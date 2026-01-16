@@ -1,0 +1,10 @@
+../IAP/src/iap.c:15:13:FLASH_DisableWriteProtectionPages	8	static
+../IAP/src/iap.c:22:6:IAP_WriteFlag	16	static
+../IAP/src/iap.c:33:10:IAP_ReadFlag	8	static
+../IAP/src/iap.c:45:6:IAP_UART_Init	4	static
+../IAP/src/iap.c:50:6:IAP_Init	8	static
+../IAP/src/iap.c:58:8:IAP_RunApp	16	static,ignoring_inline_asm
+../IAP/src/iap.c:81:6:IAP_Main_Menu	8	static
+../IAP/src/iap.c:149:8:IAP_Update	24	static
+../IAP/src/iap.c:189:8:IAP_Upload	16	static
+../IAP/src/iap.c:216:8:IAP_Erase	16	static
