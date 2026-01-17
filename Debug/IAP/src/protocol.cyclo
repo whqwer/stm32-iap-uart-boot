@@ -1,0 +1,7 @@
+../IAP/src/protocol.c:109:10:crc32_calc	2
+../IAP/src/protocol.c:117:10:crc32_c	1
+../IAP/src/protocol.c:126:10:decode_escape	8
+../IAP/src/protocol.c:166:6:Protocol_IAP_Init	1
+../IAP/src/protocol.c:176:10:Protocol_IAP_GetProgress	1
+../IAP/src/protocol.c:226:6:parse_byte	22
+../IAP/src/protocol.c:345:9:Protocol_Receive	8

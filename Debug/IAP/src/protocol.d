@@ -1,5 +1,6 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
- ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal.h \
+IAP/src/protocol.o: ../IAP/src/protocol.c \
+ /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/protocol.h \
+ ../Core/Inc/main.h ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal.h \
  ../Core/Inc/stm32h5xx_hal_conf.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_rcc.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_def.h \
@@ -25,11 +26,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart_ex.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_exti.h \
- ../Core/Inc/usart.h ../Core/Inc/main.h ../Core/Inc/gpio.h \
  /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/common.h \
  /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap_config.h \
- ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/stm32h503xx.h \
- /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap.h
+ ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/stm32h503xx.h
+/home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/protocol.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal.h:
 ../Core/Inc/stm32h5xx_hal_conf.h:
@@ -57,10 +57,6 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart_ex.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_exti.h:
-../Core/Inc/usart.h:
-../Core/Inc/main.h:
-../Core/Inc/gpio.h:
 /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/common.h:
 /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap_config.h:
 ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/stm32h503xx.h:
-/home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap.h:

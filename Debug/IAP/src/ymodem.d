@@ -1,5 +1,5 @@
 IAP/src/ymodem.o: ../IAP/src/ymodem.c \
- /home/wh/Documents/IAP/bootloader/IAP/inc/ymodem.h \
+ /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/ymodem.h \
  ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/stm32h503xx.h \
  ../Drivers/CMSIS/Include/core_cm33.h \
  ../Drivers/CMSIS/Include/cmsis_version.h \
@@ -7,9 +7,9 @@ IAP/src/ymodem.o: ../IAP/src/ymodem.c \
  ../Drivers/CMSIS/Include/cmsis_gcc.h \
  ../Drivers/CMSIS/Include/mpu_armv8.h \
  ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/system_stm32h5xx.h \
- /home/wh/Documents/IAP/bootloader/IAP/inc/iap_config.h \
- /home/wh/Documents/IAP/bootloader/IAP/inc/common.h \
- /home/wh/Documents/IAP/bootloader/IAP/inc/iap_config.h \
+ /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap_config.h \
+ /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/common.h \
+ /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap_config.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal.h \
  ../Core/Inc/stm32h5xx_hal_conf.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_rcc.h \
@@ -30,7 +30,7 @@ IAP/src/ymodem.o: ../IAP/src/ymodem.c \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart_ex.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_exti.h
-/home/wh/Documents/IAP/bootloader/IAP/inc/ymodem.h:
+/home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/ymodem.h:
 ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/stm32h503xx.h:
 ../Drivers/CMSIS/Include/core_cm33.h:
 ../Drivers/CMSIS/Include/cmsis_version.h:
@@ -38,9 +38,9 @@ IAP/src/ymodem.o: ../IAP/src/ymodem.c \
 ../Drivers/CMSIS/Include/cmsis_gcc.h:
 ../Drivers/CMSIS/Include/mpu_armv8.h:
 ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/system_stm32h5xx.h:
-/home/wh/Documents/IAP/bootloader/IAP/inc/iap_config.h:
-/home/wh/Documents/IAP/bootloader/IAP/inc/common.h:
-/home/wh/Documents/IAP/bootloader/IAP/inc/iap_config.h:
+/home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap_config.h:
+/home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/common.h:
+/home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap_config.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal.h:
 ../Core/Inc/stm32h5xx_hal_conf.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_rcc.h:

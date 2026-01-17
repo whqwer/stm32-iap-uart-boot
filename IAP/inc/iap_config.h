@@ -4,7 +4,7 @@
 #define USE_BKP_SAVE_FLAG     1
 
 /* Define the APP start address -------------------------------*/
-#define ApplicationAddress    0x800A000
+#define ApplicationAddress    0x800C000
 
 /* Output printer switch --------------------------------------*/
 #define ENABLE_PUTSTR         1
@@ -54,7 +54,7 @@
 // #error "Please select first the STM32 device to be used (in stm32f10x.h)"
 //#endif
  #define PAGE_SIZE                         (0x2000)    /* 8 Kbyte */
- #define APP_FLASH_SIZE                    (0x16000)  /* 88 KBytes */
+ #define APP_FLASH_SIZE                    (0x14000)  /* 80 KBytes */
 
 /* STM32H5 Flash Definitions ---------------------------------*/
 #define STM32_FLASH_BASE                   (0x08000000)    /* Flash base address */

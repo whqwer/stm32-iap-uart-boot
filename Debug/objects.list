@@ -23,5 +23,6 @@
 "./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.o"
 "./IAP/src/common.o"
 "./IAP/src/iap.o"
+"./IAP/src/protocol.o"
 "./IAP/src/stmflash.o"
 "./IAP/src/ymodem.o"

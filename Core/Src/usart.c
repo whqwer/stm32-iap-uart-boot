@@ -157,6 +157,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if (huart->Instance == USART1)
 	{
+  //  Protocol_Receive(uart_rx_buffer, rx_length);
 		uint32_t event_type = HAL_UARTEx_GetRxEventType(huart);
 		// 如果是空闲事件，设置标志让主循环知道
 		if (event_type == HAL_UART_RXEVENT_IDLE)  // 或 HAL_UART_RXEVENT_TC
