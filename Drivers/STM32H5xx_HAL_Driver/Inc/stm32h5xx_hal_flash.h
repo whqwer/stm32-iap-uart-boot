@@ -650,7 +650,7 @@ HAL_StatusTypeDef HAL_FLASH_OB_Unlock(void);
 HAL_StatusTypeDef HAL_FLASH_OB_Lock(void);
 /* Option bytes control */
 HAL_StatusTypeDef HAL_FLASH_OB_Launch(void);
-void FLASH_Program_HalfWord(uint32_t FlashAddress, uint32_t DataAddress);
+
 /**
   * @}
   */

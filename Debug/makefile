@@ -53,6 +53,12 @@ default.size.stdout \
 OBJDUMP_LIST += \
 bootloader.list \
 
+OBJCOPY_HEX += \
+bootloader.hex \
+
+OBJCOPY_BIN += \
+bootloader.bin \
+
 
 # All Target
 all: main-build
@@ -76,12 +82,22 @@ bootloader.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+bootloader.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O ihex $(EXECUTABLES) "bootloader.hex"
+	@echo 'Finished building: $@'
+	@echo ' '
+
+bootloader.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "bootloader.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) bootloader.elf bootloader.list bootloader.map default.size.stdout
+	-$(RM) bootloader.bin bootloader.elf bootloader.hex bootloader.list bootloader.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

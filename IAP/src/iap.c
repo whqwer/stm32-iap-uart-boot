@@ -3,12 +3,13 @@
 #include "stmflash.h"
 #include "ymodem.h"
 #include "protocol.h"
+#include <stdlib.h>
 
 pFunction Jump_To_Application;
 uint32_t JumpAddress;
 uint32_t BlockNbr = 0, UserMemoryMask = 0;
 __IO uint32_t FlashProtection = 0;
-uint8_t tab_1024[1024] = {0};
+// uint8_t tab_1024[1024] = {0};
 
 
 /************************************************************************/
@@ -192,14 +193,25 @@ void IAP_Main_Menu(void)
 
 
 /************************************************************************/
+#define MAX_FRAME_SIZE    1024*4
+// UART接收缓冲区（一次接收最多1024*4字节）
+uint8_t rx_buffer[MAX_FRAME_SIZE];
+
 // 基于协议的固件更新（新版本）
+extern uint8_t UART1_in_update_mode;  // 声明外部变量
+
 int8_t IAP_Update(void)
 {
-    uint8_t rx_buffer[512];  // UART接收缓冲区（一次接收最多512字节）
     uint16_t rx_len = 0;
     uint32_t start_time;
-    uint32_t last_progress = 0;
+//    uint32_t last_progress = 0;
     HAL_StatusTypeDef status;
+    
+    // 设置标志：进入 Update 模式
+    UART1_in_update_mode = 1;
+    
+    // 关键修复：禁用UART中断，防止中断干扰阻塞式接收
+    HAL_NVIC_DisableIRQ(USART1_IRQn);
     
     // 1. 初始化协议层
     Protocol_IAP_Init();
@@ -210,14 +222,29 @@ int8_t IAP_Update(void)
     if (!EraseSomePages(FLASH_IMAGE_SIZE, 1))
     {
         SerialPutString("Erase failed!\r\n");
+        UART1_in_update_mode = 0;
+        HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
+//        free(rx_buffer);
         return -1;
     }
     
-    SerialPutString("Ready to receive firmware data...\r\n");
-    SerialPutString("Waiting for data (timeout: 30s)...\r\n");
+//    SerialPutString("Ready to receive firmware data...\r\n");
+//    SerialPutString("Waiting for data (timeout: 30s)...\r\n");
+//
+//    // 调试：检查 UART 初始状态
+//    SerialPutString("[DEBUG] UART RxState: ");
+//    if (huart1.RxState == HAL_UART_STATE_READY) SerialPutString("READY\r\n");
+//    else if (huart1.RxState == HAL_UART_STATE_BUSY_RX) SerialPutString("BUSY_RX\r\n");
+//    else SerialPutString("OTHER\r\n");
+    
+//    SerialPutString("[DEBUG] UART ErrorCode: ");
+//    uint8_t err_str[12];
+//    Int2Str(err_str, huart1.ErrorCode);
+//    SerialPutString(err_str);
+//    SerialPutString("\r\n");
     
     start_time = HAL_GetTick();
-    
+
     // 3. 主循环：使用 ReceiveToIdle 一次接收多个字节
     while (1)
     {
@@ -225,157 +252,220 @@ int8_t IAP_Update(void)
         if ((HAL_GetTick() - start_time) > 30000)
         {
             SerialPutString("\r\n=== Update Timeout! ===\r\n");
+            UART1_in_update_mode = 0;  // 退出 Update 模式
+            HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
+//            free(rx_buffer);
             return -2;
         }
+        memset(rx_buffer,0,MAX_FRAME_SIZE);
+        rx_len=0;
+        // 清除之前可能的错误标志
+        __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);
+        __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_FEF);
+        __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_NEF);
         
         // 使用 ReceiveToIdle 接收数据，遇到总线空闲或缓冲区满就返回
         // 超时设置为5秒，如果5秒内没有数据开始接收则超时
-        status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &rx_len, 5000);
-        
-        if (status == HAL_OK && rx_len > 0)
-        {
-            // 收到数据，调用协议解析
-            Protocol_Receive(rx_buffer, rx_len);
-            
-            // 重置超时计时（有数据就继续等待）
-            start_time = HAL_GetTick();
-            
-            // 打印进度
-            uint32_t current_progress = Protocol_IAP_GetProgress();
-            if (current_progress != last_progress)
-            {
-                uint8_t progress_str[12];
-                Int2Str(progress_str, current_progress);
-                SerialPutString("\rReceived: ");
-                SerialPutString(progress_str);
-                SerialPutString(" bytes");
-                last_progress = current_progress;
-            }
-            
-            // 如果接收到的数据量小于缓冲区大小，说明是最后一包
-            if (rx_len < sizeof(rx_buffer))
-            {
-                // 等待一小段时间确认没有更多数据
-                HAL_Delay(500);
-                
-                // 再尝试接收一次，如果还有数据则继续
-                uint16_t extra_len = 0;
-                status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &extra_len, 500);
-                
-                if (status == HAL_OK && extra_len > 0)
-                {
-                    // 还有数据，继续处理
-                    Protocol_Receive(rx_buffer, extra_len);
-                    continue;
-                }
-                
-                // 确认传输完成
-                uint32_t total_received = Protocol_IAP_GetProgress();
-                if (total_received > 0)
-                {
-                    SerialPutString("\r\n=== Update Successful! ===\r\n");
-                    uint8_t size_str[12];
-                    Int2Str(size_str, total_received);
-                    SerialPutString("Total received: ");
-                    SerialPutString(size_str);
-                    SerialPutString(" bytes\r\n");
-                    return 0;
-                }
-            }
-        }
-        else if (status == HAL_TIMEOUT)
-        {
-            // 如果已经接收过数据，超时认为传输完成
-            uint32_t total_received = Protocol_IAP_GetProgress();
-            if (total_received > 0)
-            {
-                SerialPutString("\r\n=== Update Successful! ===\r\n");
-                uint8_t size_str[12];
-                Int2Str(size_str, total_received);
-                SerialPutString("Total received: ");
-                SerialPutString(size_str);
-                SerialPutString(" bytes\r\n");
-                return 0;
-            }
-            // 如果还没有接收任何数据，继续等待
-        }
-        else
-        {
-            // 其他错误
-            SerialPutString("\r\nUART receive error!\r\n");
-            return -1;
-        }
-        
-        HAL_Delay(10);
-    }
-}
+        status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &rx_len, 10000);
+        //HAL_UARTEx_ReceiveToIdle_IT(huart, rx_buffer, MAX_FRAME_SIZE);
+//		 // 调试：打印每次接收的结果
+//		 SerialPutString("\r\n[DEBUG] Status: ");
+//		 if (status == HAL_OK) SerialPutString("OK");
+//		 else if (status == HAL_TIMEOUT) SerialPutString("TIMEOUT");
+//		 else if (status == HAL_BUSY) SerialPutString("BUSY");
+//		 else if (status == HAL_ERROR) SerialPutString("ERROR");
+//		 SerialPutString(", rx_len: ");
+//		 uint8_t debug_len[12];
+//		 Int2Str(debug_len, rx_len);
+//		 SerialPutString(debug_len);
+		
+//		 // 检查接收后的错误
+//		 uint32_t rx_error = HAL_UART_GetError(&huart1);
+//		 if (rx_error != HAL_UART_ERROR_NONE)
+//		 {
+//		 	SerialPutString(", Errors:");
+//		 	if (rx_error & HAL_UART_ERROR_ORE) SerialPutString(" ORE");
+//		 	if (rx_error & HAL_UART_ERROR_FE) SerialPutString(" FE");
+//		 	if (rx_error & HAL_UART_ERROR_NE) SerialPutString(" NE");
+//		 	if (rx_error & HAL_UART_ERROR_PE) SerialPutString(" PE");
+//		 }
+//		 SerialPutString("\r\n");
 
-/************************************************************************/
-// 基于Ymodem的固件更新（备份版本）
-int8_t IAP_Update_Ymodem(void)
-{
-	uint8_t Number[10] = "";
-	int32_t Size = 0;
-	Size = Ymodem_Receive(&tab_1024[0]);
-	if (Size > 0)
-	{
-		SerialPutString("\r\n Update Over!\r\n");
-		SerialPutString(" Name: ");
-		SerialPutString(file_name);
-		Int2Str(Number, Size);
-		SerialPutString("\r\n Size: ");
-		SerialPutString(Number);
-		SerialPutString(" Bytes.\r\n");
-		return 0;
-	}
-	else if (Size == -1)
-	{
-		SerialPutString("\r\n Image Too Big!\r\n");
-		return -1;
-	}
-	else if (Size == -2)
-	{
-		SerialPutString("\r\n Update failed!\r\n");
-		return -2;
-	}
-	else if (Size == -3)
-	{
-		SerialPutString("\r\n Aborted by user.\r\n");
-		return -3;
-	}
-	else
-	{
-		SerialPutString(" Receive Filed.\r\n");
-		return -4;
-	}
-}
-
-
-/************************************************************************/
-int8_t IAP_Upload(void)
-{
-	uint32_t status = 0; 
-	SerialPutString("\n\n\rSelect Receive File ... (press any key to abort)\n\r");
-	if (GetKey() == CRC16)
-	{
-		status = Ymodem_Transmit((uint8_t*)ApplicationAddress, (const uint8_t*)"UploadedFlashImage.bin", FLASH_IMAGE_SIZE);
-		if (status != 0) 
+		if (status == HAL_OK && rx_len>0)
 		{
-			SerialPutString("\n\rError Occured while Transmitting File\n\r");
-			return -1;
+			// // 打印接收到的数据长度
+			// uint8_t len_str[12];
+			// Int2Str(len_str, rx_len);
+			// SerialPutString("\r\nRx: ");
+			// SerialPutString(len_str);
+			// SerialPutString(" bytes\r\n");
+			
+			// 收到数据，调用协议解析
+			Protocol_Receive(rx_buffer, rx_len);
+
+//			// 重置超时计时（有数据就继续等待）
+//			start_time = HAL_GetTick();
+//
+//			// 打印进度
+//			uint32_t current_progress = Protocol_IAP_GetProgress();
+//			if (current_progress != last_progress)
+//			{
+//				uint8_t progress_str[12];
+//				Int2Str(progress_str, current_progress);
+//				SerialPutString("\rReceived: ");
+//				SerialPutString(progress_str);
+//				SerialPutString(" bytes");
+//				last_progress = current_progress;
+//			}
+		}
+			// // 如果接收到的数据量小于缓冲区大小，说明可能是最后一包（继续接收确认）
+			// if (rx_len < sizeof(rx_buffer))
+			// {
+			// 	// 等待一小段时间确认没有更多数据
+			// 	HAL_Delay(200);
+			// 	 status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &rx_len, 5000);
+
+			// 	if (status == HAL_OK && extra_len > 0)
+			// 	{
+			// 		// 还有数据，继续处理
+			// 		Protocol_Receive(rx_buffer, rx_len);
+			// 		// 重置超时计时
+			// 		start_time = HAL_GetTick();
+			// 		continue;
+			// 	}
+
+			// 	// 确认传输完成
+			// 	uint32_t total_received = Protocol_IAP_GetProgress();
+			// 	if (total_received > 0)
+			// 	{
+			// 		SerialPutString("\r\n=== Update Successful! ===\r\n");
+			// 		uint8_t size_str[12];
+			// 		Int2Str(size_str, total_received);
+			// 		SerialPutString("Total received: ");
+			// 		SerialPutString(size_str);
+			// 		SerialPutString(" bytes\r\n");
+			// 		UART1_in_update_mode = 0;  // 退出 Update 模式
+			// 		return 0;
+			// 	}
+			// }
+		else if (status == HAL_TIMEOUT)
+		{
+			SerialPutString("\r\n[DEBUG] HAL_TIMEOUT detected\r\n");
+			// 如果已经接收过数据，超时认为传输完成
+			uint32_t total_received = Protocol_IAP_GetProgress();
+			if (total_received > 0)
+			{
+				SerialPutString("\r\n=== Update Successful! ===\r\n");
+				uint8_t size_str[12];
+				Int2Str(size_str, total_received);
+				SerialPutString("Total received: ");
+				SerialPutString(size_str);
+				UART1_in_update_mode = 0;  // 退出 Update 模式
+			HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
+				return 0;
+			}
+			// 如果还没有接收任何数据，继续等待
+			SerialPutString("\r\n[DEBUG] No data received yet, continue waiting...\r\n");
+		}
+		else if (status == HAL_OK && rx_len == 0)
+		{
+			// 收到 IDLE 但没有数据（可能是残留的 IDLE 标志）
+			SerialPutString("\r\n[DEBUG] Received IDLE with no data, continue...\r\n");
+			// 继续循环，不退出
 		}
 		else
 		{
-			SerialPutString("\n\rFile Trasmitted Successfully \n\r");
-			return -2;
+			// 其他错误
+			SerialPutString("\r\nUART receive error! Status: ");
+			if (status == HAL_ERROR) SerialPutString("HAL_ERROR");
+			else if (status == HAL_BUSY) SerialPutString("HAL_BUSY");
+			else SerialPutString("UNKNOWN");
+			
+			// 检查 UART 错误标志
+			uint32_t error = HAL_UART_GetError(&huart1);
+			if (error & HAL_UART_ERROR_ORE) SerialPutString(" ORE(Overrun)");
+			if (error & HAL_UART_ERROR_FE) SerialPutString(" FE(Frame)");
+			if (error & HAL_UART_ERROR_NE) SerialPutString(" NE(Noise)");
+			if (error & HAL_UART_ERROR_PE) SerialPutString(" PE(Parity)");
+			SerialPutString("\r\n");
+			
+			UART1_in_update_mode = 0;  // 退出 Update 模式
+			HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
+//			free(rx_buffer);
+			return -1;
 		}
-	}
-	else
-	{
-		SerialPutString("\r\n\nAborted by user.\n\r");  
-		return 0;
-	}
+
+		HAL_Delay(10);
+
+    }
 }
+
+// /************************************************************************/
+// // 基于Ymodem的固件更新（备份版本）
+// int8_t IAP_Update_Ymodem(void)
+// {
+// 	uint8_t Number[10] = "";
+// 	int32_t Size = 0;
+// 	Size = Ymodem_Receive(&tab_1024[0]);
+// 	if (Size > 0)
+// 	{
+// 		SerialPutString("\r\n Update Over!\r\n");
+// 		SerialPutString(" Name: ");
+// 		SerialPutString(file_name);
+// 		Int2Str(Number, Size);
+// 		SerialPutString("\r\n Size: ");
+// 		SerialPutString(Number);
+// 		SerialPutString(" Bytes.\r\n");
+// 		return 0;
+// 	}
+// 	else if (Size == -1)
+// 	{
+// 		SerialPutString("\r\n Image Too Big!\r\n");
+// 		return -1;
+// 	}
+// 	else if (Size == -2)
+// 	{
+// 		SerialPutString("\r\n Update failed!\r\n");
+// 		return -2;
+// 	}
+// 	else if (Size == -3)
+// 	{
+// 		SerialPutString("\r\n Aborted by user.\r\n");
+// 		return -3;
+// 	}
+// 	else
+// 	{
+// 		SerialPutString(" Receive Filed.\r\n");
+// 		return -4;
+// 	}
+// }
+
+
+/************************************************************************/
+//int8_t IAP_Upload(void)
+//{
+//	uint32_t status = 0;
+//	SerialPutString("\n\n\rSelect Receive File ... (press any key to abort)\n\r");
+//	if (GetKey() == CRC16)
+//	{
+//		status = Ymodem_Transmit((uint8_t*)ApplicationAddress, (const uint8_t*)"UploadedFlashImage.bin", FLASH_IMAGE_SIZE);
+//		if (status != 0)
+//		{
+//			SerialPutString("\n\rError Occured while Transmitting File\n\r");
+//			return -1;
+//		}
+//		else
+//		{
+//			SerialPutString("\n\rFile Trasmitted Successfully \n\r");
+//			return -2;
+//		}
+//	}
+//	else
+//	{
+//		SerialPutString("\r\n\nAborted by user.\n\r");
+//		return 0;
+//	}
+//}
 
 
 /************************************************************************/

@@ -11,4 +11,4 @@
 ../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.c:720:10:HAL_FLASH_GetError	1
 ../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.c:744:19:FLASH_WaitForLastOperation	7
 ../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.c:824:13:FLASH_Program_QuadWord	2
-../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.c:909:6:FLASH_Program_HalfWord	1
+../Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.c:909:13:FLASH_Program_HalfWord	1

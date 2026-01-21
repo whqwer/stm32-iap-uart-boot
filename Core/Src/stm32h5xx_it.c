@@ -69,11 +69,56 @@ extern UART_HandleTypeDef huart1;
 void NMI_Handler(void)
 {
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
-
+  volatile uint32_t nmi_source = 0;  // 用于调试观察NMI源
+  
+  // 1. 检查 HSE 时钟安全系统
+  if (__HAL_RCC_GET_IT(RCC_IT_HSECSS))
+  {
+    nmi_source = 1;  // HSE CSS
+    __HAL_RCC_CLEAR_IT(RCC_IT_HSECSS);
+    NVIC_SystemReset();
+  }
+//
+//  // 2. 检查 LSE 时钟安全系统
+//  if (__HAL_RCC_GET_IT(RCC_IT_LSECSS))
+//  {
+//    nmi_source = 2;  // LSE CSS
+//    __HAL_RCC_CLEAR_IT(RCC_IT_LSECSS);
+//  }
+  
+  // 3. 检查 Flash ECC 错误（双bit错误会触发NMI）
+  if (READ_BIT(FLASH->ECCDETR, FLASH_ECCR_ECCD) != 0U)
+  {
+    nmi_source = 3;  // Flash ECC Double Detection
+    // 记录错误地址
+    volatile uint32_t ecc_addr = FLASH->ECCDR & FLASH_ECCR_ADDR_ECC;
+    SET_BIT(FLASH->ECCDETR, FLASH_ECCR_ECCD);  // 清除标志
+    (void)ecc_addr;  // 防止编译器优化
+  }
+  
+  // 4. 检查 SRAM ECC 错误
+  if (READ_BIT(RAMCFG_SRAM1->IER, RAMCFG_IER_ECCNMI) != 0U)
+  {
+    if (READ_BIT(RAMCFG_SRAM1->ISR, RAMCFG_ISR_DED) != 0U)
+    {
+      nmi_source = 4;  // SRAM ECC错误
+      SET_BIT(RAMCFG_SRAM1->ICR, RAMCFG_ICR_CDED);  // 清除标志
+    }
+  }
+  
+  // 5. 如果没有找到明确的NMI源，可能是硬件问题或栈溢出
+  if (nmi_source == 0)
+  {
+    nmi_source = 99;  // 未知NMI源
+  }
+  
   /* USER CODE END NonMaskableInt_IRQn 0 */
   /* USER CODE BEGIN NonMaskableInt_IRQn 1 */
-   while (1)
+  // 在调试器中设置断点查看 nmi_source 的值
+  // 1 = HSE CSS, 2 = LSE CSS, 3 = Flash ECC, 4 = SRAM ECC, 99 = 未知
+  while (1)
   {
+    // 死循环，便于调试观察 nmi_source
   }
   /* USER CODE END NonMaskableInt_IRQn 1 */
 }
@@ -84,7 +129,10 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+	   uint32_t cfsr = SCB->CFSR;    // 配置错误状态寄存器
+	    uint32_t hfsr = SCB->HFSR;    // HardFault状态寄存器
+	    uint32_t mmfar = SCB->MMFAR;  // 内存管理fault地址
+	    uint32_t bfar = SCB->BFAR;    // 总线fault地址
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {

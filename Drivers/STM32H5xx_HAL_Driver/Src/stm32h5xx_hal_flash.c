@@ -123,7 +123,7 @@ static void          FLASH_Program_QuadWord(uint32_t FlashAddress, uint32_t Data
 #if defined (FLASH_SR_OBKERR)
 static void          FLASH_Program_QuadWord_OBK(uint32_t FlashAddress, uint32_t DataAddress);
 #endif /* FLASH_SR_OBKERR */
-void          FLASH_Program_HalfWord(uint32_t FlashAddress, uint32_t DataAddress);
+static void          FLASH_Program_HalfWord(uint32_t FlashAddress, uint32_t DataAddress);
 #if defined(FLASH_EDATAR_EDATA_EN)
 static void          FLASH_Program_Word(uint32_t FlashAddress, uint32_t DataAddress);
 #endif /* FLASH_EDATAR_EDATA_EN */
@@ -906,7 +906,7 @@ static void FLASH_Program_QuadWord_OBK(uint32_t FlashAddress, uint32_t DataAddre
   * @param  DataAddress specifies the address of data to be programmed.
   * @retval None
   */
-void FLASH_Program_HalfWord(uint32_t FlashAddress, uint32_t DataAddress)
+static void FLASH_Program_HalfWord(uint32_t FlashAddress, uint32_t DataAddress)
 {
   __IO uint32_t *reg_cr;
 

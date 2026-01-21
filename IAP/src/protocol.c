@@ -34,7 +34,7 @@ extern void STMFLASH_Write(uint32_t addr, uint16_t *buffer, uint16_t count);
 #define ESCAPE_FLAG       0x7A
 #define ESCAPE_7E         0x55
 #define ESCAPE_7A         0xAA
-#define MAX_FRAME_SIZE    1024
+#define MAX_FRAME_SIZE    1024*4
 
 // ==================== 协议解析状态机 ====================
 typedef enum {
@@ -53,16 +53,22 @@ static uint32_t recv_count = 0;
 static uint32_t recv_crc = 0;
 static uint8_t frame_buf[MAX_FRAME_SIZE];
 static uint8_t crc_input[MAX_FRAME_SIZE + 4];
-static uint8_t frame_buffer[MAX_FRAME_SIZE];
-static uint8_t decode_data[MAX_FRAME_SIZE];
+//static uint8_t frame_buffer[MAX_FRAME_SIZE];
+//static uint8_t decode_data[MAX_FRAME_SIZE];
+// decode_data 和 frame_buffer 合并（不同协议阶段使用，可以复用）
+#define decode_data frame_buf                     // 复用 frame_buf（解码后存储位置）
+#define frame_buffer crc_input                    // 复用 crc_input（帧缓冲临时存储）
+
 static uint32_t frame_pos = 0;
 static uint8_t in_frame = 0;
-static uint8_t crc_bytes[4];
+//static uint8_t crc_bytes[4];
 
 // ==================== IAP更新状态（简化版）====================
 static uint8_t iap_started = 0;           // IAP是否已开始
 static uint32_t iap_write_addr = ApplicationAddress;  // 当前Flash写入地址
-static uint8_t iap_buffer[2048];          // 写入缓冲区（存储半字对齐前的数据）
+//static uint8_t iap_buffer[1024*5];          // 写入缓冲区（存储半字对齐前的数据）
+// ⚠️ iap_buffer 复用 frame_buf（IAP 写入时不需要接收新帧）
+#define iap_buffer frame_buf                      // 复用 frame_buf（5KB）
 static uint16_t iap_buf_idx = 0;          // 缓冲区当前索引
 static uint32_t iap_total_received = 0;   // 总接收字节数
 
@@ -128,33 +134,32 @@ uint32_t decode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
     uint32_t dst_idx = 0;
     for (uint32_t i = 0; i < src_len; i++)
     {
-    	// 跳过首尾的帧标志 (0x7E)
-    	if (i == 0 || i == src_len - 1)
+    	// only treat interior bytes (not the first/last few header/footer bytes) as candidates for escape sequences
+    	if( i>=5 && i < src_len-5 )
     	{
-    		dst[dst_idx++] = src[i];
-    		continue;
-    	}
-    	
-    	// 处理转义序列
-		if (src[i] == ESCAPE_FLAG && i + 1 < src_len)
-		{
-			if (src[i+1] == ESCAPE_7E)
+			if (src[i] == ESCAPE_FLAG)
 			{
-				dst[dst_idx++] = START_END_FLAG;
-				i++;
-			}
-			else if (src[i+1] == ESCAPE_7A)
-			{
-				dst[dst_idx++] = ESCAPE_FLAG;
-				i++;
+				if (src[i+1] == ESCAPE_7E)
+				{
+					dst[dst_idx++] = START_END_FLAG;
+					i++;
+				}
+				else if (src[i+1] == ESCAPE_7A) {
+					dst[dst_idx++] = ESCAPE_FLAG;
+					i++;
+				}
+	//			else
+	//			{
+	//				dst[dst_idx++] = src[i]; // 未知转义？直接输出
+	//			}
 			}
 			else
 			{
-				dst[dst_idx++] = src[i]; // 无效转义，保留原字符
+				dst[dst_idx++] = src[i];
 			}
-		}
-		else
-		{
+    	}
+    	else
+    	{
 			dst[dst_idx++] = src[i];
 		}
     }
@@ -162,7 +167,7 @@ uint32_t decode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
 }
 
 // ==================== IAP公共接口 ====================
-
+extern UART_HandleTypeDef huart1;
 void Protocol_IAP_Init(void)
 {
     iap_started = 0;
@@ -171,50 +176,39 @@ void Protocol_IAP_Init(void)
     iap_total_received = 0;
     
     SerialPutString("IAP Init OK\r\n");
+
+	// 1. 终止所有正在进行的 UART 操作
+	HAL_UART_AbortReceive_IT(&huart1);
+	HAL_UART_Abort(&huart1);
+	
+	// 2. 清除所有 UART 错误标志
+	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_PEF);   // Parity Error
+	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_FEF);   // Frame Error
+	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_NEF);   // Noise Error
+	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);  // Overrun Error
+	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_IDLEF); // Idle Line
+	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_RTOF);  // Receiver Timeout
+	
+	// 3. 清空接收 FIFO（读取所有数据）
+	while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))
+	{
+		(void)huart1.Instance->RDR;  // 读取并丢弃
+	}
+	
+	// 4. 重置 UART 错误代码
+	huart1.ErrorCode = HAL_UART_ERROR_NONE;
+	
+	// 5. 等待状态完全恢复
+	HAL_Delay(10);
+	
+	SerialPutString("UART fully reset\r\n");
 }
 
 uint32_t Protocol_IAP_GetProgress(void)
 {
     return iap_total_received;
 }
-//
-//int8_t Protocol_IAP_Update(uint32_t timeout_ms)
-//{
-//    SerialPutString("\r\n=== IAP Update Mode ===\r\n");
-//    SerialPutString("Send firmware data via UART...\r\n");
-//
-//    Protocol_IAP_Init();
-//
-//    // 擦除应用区Flash
-//    SerialPutString("Erasing flash...\r\n");
-//    if (!EraseSomePages(FLASH_IMAGE_SIZE, 1))
-//    {
-//        SerialPutString("Erase failed!\r\n");
-//        return -1;
-//    }
-//
-//    iap_started = 1;
-//    SerialPutString("Ready to receive data\r\n");
-//
-//    uint32_t start_time = HAL_GetTick();
-//
-//    // 阻塞等待数据接收（实际数据由UART中断+Protocol_Receive处理）
-//    while (1)
-//    {
-//        // 检查超时
-//        if (timeout_ms > 0 && (HAL_GetTick() - start_time) > timeout_ms)
-//        {
-//            SerialPutString("Timeout!\r\n");
-//            iap_started = 0;
-//            return -2;
-//        }
-//
-//        // 这里可以添加其他退出条件，比如接收到特定结束命令
-//        HAL_Delay(100);
-//    }
-//
-//    return 0;
-//}
+
 
 
 
@@ -289,7 +283,7 @@ void parse_byte(uint8_t byte)
 					uint8_t *firmware_data = &frame_buf[3];
 					uint32_t data_len = body_len - 3;
 					
-					if (iap_started && data_len > 0)
+					if ( data_len > 0)
 					{
 						// 将数据拷贝到缓冲区
 						if (iap_buf_idx + data_len <= sizeof(iap_buffer))
