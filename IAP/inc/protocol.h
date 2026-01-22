@@ -34,6 +34,7 @@ int8_t Protocol_IAP_Update(uint32_t timeout_ms);
 // 获取更新进度（已接收字节数）
 uint32_t Protocol_IAP_GetProgress(void);
 
+void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, uint32_t data_len);
 #endif /* INC_PROTOCOL_H_ */
 
 

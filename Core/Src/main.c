@@ -92,7 +92,6 @@ int main(void)
   IAP_Init();
   IAP_WriteFlag(INIT_FLAG_DATA);
   /* USER CODE END 2 */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)

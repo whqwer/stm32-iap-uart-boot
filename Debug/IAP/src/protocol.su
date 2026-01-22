@@ -1,7 +1,9 @@
 ../IAP/src/protocol.c:115:10:crc32_calc	32	static
 ../IAP/src/protocol.c:123:10:crc32_c	16	static
 ../IAP/src/protocol.c:132:10:decode_escape	32	static
-../IAP/src/protocol.c:171:6:Protocol_IAP_Init	8	static
-../IAP/src/protocol.c:207:10:Protocol_IAP_GetProgress	4	static
-../IAP/src/protocol.c:220:6:parse_byte	32	static
-../IAP/src/protocol.c:339:9:Protocol_Receive	32	static
+../IAP/src/protocol.c:169:10:encode_escape	32	static
+../IAP/src/protocol.c:199:6:Protocol_IAP_Init	8	static
+../IAP/src/protocol.c:235:10:Protocol_IAP_GetProgress	4	static
+../IAP/src/protocol.c:248:6:parse_byte	32	static
+../IAP/src/protocol.c:380:9:Protocol_Receive	32	static
+../IAP/src/protocol.c:438:6:send_protocol_frame	40	static

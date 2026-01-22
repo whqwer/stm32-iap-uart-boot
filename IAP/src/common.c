@@ -360,28 +360,47 @@ uint32_t FLASH_PagesMask(__IO uint32_t Size)
 
 uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
 {
-	uint32_t EraseCounter = 0x0;
-	uint32_t NbrOfSector = 0;
-	uint8_t erase_cont[3] = {0};
-	HAL_StatusTypeDef status = HAL_OK;
-	FLASH_EraseInitTypeDef EraseInitStruct;
-	uint32_t SectorError = 0;
-	
-	NbrOfSector = FLASH_PagesMask(size);
+	   uint32_t EraseCounter = 0x0;
+	    uint8_t erase_cont[3] = {0};
+	    HAL_StatusTypeDef status = HAL_OK;
+	    FLASH_EraseInitTypeDef EraseInitStruct;
+	    uint32_t SectorError = 0;
 
-	/* Erase the FLASH sectors */
-	HAL_FLASH_Unlock();
-	
-	EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
-	EraseInitStruct.Banks = FLASH_BANK_1;
-	EraseInitStruct.Sector = (ApplicationAddress - FLASH_BASE) / PAGE_SIZE;
-	EraseInitStruct.NbSectors = NbrOfSector;
-	
-	status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
-	
+	    // 计算全局起始扇区和总扇区数
+	    uint32_t global_start_sector = (ApplicationAddress - FLASH_BASE) / PAGE_SIZE;  // = 6
+	    uint32_t total_sectors = FLASH_PagesMask(size);  // 例如 = 4
+
+	    uint32_t sectors_per_bank = 8;  // 每个 Bank 8 个扇区
+
+	    HAL_FLASH_Unlock();
+	    EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
+
+	    // Bank 1 擦除（如果起始在 Bank 1）
+	    if (global_start_sector < sectors_per_bank) {
+	        // 计算 Bank 1 能擦除的扇区数
+	        uint32_t bank1_sectors = (global_start_sector + total_sectors <= sectors_per_bank)
+	                                 ? total_sectors
+	                                 : (sectors_per_bank - global_start_sector);
+
+	        EraseInitStruct.Banks = FLASH_BANK_1;
+	        EraseInitStruct.Sector = global_start_sector;  // Bank 1 的扇区 6
+	        EraseInitStruct.NbSectors = bank1_sectors;
+	        status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
+
+	        total_sectors -= bank1_sectors;
+	    }
+
+	    // Bank 2 擦除（如果还有剩余扇区）
+	    if (total_sectors > 0 && status == HAL_OK) {
+	        EraseInitStruct.Banks = FLASH_BANK_2;
+	        EraseInitStruct.Sector = 0;  // Bank 2 从扇区 0 开始
+	        EraseInitStruct.NbSectors = total_sectors;
+	        status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
+	    }
+
 	if(status == HAL_OK)
 	{
-		for (EraseCounter = 0; EraseCounter < NbrOfSector; EraseCounter++)
+		for (EraseCounter = 0; EraseCounter < total_sectors; EraseCounter++)
 		{
 			if(outPutCont == 1)
 			{
@@ -391,9 +410,9 @@ uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
 			}
 		}
 	}
-	
+
 	HAL_FLASH_Lock();
-	
+
 	if(status != HAL_OK)
 	{
 		return 0;

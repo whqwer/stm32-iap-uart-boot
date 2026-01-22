@@ -268,86 +268,12 @@ int8_t IAP_Update(void)
         // 超时设置为5秒，如果5秒内没有数据开始接收则超时
         status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &rx_len, 10000);
         //HAL_UARTEx_ReceiveToIdle_IT(huart, rx_buffer, MAX_FRAME_SIZE);
-//		 // 调试：打印每次接收的结果
-//		 SerialPutString("\r\n[DEBUG] Status: ");
-//		 if (status == HAL_OK) SerialPutString("OK");
-//		 else if (status == HAL_TIMEOUT) SerialPutString("TIMEOUT");
-//		 else if (status == HAL_BUSY) SerialPutString("BUSY");
-//		 else if (status == HAL_ERROR) SerialPutString("ERROR");
-//		 SerialPutString(", rx_len: ");
-//		 uint8_t debug_len[12];
-//		 Int2Str(debug_len, rx_len);
-//		 SerialPutString(debug_len);
-		
-//		 // 检查接收后的错误
-//		 uint32_t rx_error = HAL_UART_GetError(&huart1);
-//		 if (rx_error != HAL_UART_ERROR_NONE)
-//		 {
-//		 	SerialPutString(", Errors:");
-//		 	if (rx_error & HAL_UART_ERROR_ORE) SerialPutString(" ORE");
-//		 	if (rx_error & HAL_UART_ERROR_FE) SerialPutString(" FE");
-//		 	if (rx_error & HAL_UART_ERROR_NE) SerialPutString(" NE");
-//		 	if (rx_error & HAL_UART_ERROR_PE) SerialPutString(" PE");
-//		 }
-//		 SerialPutString("\r\n");
 
 		if (status == HAL_OK && rx_len>0)
 		{
-			// // 打印接收到的数据长度
-			// uint8_t len_str[12];
-			// Int2Str(len_str, rx_len);
-			// SerialPutString("\r\nRx: ");
-			// SerialPutString(len_str);
-			// SerialPutString(" bytes\r\n");
-			
 			// 收到数据，调用协议解析
 			Protocol_Receive(rx_buffer, rx_len);
-
-//			// 重置超时计时（有数据就继续等待）
-//			start_time = HAL_GetTick();
-//
-//			// 打印进度
-//			uint32_t current_progress = Protocol_IAP_GetProgress();
-//			if (current_progress != last_progress)
-//			{
-//				uint8_t progress_str[12];
-//				Int2Str(progress_str, current_progress);
-//				SerialPutString("\rReceived: ");
-//				SerialPutString(progress_str);
-//				SerialPutString(" bytes");
-//				last_progress = current_progress;
-//			}
 		}
-			// // 如果接收到的数据量小于缓冲区大小，说明可能是最后一包（继续接收确认）
-			// if (rx_len < sizeof(rx_buffer))
-			// {
-			// 	// 等待一小段时间确认没有更多数据
-			// 	HAL_Delay(200);
-			// 	 status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &rx_len, 5000);
-
-			// 	if (status == HAL_OK && extra_len > 0)
-			// 	{
-			// 		// 还有数据，继续处理
-			// 		Protocol_Receive(rx_buffer, rx_len);
-			// 		// 重置超时计时
-			// 		start_time = HAL_GetTick();
-			// 		continue;
-			// 	}
-
-			// 	// 确认传输完成
-			// 	uint32_t total_received = Protocol_IAP_GetProgress();
-			// 	if (total_received > 0)
-			// 	{
-			// 		SerialPutString("\r\n=== Update Successful! ===\r\n");
-			// 		uint8_t size_str[12];
-			// 		Int2Str(size_str, total_received);
-			// 		SerialPutString("Total received: ");
-			// 		SerialPutString(size_str);
-			// 		SerialPutString(" bytes\r\n");
-			// 		UART1_in_update_mode = 0;  // 退出 Update 模式
-			// 		return 0;
-			// 	}
-			// }
 		else if (status == HAL_TIMEOUT)
 		{
 			SerialPutString("\r\n[DEBUG] HAL_TIMEOUT detected\r\n");

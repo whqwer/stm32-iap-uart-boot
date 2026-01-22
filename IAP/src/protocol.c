@@ -165,6 +165,34 @@ uint32_t decode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
     }
     return dst_idx; // 返回解码后长度
 }
+// 实现转义编码
+uint32_t encode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
+{
+    uint32_t dst_idx = 0;
+    for (uint32_t i = 0; i < src_len; i++) {
+    	// 只有起始和结束的0x7E标志位不转义（第0字节和最后1字节）
+    	if( i<5 || i>=src_len-5 )
+    	{
+    		dst[dst_idx++] = src[i];
+    	}
+    	else{
+			switch (src[i]) {
+				case START_END_FLAG:  // 0x7E → 0x7A 0x55
+					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
+					dst[dst_idx++] = ESCAPE_7E;       // 0x55
+					break;
+				case ESCAPE_FLAG:     // 0x7A → 0x7A 0xAA
+					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
+					dst[dst_idx++] = ESCAPE_7A;       // 0xAA
+					break;
+				default:
+					dst[dst_idx++] = src[i];
+					break;
+			}
+    	}
+    }
+    return dst_idx;
+}
 
 // ==================== IAP公共接口 ====================
 extern UART_HandleTypeDef huart1;
@@ -216,7 +244,7 @@ uint32_t Protocol_IAP_GetProgress(void)
 // 帧格式：
 // [0x7E] [len(4, LSB)] [version] [receiver] [sender] [data...] [crc(4, LSB)] [0x7E]
 static uint8_t crc_bytes[4];
-
+uint8_t boot_to_FPGA_UL1[8];
 void parse_byte(uint8_t byte)
 {
     switch (state) {
@@ -280,9 +308,10 @@ void parse_byte(uint8_t byte)
 				
 				if (calc_crc == recv_crc) {
 					// CRC OK! 提取固件数据（跳过version, receiver, sender这3个字节）
-					uint8_t *firmware_data = &frame_buf[3];
-					uint32_t data_len = body_len - 3;
-					
+//					uint8_t receive=frame_buf[1];
+					uint8_t *firmware_data = &frame_buf[7];
+					uint32_t data_len = body_len - 7;
+					memcpy(boot_to_FPGA_UL1,&frame_buf[3],4);
 					if ( data_len > 0)
 					{
 						// 将数据拷贝到缓冲区
@@ -311,22 +340,34 @@ void parse_byte(uint8_t byte)
 									iap_buf_idx = 0;
 								}
 								
-								// 打印进度
-								if ((iap_total_received % 1024) == 0)
-								{
-									SerialPutString((const uint8_t*)".");
-								}
+//								// 打印进度
+//								if ((iap_total_received % 1024) == 0)
+//								{
+//									SerialPutString((const uint8_t*)".");
+//								}
 							}
-							
-							SerialPutString((const uint8_t*)"OK\r\n");
+							//OK
+							boot_to_FPGA_UL1[4] = (uint8_t)(0x00 >> 0);
+							boot_to_FPGA_UL1[5] = (uint8_t)(0x00 >> 8);
+							boot_to_FPGA_UL1[6] = (uint8_t)(0x00 >> 16);
+							boot_to_FPGA_UL1[7] = (uint8_t)(0x00 >> 24);
+							send_protocol_frame( 0x01, 0x00, boot_to_FPGA_UL1, 8);
 						}
-						else
+						else//length error
 						{
-							SerialPutString((const uint8_t*)"ERROR: Buffer full\r\n");
+							boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
+							boot_to_FPGA_UL1[5] = (uint8_t)(0x01 >> 8);
+							boot_to_FPGA_UL1[6] = (uint8_t)(0x01 >> 16);
+							boot_to_FPGA_UL1[7] = (uint8_t)(0x01 >> 24);
+							send_protocol_frame( 0x01, 0x00, boot_to_FPGA_UL1, 8);
 						}
 					}
-				} else {
-					SerialPutString((const uint8_t*)"ERROR: CRC failed\r\n");
+				} else {//CRC error
+					boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
+					boot_to_FPGA_UL1[5] = (uint8_t)(0x01 >> 8);
+					boot_to_FPGA_UL1[6] = (uint8_t)(0x01 >> 16);
+					boot_to_FPGA_UL1[7] = (uint8_t)(0x01 >> 24);
+					send_protocol_frame( 0x01, 0x00, boot_to_FPGA_UL1, 8);
 				}
             }
             state = STATE_WAIT_START;
@@ -386,4 +427,57 @@ int32_t Protocol_Receive(uint8_t *buf, uint32_t len)
 		}
 	}
 	return 0;
+}
+
+uint8_t body[15];      //[version] [receiver] [sender] [data...]
+uint8_t crc_input_send[12]; // data_len(4) + data(8)
+uint8_t raw_frame[21]; // 转义前的数据
+uint8_t escaped_buf[40];// 预留足够空间用于转义后膨胀
+//[0x7E] [len(4, LSB)] [version] [receiver] [sender] [data...] [crc(4, LSB)] [0x7E]
+//[cmd (2,LSB)] [page_index (2,LSB)] [status (4,LSB)]
+void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, uint32_t data_len)
+{
+    // 帧体 = version(1) + receiver(1) + sender(1) + data(data_len)
+    uint32_t body_len = 3 + data_len;
+
+    body[0] = 0x01;           // version
+    body[1] = receiver;
+    body[2] = sender;
+    memcpy(&body[3], data, data_len);
+
+    // 计算 CRC 输入: [body_len(小端4字节)] + body
+    crc_input_send[0] = (uint8_t)(body_len >> 0);
+    crc_input_send[1] = (uint8_t)(body_len >> 8);
+    crc_input_send[2] = (uint8_t)(body_len >> 16);
+    crc_input_send[3] = (uint8_t)(body_len >> 24);
+    memcpy(&crc_input_send[4], body, body_len);
+
+    uint32_t calc_crc = crc32_c(crc_input_send, 4 + body_len);
+
+    // 构造未转义的原始帧
+    int pos = 0;
+
+    raw_frame[pos++] = 0x7E;  // start flag
+
+    // 写入 length (小端)
+    raw_frame[pos++] = (uint8_t)(body_len >> 0);
+    raw_frame[pos++] = (uint8_t)(body_len >> 8);
+    raw_frame[pos++] = (uint8_t)(body_len >> 16);
+    raw_frame[pos++] = (uint8_t)(body_len >> 24);
+
+    // 写入 body
+    memcpy(&raw_frame[pos], body, body_len);
+    pos += body_len;
+
+    // 写入 CRC (小端)
+    raw_frame[pos++] = (uint8_t)(calc_crc >> 0);
+    raw_frame[pos++] = (uint8_t)(calc_crc >> 8);
+    raw_frame[pos++] = (uint8_t)(calc_crc >> 16);
+    raw_frame[pos++] = (uint8_t)(calc_crc >> 24);
+
+    raw_frame[pos++] = 0x7E;  // end flag
+
+    // 转义编码
+    uint32_t escaped_len = encode_escape(escaped_buf, raw_frame, pos);
+    HAL_UART_Transmit(&huart1, escaped_buf, escaped_len, 1000);
 }

@@ -8,5 +8,5 @@
 ../IAP/src/common.c:265:6:Serial_PutString	1
 ../IAP/src/common.c:282:6:GetInputString	10
 ../IAP/src/common.c:345:10:FLASH_PagesMask	2
-../IAP/src/common.c:361:9:EraseSomePages	5
-../IAP/src/common.c:410:6:Delay_ms	3
+../IAP/src/common.c:361:9:EraseSomePages	9
+../IAP/src/common.c:429:6:Delay_ms	3

@@ -6,4 +6,4 @@
 ../IAP/src/iap.c:61:8:IAP_RunApp	24	static,ignoring_inline_asm
 ../IAP/src/iap.c:128:6:IAP_Main_Menu	8	static
 ../IAP/src/iap.c:203:8:IAP_Update	48	static
-../IAP/src/iap.c:472:8:IAP_Erase	16	static
+../IAP/src/iap.c:398:8:IAP_Erase	16	static
