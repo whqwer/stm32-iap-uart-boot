@@ -1,3 +1,4 @@
+"./Core/Src/gpdma.o"
 "./Core/Src/gpio.o"
 "./Core/Src/main.o"
 "./Core/Src/stm32h5xx_hal_msp.o"

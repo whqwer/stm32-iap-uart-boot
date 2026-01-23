@@ -270,7 +270,7 @@ void Serial_PutString(uint8_t *s)
 	// 	SerialPutChar(*s);
 	// 	s++;
 	// }
-	HAL_UART_Transmit(&huart1, s, strlen((const char*)s), HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart1, s, strlen((const char*)s),1000);
 #endif
 }
 

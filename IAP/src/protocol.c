@@ -34,7 +34,7 @@ extern void STMFLASH_Write(uint32_t addr, uint16_t *buffer, uint16_t count);
 #define ESCAPE_FLAG       0x7A
 #define ESCAPE_7E         0x55
 #define ESCAPE_7A         0xAA
-#define MAX_FRAME_SIZE    1024*4
+#define MAX_FRAME_SIZE    1024*10
 
 // ==================== 协议解析状态机 ====================
 typedef enum {
@@ -52,10 +52,12 @@ static uint32_t body_offset = 0;
 static uint32_t recv_count = 0;
 static uint32_t recv_crc = 0;
 static uint8_t frame_buf[MAX_FRAME_SIZE];
-static uint8_t crc_input[MAX_FRAME_SIZE + 4];
+uint8_t rx_buffer[MAX_FRAME_SIZE];
+//static uint8_t crc_input[MAX_FRAME_SIZE];
 //static uint8_t frame_buffer[MAX_FRAME_SIZE];
 //static uint8_t decode_data[MAX_FRAME_SIZE];
 // decode_data 和 frame_buffer 合并（不同协议阶段使用，可以复用）
+#define crc_input rx_buffer
 #define decode_data frame_buf                     // 复用 frame_buf（解码后存储位置）
 #define frame_buffer crc_input                    // 复用 crc_input（帧缓冲临时存储）
 
@@ -391,6 +393,7 @@ int32_t Protocol_Receive(uint8_t *buf, uint32_t len)
 				in_frame = 1;
 				frame_pos = 0;
 				frame_buffer[frame_pos++] = byte;
+				state=STATE_WAIT_START;
 			}
 		}
 		else
@@ -479,5 +482,6 @@ void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, 
 
     // 转义编码
     uint32_t escaped_len = encode_escape(escaped_buf, raw_frame, pos);
-    HAL_UART_Transmit(&huart1, escaped_buf, escaped_len, 1000);
+    HAL_UART_Transmit(&huart1, escaped_buf, escaped_len,1000);
+
 }

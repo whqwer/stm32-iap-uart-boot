@@ -193,9 +193,9 @@ void IAP_Main_Menu(void)
 
 
 /************************************************************************/
-#define MAX_FRAME_SIZE    1024*4
-// UART接收缓冲区（一次接收最多1024*4字节）
-uint8_t rx_buffer[MAX_FRAME_SIZE];
+#define MAX_FRAME_SIZE    1024*10
+// UART接收缓冲区（一次接收最多1024*10字节）
+extern uint8_t rx_buffer[MAX_FRAME_SIZE];
 
 // 基于协议的固件更新（新版本）
 extern uint8_t UART1_in_update_mode;  // 声明外部变量
@@ -224,7 +224,6 @@ int8_t IAP_Update(void)
         SerialPutString("Erase failed!\r\n");
         UART1_in_update_mode = 0;
         HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
-//        free(rx_buffer);
         return -1;
     }
     
@@ -254,7 +253,6 @@ int8_t IAP_Update(void)
             SerialPutString("\r\n=== Update Timeout! ===\r\n");
             UART1_in_update_mode = 0;  // 退出 Update 模式
             HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
-//            free(rx_buffer);
             return -2;
         }
         memset(rx_buffer,0,MAX_FRAME_SIZE);
@@ -266,7 +264,7 @@ int8_t IAP_Update(void)
         
         // 使用 ReceiveToIdle 接收数据，遇到总线空闲或缓冲区满就返回
         // 超时设置为5秒，如果5秒内没有数据开始接收则超时
-        status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &rx_len, 10000);
+        status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &rx_len,10000);
         //HAL_UARTEx_ReceiveToIdle_IT(huart, rx_buffer, MAX_FRAME_SIZE);
 
 		if (status == HAL_OK && rx_len>0)
@@ -317,7 +315,6 @@ int8_t IAP_Update(void)
 			
 			UART1_in_update_mode = 0;  // 退出 Update 模式
 			HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
-//			free(rx_buffer);
 			return -1;
 		}
 

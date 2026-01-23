@@ -6,4 +6,4 @@
 ../IAP/src/iap.c:61:8:IAP_RunApp	4
 ../IAP/src/iap.c:128:6:IAP_Main_Menu	9
 ../IAP/src/iap.c:203:8:IAP_Update	15
-../IAP/src/iap.c:398:8:IAP_Erase	2
+../IAP/src/iap.c:395:8:IAP_Erase	2
