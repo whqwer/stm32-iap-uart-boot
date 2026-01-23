@@ -219,28 +219,27 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if (huart->Instance == USART1)
 	{
-//		// ⚠️ Update模式下UART中断已被禁用，这个回调理论上不会被触发
-//		// 但为了防御性编程，仍然保留检查
-//		if (UART1_in_update_mode)
-//		{
-//			// 如果意外触发，清除标志防止干扰
-//			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
-//			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_OREF);
-//			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_NEF);
-//			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_FEF);
-//			return;
-//		}
-//
-//		// Menu 模式：使用中断接收
-//		uint32_t event_type = HAL_UARTEx_GetRxEventType(huart);
-//		// 如果是空闲事件，设置标志让主循环知道
-//		if (event_type == HAL_UART_RXEVENT_IDLE)  // 或 HAL_UART_RXEVENT_TC
-//		{
-//			__HAL_UART_CLEAR_IDLEFLAG(huart);
-//			UART1_flag=1;
-//		}
-//		HAL_UARTEx_ReceiveToIdle_IT(&huart1, cmdStr, 128);
-		UART1_flag=1;
+		// ⚠️ Update模式下UART中断已被禁用，这个回调理论上不会被触发
+		// 但为了防御性编程，仍然保留检查
+		if (UART1_in_update_mode)
+		{
+			// 如果意外触发，清除标志防止干扰
+			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
+			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_OREF);
+			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_NEF);
+			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_FEF);
+			return;
+		}
+
+		// Menu 模式：使用中断接收
+		uint32_t event_type = HAL_UARTEx_GetRxEventType(huart);
+		// 如果是空闲事件，设置标志让主循环知道
+		if (event_type == HAL_UART_RXEVENT_IDLE)  // 或 HAL_UART_RXEVENT_TC
+		{
+			__HAL_UART_CLEAR_IDLEFLAG(huart);
+			UART1_flag=1;
+		}
+		HAL_UARTEx_ReceiveToIdle_IT(&huart1, cmdStr, 128);
 	}
 }
 /* USER CODE END 1 */

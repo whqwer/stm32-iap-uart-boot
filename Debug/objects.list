@@ -26,4 +26,3 @@
 "./IAP/src/iap.o"
 "./IAP/src/protocol.o"
 "./IAP/src/stmflash.o"
-"./IAP/src/ymodem.o"

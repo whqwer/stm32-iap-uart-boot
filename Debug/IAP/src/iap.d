@@ -31,7 +31,6 @@ IAP/src/iap.o: ../IAP/src/iap.c \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_exti.h \
  /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/common.h \
  /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap_config.h \
- /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/ymodem.h \
  /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/protocol.h
 /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap_config.h:
 /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap.h:
@@ -65,5 +64,4 @@ IAP/src/iap.o: ../IAP/src/iap.c \
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_exti.h:
 /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/common.h:
 /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/iap_config.h:
-/home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/ymodem.h:
 /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/IAP/inc/protocol.h:

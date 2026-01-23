@@ -89,12 +89,28 @@ uint16_t STMFLASH_BUF[PAGE_SIZE / 4];     // Flash sector buffer
 //uint16_t STM32_FLASH_SIZE[PAGE_SIZE / 2];//Up to 4k bytes
 
 /**
-  * @brief  Write data from the specified address to the specified length.
-  * @note   This function can be used for STM32H5 devices.
-  * @param  addr: The starting address to be written.(The address must be a multiple of two)
-  * @param  buffer: The pointer to the data.
-  * @param  count:  The number of half words written
+  * @brief  Write data to Flash memory from the specified address.
+  * @note   This function handles sector-aligned writing with automatic erase-if-needed logic.
+  *         For STM32H5 devices, the write address must be 16-byte aligned (quadword programming).
+  *         The function performs read-modify-write operations when partial sector updates are needed.
+  * 
+  * @details Algorithm:
+  *         1. Validates input parameters (NULL check, address range, alignment)
+  *         2. Calculates sector position and offset within the sector
+  *         3. Reads existing sector data into buffer
+  *         4. Checks if erase is needed (any byte != 0xFFFF)
+  *         5. If erase needed: erases sector, fills buffer with 0xFFFF, merges new data
+  *         6. Writes the complete sector or remaining data
+  *         7. Handles multi-sector writes by iterating through sectors
+  * 
+  * @param  WriteAddr: The starting Flash address to write (must be 16-byte aligned for STM32H5)
+  * @param  pBuffer: Pointer to the source data buffer (array of 16-bit halfwords)
+  * @param  NumToWrite: Number of halfwords (16-bit) to write
+  * 
   * @retval None
+  * 
+  * @warning Interrupts are disabled during Flash operations to prevent conflicts.
+  * @warning Function returns silently on error (NULL pointer, address out of range, misalignment).
   */
 void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 {
@@ -103,43 +119,52 @@ void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 		return;
 	}
 	
-	// ⚠️ 地址对齐检查：STM32H5 Flash 编程地址必须 16 字节对齐
+	// ⚠️ Address alignment check: STM32H5 Flash programming requires 16-byte alignment
 	if ((WriteAddr & 0x0F) != 0) {
-		// 地址未对齐到 16 字节边界
+		// Address not aligned to 16-byte boundary
 		return;
 	}
 	
-	uint32_t secpos;	   //������ַ
-	uint16_t secoff;	   //������ƫ�Ƶ�ַ(16λ�ּ���)
-	uint16_t secremain; //������ʣ����?(16λ�ּ���)	   
- 	uint16_t i = 0;    // ⚠️ 必须初始化为0！防止使用随机值
-	uint32_t offaddr;   //ȥ��0X08000000��ĵ��?
-	// Check if address is within valid flash range (STM32H503: 128KB total)
-	if(WriteAddr<STM32_FLASH_BASE || WriteAddr>=(STM32_FLASH_BASE+0x20000))return;//�Ƿ���ַ
-	 __disable_irq();
-	HAL_FLASH_Unlock();						//����
-	offaddr=WriteAddr-STM32_FLASH_BASE;		//ʵ��ƫ�Ƶ�ַ.
-	secpos=offaddr/STM_SECTOR_SIZE;			//������ַ  0~127 for STM32F103RBT6
-	secoff=(offaddr%STM_SECTOR_SIZE)/2;		//�������ڵ�ƫ��(2���ֽ�Ϊ������λ.)
-	secremain=STM_SECTOR_SIZE/2-secoff;		//����ʣ��ռ��С   
-	if(NumToWrite<=secremain)secremain=NumToWrite;//�����ڸ�������Χ
+	uint32_t secpos;	   // Sector index/position in Flash
+	uint16_t secoff;	   // Offset within sector (in halfwords)
+	uint16_t secremain;    // Remaining space in current sector (in halfwords)	   
+ 	uint16_t i = 0;        // Loop counter (must initialize to 0)
+	uint32_t offaddr;      // Offset address (relative to Flash base)
+	
+	// Validate address is within valid Flash range (STM32H503: 128KB total)
+	if(WriteAddr<STM32_FLASH_BASE || WriteAddr>=(STM32_FLASH_BASE+0x20000))return; // Invalid address
+	
+	__disable_irq();  // Disable interrupts during Flash operation
+	HAL_FLASH_Unlock();  // Unlock Flash for writing
+	
+	offaddr=WriteAddr-STM32_FLASH_BASE;		// Calculate offset from Flash base
+	secpos=offaddr/STM_SECTOR_SIZE;			// Calculate sector index (0~15 for STM32H503 with 8KB sectors)
+	secoff=(offaddr%STM_SECTOR_SIZE)/2;		// Calculate offset within sector (in halfwords, 2 bytes each)
+	secremain=STM_SECTOR_SIZE/2-secoff;		// Calculate remaining space in current sector (in halfwords)
+	
+	if(NumToWrite<=secremain)secremain=NumToWrite;  // Data fits within current sector
 	while(1) 
 	{	
-		STMFLASH_Read(secpos*STM_SECTOR_SIZE+STM32_FLASH_BASE,STMFLASH_BUF,STM_SECTOR_SIZE/2);//������������������
-		for(i=0;i<secremain;i++)//У������
+		// Read entire sector into buffer for read-modify-write operation
+		STMFLASH_Read(secpos*STM_SECTOR_SIZE+STM32_FLASH_BASE,STMFLASH_BUF,STM_SECTOR_SIZE/2);
+		
+		// Check if sector needs erasing (any non-0xFFFF byte means erase required)
+		for(i=0;i<secremain;i++)
 		{
-			if(STMFLASH_BUF[secoff+i]!=0XFFFF)break;//��Ҫ����
+			if(STMFLASH_BUF[secoff+i]!=0XFFFF)break;  // Found non-erased byte, need erase
 		}
-		 if(i<secremain)//��Ҫ����
+		
+		 if(i<secremain)  // Erase is needed
 		 {
+			// Configure sector erase parameters
 			FLASH_EraseInitTypeDef EraseInitStruct;
 			uint32_t SectorError = 0;
 			EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
 			EraseInitStruct.Banks     = FLASH_BANK_1;
-			EraseInitStruct.Sector    = secpos;   // �� 8KB ���������?
-			EraseInitStruct.NbSectors = 1;
+			EraseInitStruct.Sector    = secpos;   // Sector to erase (8KB sectors for STM32H503)
+			EraseInitStruct.NbSectors = 1;        // Erase one sector at a time
 			__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
-//			 // ⚠️ 擦除前禁用中断（擦除时间更长，更危险！）
+//			 // ⚠️ Note: interrupts already disabled at function entry
 //			    __disable_irq();
 
 			    HAL_StatusTypeDef erase_status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
@@ -151,57 +176,79 @@ void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 			        __enable_irq();
 			        return;
 			    }
-			// �����󽫻���������?0xFFFF������Ѿ���������д��?
-			// 修复：正确填充 0xFFFF（memset 只能填充字节，需要循环填充半字）
+			
+			// After erase, fill buffer with 0xFFFF (erased state)
+			// Note: memset fills bytes, so we must loop to fill halfwords correctly
 			for(i=0; i<(PAGE_SIZE/4); i++) {
 				STMFLASH_BUF[i] = 0xFFFF;
 			}
-			// ⚠️ 关键检查：防止数组越界访问
-			for(i=0;i<secremain;i++)//����
+			
+			// Merge new data into buffer (read-modify-write)
+			for(i=0;i<secremain;i++)
 			{
-				// 确保不会超出 STMFLASH_BUF 的范围
+				// Prevent buffer overflow
 				if ((i+secoff) >= (PAGE_SIZE/4)) {
-					break;  // 防止越界
+					break;  // Stop if exceeding buffer bounds
 				}
 				STMFLASH_BUF[i+secoff]=pBuffer[i];	  
 			}
-			STMFLASH_Write_NoCheck(secpos*STM_SECTOR_SIZE+STM32_FLASH_BASE,STMFLASH_BUF,STM_SECTOR_SIZE/2);//д����������
+			
+			// Write entire sector back to Flash
+			STMFLASH_Write_NoCheck(secpos*STM_SECTOR_SIZE+STM32_FLASH_BASE,STMFLASH_BUF,STM_SECTOR_SIZE/2);
 
 		 }else {
-		 	STMFLASH_Write_NoCheck(WriteAddr,pBuffer,secremain);//д�Ѿ������˵�,ֱ��д������ʣ������.
+		 	// Sector already erased, write directly without erase operation
+		 	STMFLASH_Write_NoCheck(WriteAddr,pBuffer,secremain);
 
 		 }
-		if(NumToWrite==secremain)break;//д�������??
-		else//д��δ����
+		
+		if(NumToWrite==secremain)break;  // All data written, exit loop
+		else  // More data to write, continue to next sector
 		{
-			secpos++;				//������ַ��1		
-			secoff=0;				//ƫ��λ��Ϊ0 	 
-		   	pBuffer+=secremain;  	//ָ��ƫ��
-		WriteAddr+=secremain*2;	//д��ַƫ��(修正：secremain是半字数，地址需要*2)	   
-		   	NumToWrite-=secremain;	//�ֽ�(16λ)���ݼ�
-			if(NumToWrite>(STM_SECTOR_SIZE/2))secremain=STM_SECTOR_SIZE/2;//��һ����������д����
-			else secremain=NumToWrite;//��һ����������д����
+			secpos++;				// Move to next sector		
+			secoff=0;				// Reset offset to beginning of sector	 
+		   	pBuffer+=secremain;  	// Advance source buffer pointer
+		WriteAddr+=secremain*2;	// Advance write address (secremain is in halfwords, multiply by 2 for bytes)	   
+		   	NumToWrite-=secremain;	// Decrease remaining count
+		   	
+		   	// Calculate how much to write in next iteration
+			if(NumToWrite>(STM_SECTOR_SIZE/2))secremain=STM_SECTOR_SIZE/2;  // Next sector will be full
+			else secremain=NumToWrite;  // Last partial sector
 		}	 
 	};	
-	HAL_FLASH_Lock();//����
-	__enable_irq();
+	
+	HAL_FLASH_Lock();  // Lock Flash after operation
+	__enable_irq();    // Re-enable interrupts
 }
 
 /**
-  * @brief  Start reading the specified data from the specified address.
-  * @note   This function can be used for all STM32F10x devices.
-  * @param  ReadAddr: Start addr
-  * @param  pBuffer: The pointer to the data.
-  * @param  NumToWrite:  The number of half words written(16bit)
+  * @brief  Read data from Flash memory starting at the specified address.
+  * @note   This function performs sequential halfword (16-bit) reads from Flash.
+  *         Compatible with all STM32 devices including STM32F10x and STM32H5 series.
+  *         No alignment restrictions for read operations.
+  * 
+  * @details Algorithm:
+  *         1. Iterates through the specified number of halfwords
+  *         2. Reads each halfword (2 bytes) using STMFLASH_ReadHalfWord()
+  *         3. Stores the value in the destination buffer
+  *         4. Advances read address by 2 bytes per iteration
+  * 
+  * @param  ReadAddr: Starting Flash address to read from (any valid Flash address)
+  * @param  pBuffer: Pointer to the destination buffer (array of 16-bit halfwords)
+  * @param  NumToRead: Number of halfwords (16-bit) to read
+  * 
   * @retval None
+  * 
+  * @warning No boundary checking is performed. Ensure ReadAddr and buffer size are valid.
+  * @note   This is a simple memory-mapped read operation, safe to call anytime.
   */
 void STMFLASH_Read(uint32_t ReadAddr,uint16_t *pBuffer,uint16_t NumToRead)
 {
 	uint16_t i;
 	for(i=0;i<NumToRead;i++)
 	{
-		pBuffer[i]=STMFLASH_ReadHalfWord(ReadAddr);//��ȡ2�ֽ�����.
-		ReadAddr+=2;//ƫ��2�ֽ�����.	
+		pBuffer[i]=STMFLASH_ReadHalfWord(ReadAddr);// Read 2 bytes (1 halfword)
+		ReadAddr+=2;// Advance address by 2 bytes	
 	}
 }
 					

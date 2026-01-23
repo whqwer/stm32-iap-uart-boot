@@ -1,15 +1,11 @@
 #include "iap_config.h"
 #include "iap.h"
 #include "stmflash.h"
-#include "ymodem.h"
 #include "protocol.h"
 #include <stdlib.h>
 
 pFunction Jump_To_Application;
 uint32_t JumpAddress;
-uint32_t BlockNbr = 0, UserMemoryMask = 0;
-__IO uint32_t FlashProtection = 0;
-// uint8_t tab_1024[1024] = {0};
 
 
 /************************************************************************/
@@ -128,13 +124,6 @@ uint8_t cmdStr[CMD_STRING_SIZE] = {0};
 void IAP_Main_Menu(void)
 {
 
-	BlockNbr = (FlashDestination - 0x08000000) >> 12;
-	
-	// UserMemoryMask calculation for STM32H503CBT6
-	UserMemoryMask = 0;
-	
-	// Flash protection is not supported in this implementation
-	FlashProtection = 0;
 	// 打印菜单一次，避免循环反复刷屏
 	SerialPutString("\r\n IAP Main Menu (V 0.2.0)\r\n");
 	SerialPutString(" update\r\n");
@@ -142,10 +131,6 @@ void IAP_Main_Menu(void)
 	SerialPutString(" erase\r\n");
 	SerialPutString(" menu\r\n");
 	SerialPutString(" runapp\r\n");
-	if(FlashProtection != 0)//There is write protected
-	{
-		SerialPutString(" diswp\r\n");
-	}
 	SerialPutString(" cmd> ");
 	while (1)
 	{
@@ -227,21 +212,6 @@ int8_t IAP_Update(void)
         return -1;
     }
     
-//    SerialPutString("Ready to receive firmware data...\r\n");
-//    SerialPutString("Waiting for data (timeout: 30s)...\r\n");
-//
-//    // 调试：检查 UART 初始状态
-//    SerialPutString("[DEBUG] UART RxState: ");
-//    if (huart1.RxState == HAL_UART_STATE_READY) SerialPutString("READY\r\n");
-//    else if (huart1.RxState == HAL_UART_STATE_BUSY_RX) SerialPutString("BUSY_RX\r\n");
-//    else SerialPutString("OTHER\r\n");
-    
-//    SerialPutString("[DEBUG] UART ErrorCode: ");
-//    uint8_t err_str[12];
-//    Int2Str(err_str, huart1.ErrorCode);
-//    SerialPutString(err_str);
-//    SerialPutString("\r\n");
-    
     start_time = HAL_GetTick();
 
     // 3. 主循环：使用 ReceiveToIdle 一次接收多个字节
@@ -265,7 +235,6 @@ int8_t IAP_Update(void)
         // 使用 ReceiveToIdle 接收数据，遇到总线空闲或缓冲区满就返回
         // 超时设置为5秒，如果5秒内没有数据开始接收则超时
         status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &rx_len,10000);
-        //HAL_UARTEx_ReceiveToIdle_IT(huart, rx_buffer, MAX_FRAME_SIZE);
 
 		if (status == HAL_OK && rx_len>0)
 		{
@@ -322,73 +291,6 @@ int8_t IAP_Update(void)
 
     }
 }
-
-// /************************************************************************/
-// // 基于Ymodem的固件更新（备份版本）
-// int8_t IAP_Update_Ymodem(void)
-// {
-// 	uint8_t Number[10] = "";
-// 	int32_t Size = 0;
-// 	Size = Ymodem_Receive(&tab_1024[0]);
-// 	if (Size > 0)
-// 	{
-// 		SerialPutString("\r\n Update Over!\r\n");
-// 		SerialPutString(" Name: ");
-// 		SerialPutString(file_name);
-// 		Int2Str(Number, Size);
-// 		SerialPutString("\r\n Size: ");
-// 		SerialPutString(Number);
-// 		SerialPutString(" Bytes.\r\n");
-// 		return 0;
-// 	}
-// 	else if (Size == -1)
-// 	{
-// 		SerialPutString("\r\n Image Too Big!\r\n");
-// 		return -1;
-// 	}
-// 	else if (Size == -2)
-// 	{
-// 		SerialPutString("\r\n Update failed!\r\n");
-// 		return -2;
-// 	}
-// 	else if (Size == -3)
-// 	{
-// 		SerialPutString("\r\n Aborted by user.\r\n");
-// 		return -3;
-// 	}
-// 	else
-// 	{
-// 		SerialPutString(" Receive Filed.\r\n");
-// 		return -4;
-// 	}
-// }
-
-
-/************************************************************************/
-//int8_t IAP_Upload(void)
-//{
-//	uint32_t status = 0;
-//	SerialPutString("\n\n\rSelect Receive File ... (press any key to abort)\n\r");
-//	if (GetKey() == CRC16)
-//	{
-//		status = Ymodem_Transmit((uint8_t*)ApplicationAddress, (const uint8_t*)"UploadedFlashImage.bin", FLASH_IMAGE_SIZE);
-//		if (status != 0)
-//		{
-//			SerialPutString("\n\rError Occured while Transmitting File\n\r");
-//			return -1;
-//		}
-//		else
-//		{
-//			SerialPutString("\n\rFile Trasmitted Successfully \n\r");
-//			return -2;
-//		}
-//	}
-//	else
-//	{
-//		SerialPutString("\r\n\nAborted by user.\n\r");
-//		return 0;
-//	}
-//}
 
 
 /************************************************************************/

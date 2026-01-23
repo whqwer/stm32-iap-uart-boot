@@ -420,18 +420,5 @@ uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
 	return 1;
 }
 
- /**
-  * @file   Delay_ms
-  * @brief  ������ʱtime_ms ms
-  * @param   time_ms ��ʱʱ��
-  * @retval ��
-  */
-void Delay_ms( uint16_t time_ms )
-{
-  uint16_t i,j;
-  for( i=0;i<time_ms;i++ )
-  {
-		for( j=0;j<4784;j++ );
-  }
-}
+
 /*******************(C)COPYRIGHT 2010 STMicroelectronics *****END OF FILE******/

@@ -52,9 +52,6 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-//extern uint8_t UART1_flag;
-//uint8_t rx[5000];
-//uint32_t rx_len;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -95,9 +92,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
   IAP_Init();
   IAP_WriteFlag(INIT_FLAG_DATA);
-//  HAL_UARTEx_ReceiveToIdle(&huart1, rx, sizeof(rx),&rx_len,10000);
-//  HAL_StatusTypeDef result = HAL_UART_Receive(&huart1, rx, 5000, 10000);
-//  uint32_t error = HAL_UART_GetError(&huart1);
   /* USER CODE END 2 */
 
   /* Infinite loop */

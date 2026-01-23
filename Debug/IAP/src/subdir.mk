@@ -8,22 +8,19 @@ C_SRCS += \
 ../IAP/src/common.c \
 ../IAP/src/iap.c \
 ../IAP/src/protocol.c \
-../IAP/src/stmflash.c \
-../IAP/src/ymodem.c 
+../IAP/src/stmflash.c 
 
 OBJS += \
 ./IAP/src/common.o \
 ./IAP/src/iap.o \
 ./IAP/src/protocol.o \
-./IAP/src/stmflash.o \
-./IAP/src/ymodem.o 
+./IAP/src/stmflash.o 
 
 C_DEPS += \
 ./IAP/src/common.d \
 ./IAP/src/iap.d \
 ./IAP/src/protocol.d \
-./IAP/src/stmflash.d \
-./IAP/src/ymodem.d 
+./IAP/src/stmflash.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -33,7 +30,7 @@ IAP/src/%.o IAP/src/%.su IAP/src/%.cyclo: ../IAP/src/%.c IAP/src/subdir.mk
 clean: clean-IAP-2f-src
 
 clean-IAP-2f-src:
-	-$(RM) ./IAP/src/common.cyclo ./IAP/src/common.d ./IAP/src/common.o ./IAP/src/common.su ./IAP/src/iap.cyclo ./IAP/src/iap.d ./IAP/src/iap.o ./IAP/src/iap.su ./IAP/src/protocol.cyclo ./IAP/src/protocol.d ./IAP/src/protocol.o ./IAP/src/protocol.su ./IAP/src/stmflash.cyclo ./IAP/src/stmflash.d ./IAP/src/stmflash.o ./IAP/src/stmflash.su ./IAP/src/ymodem.cyclo ./IAP/src/ymodem.d ./IAP/src/ymodem.o ./IAP/src/ymodem.su
+	-$(RM) ./IAP/src/common.cyclo ./IAP/src/common.d ./IAP/src/common.o ./IAP/src/common.su ./IAP/src/iap.cyclo ./IAP/src/iap.d ./IAP/src/iap.o ./IAP/src/iap.su ./IAP/src/protocol.cyclo ./IAP/src/protocol.d ./IAP/src/protocol.o ./IAP/src/protocol.su ./IAP/src/stmflash.cyclo ./IAP/src/stmflash.d ./IAP/src/stmflash.o ./IAP/src/stmflash.su
 
 .PHONY: clean-IAP-2f-src
 
