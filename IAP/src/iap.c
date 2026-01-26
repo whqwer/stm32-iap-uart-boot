@@ -184,19 +184,16 @@ extern uint8_t rx_buffer[MAX_FRAME_SIZE];
 
 // 基于协议的固件更新（新版本）
 extern uint8_t UART1_in_update_mode;  // 声明外部变量
-
+extern uint8_t UART1_Complete_flag;
+extern uint16_t rx_len;
 int8_t IAP_Update(void)
 {
-    uint16_t rx_len = 0;
     uint32_t start_time;
-//    uint32_t last_progress = 0;
     HAL_StatusTypeDef status;
+    uint8_t consecutive_idle = 0;  // 连续空闲次数
     
     // 设置标志：进入 Update 模式
     UART1_in_update_mode = 1;
-    
-    // 关键修复：禁用UART中断，防止中断干扰阻塞式接收
-    HAL_NVIC_DisableIRQ(USART1_IRQn);
     
     // 1. 初始化协议层
     Protocol_IAP_Init();
@@ -208,90 +205,108 @@ int8_t IAP_Update(void)
     {
         SerialPutString("Erase failed!\r\n");
         UART1_in_update_mode = 0;
-        HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
         return -1;
     }
     
     start_time = HAL_GetTick();
+    
+    // ✅ 关键改动1：在循环外启动第一次DMA接收
+    status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
+    if (status != HAL_OK) {
+        SerialPutString("DMA start failed!\r\n");
+        UART1_in_update_mode = 0;
+        return -1;
+    }
+    huart1.hdmarx->XferHalfCpltCallback = NULL;
+    SerialPutString("DMA started, waiting for data...\r\n");
 
-    // 3. 主循环：使用 ReceiveToIdle 一次接收多个字节
+    // ✅ 关键改动2：主循环只等待和处理数据
     while (1)
     {
         // 检查总超时 (30秒)
         if ((HAL_GetTick() - start_time) > 30000)
         {
-            SerialPutString("\r\n=== Update Timeout! ===\r\n");
-            UART1_in_update_mode = 0;  // 退出 Update 模式
-            HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
+            SerialPutString("\r\n=== Update Timeout (30s)! ===\r\n");
+            UART1_in_update_mode = 0;
             return -2;
         }
-        memset(rx_buffer,0,MAX_FRAME_SIZE);
-        rx_len=0;
-        // 清除之前可能的错误标志
-        __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);
-        __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_FEF);
-        __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_NEF);
         
-        // 使用 ReceiveToIdle 接收数据，遇到总线空闲或缓冲区满就返回
-        // 超时设置为5秒，如果5秒内没有数据开始接收则超时
-        status = HAL_UARTEx_ReceiveToIdle(&huart1, rx_buffer, sizeof(rx_buffer), &rx_len,10000);
+        // ✅ 关键改动3：只判断标志，不判断status
+        if(UART1_Complete_flag)
+        {
+            UART1_Complete_flag = 0;
+            
+            // ✅ 关键改动4：根据rx_len判断数据状态
+            if (rx_len > 1)
+            {
+                
+                // 处理数据
+                Protocol_Receive(rx_buffer, rx_len);
+                memset(rx_buffer, 0, MAX_FRAME_SIZE);
+                
+                // 重置空闲计数（收到数据说明传输还在进行）
+                consecutive_idle = 0;
 
-		if (status == HAL_OK && rx_len>0)
-		{
-			// 收到数据，调用协议解析
-			Protocol_Receive(rx_buffer, rx_len);
-		}
-		else if (status == HAL_TIMEOUT)
-		{
-			SerialPutString("\r\n[DEBUG] HAL_TIMEOUT detected\r\n");
-			// 如果已经接收过数据，超时认为传输完成
-			uint32_t total_received = Protocol_IAP_GetProgress();
-			if (total_received > 0)
-			{
-				SerialPutString("\r\n=== Update Successful! ===\r\n");
-				uint8_t size_str[12];
-				Int2Str(size_str, total_received);
-				SerialPutString("Total received: ");
-				SerialPutString(size_str);
-				UART1_in_update_mode = 0;  // 退出 Update 模式
-			HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
-				return 0;
-			}
-			// 如果还没有接收任何数据，继续等待
-			SerialPutString("\r\n[DEBUG] No data received yet, continue waiting...\r\n");
-		}
-		else if (status == HAL_OK && rx_len == 0)
-		{
-			// 收到 IDLE 但没有数据（可能是残留的 IDLE 标志）
-			SerialPutString("\r\n[DEBUG] Received IDLE with no data, continue...\r\n");
-			// 继续循环，不退出
-		}
-		else
-		{
-			// 其他错误
-			SerialPutString("\r\nUART receive error! Status: ");
-			if (status == HAL_ERROR) SerialPutString("HAL_ERROR");
-			else if (status == HAL_BUSY) SerialPutString("HAL_BUSY");
-			else SerialPutString("UNKNOWN");
-			
-			// 检查 UART 错误标志
-			uint32_t error = HAL_UART_GetError(&huart1);
-			if (error & HAL_UART_ERROR_ORE) SerialPutString(" ORE(Overrun)");
-			if (error & HAL_UART_ERROR_FE) SerialPutString(" FE(Frame)");
-			if (error & HAL_UART_ERROR_NE) SerialPutString(" NE(Noise)");
-			if (error & HAL_UART_ERROR_PE) SerialPutString(" PE(Parity)");
-			SerialPutString("\r\n");
-			
-			UART1_in_update_mode = 0;  // 退出 Update 模式
-			HAL_NVIC_EnableIRQ(USART1_IRQn);  // 重新启用UART中断
-			return -1;
-		}
+                // ✅ 关键改动5：处理完后重新启动DMA
+                status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
+                if (status == HAL_OK) {
+                    huart1.hdmarx->XferHalfCpltCallback = NULL;
+                }
+            }
+            else if(rx_len == 1 && rx_buffer[0] == 0xFF)
+            {
+                // ✅ 关键改动6：这才是真正的"传输结束"判断逻辑
+                consecutive_idle++;
 
-		HAL_Delay(10);
+                SerialPutString("\r\n[IDLE] Bus idle detected (");
+                uint8_t count_str[4];
+                Int2Str(count_str, consecutive_idle);
+                SerialPutString(count_str);
+                SerialPutString("/2)\r\n");
 
+                // 连续2次IDLE且无数据，认为传输完成
+                if (consecutive_idle >= 1)
+                {
+                    uint32_t total_received = Protocol_IAP_GetProgress();
+
+                    if (total_received > 0)
+                    {
+                        // ✅ 传输成功完成
+                        SerialPutString("\r\n=== Update Successful! ===\r\n");
+                        uint8_t size_str[12];
+                        Int2Str(size_str, total_received);
+                        SerialPutString("Total received: ");
+                        SerialPutString(size_str);
+                        SerialPutString(" bytes\r\n");
+                        UART1_in_update_mode = 0;
+                        return 0;
+                    }
+                    else
+                    {
+                        // 没有收到任何数据就结束了
+                        SerialPutString("\r\n=== No data received ===\r\n");
+                        UART1_in_update_mode = 0;
+                        return -3;
+                    }
+                }
+                else
+                {
+                    // 第一次空闲，可能是包间隔，继续等待
+                    SerialPutString("Waiting for more data...\r\n");
+
+                    // 重新启动DMA
+                    status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
+                    if (status == HAL_OK) {
+                        huart1.hdmarx->XferHalfCpltCallback = NULL;
+                    }
+                }
+            }
+        }
+        
+        // 适当延时，避免CPU占用过高
+        HAL_Delay(1);
     }
 }
-
 
 /************************************************************************/
 int8_t IAP_Erase(void)

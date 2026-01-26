@@ -67,8 +67,8 @@ all: main-build
 main-build: bootloader.elf secondary-outputs
 
 # Tool invocations
-bootloader.elf bootloader.map: $(OBJS) $(USER_OBJS) /home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/STM32H503CBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "bootloader.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"/home/wh/Documents/IAP/newboot/stm32-iap-uart-boot/STM32H503CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="bootloader.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+bootloader.elf bootloader.map: $(OBJS) $(USER_OBJS) /home/wh/Documents/IAP/git_bootloader/Asteroid/STM32H503CBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "bootloader.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"/home/wh/Documents/IAP/git_bootloader/Asteroid/STM32H503CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="bootloader.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
