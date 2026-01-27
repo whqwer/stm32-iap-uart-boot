@@ -185,7 +185,7 @@ int8_t IAP_Update(void)
     
     start_time = HAL_GetTick();
     
-    // ✅ Key modification 1: Start first DMA reception outside the loop
+    // Key modification 1: Start first DMA reception outside the loop
     status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
     if (status != HAL_OK) {
         SerialPutString("DMA start failed!\r\n");
@@ -195,7 +195,7 @@ int8_t IAP_Update(void)
     huart1.hdmarx->XferHalfCpltCallback = NULL;
     SerialPutString("DMA started, waiting for data...\r\n");
 
-    // ✅ Key modification 2: Main loop only waits and processes data
+    // Key modification 2: Main loop only waits and processes data
     while (1)
     {
         // Check total timeout (30 seconds)
@@ -206,16 +206,16 @@ int8_t IAP_Update(void)
             return -2;
         }
         
-        // ✅ Key modification 3: Only check flag, not status
+        // Key modification 3: Only check flag, not status
         if(UART1_Complete_flag)
         {
             UART1_Complete_flag = 0;
             
-            // ✅ Read DMA counter in main loop, DMA is fully stable at this point
+            // Read DMA counter in main loop, DMA is fully stable at this point
             uint16_t remaining = (uint16_t)__HAL_DMA_GET_COUNTER(huart1.hdmarx);
             rx_len = sizeof(rx_buffer) - remaining;  // Actual bytes received accurately
             
-            // ✅ Key modification 4: Judge data status based on rx_len
+            // Key modification 4: Judge data status based on rx_len
             if (rx_len > 1)
             {
                 
@@ -226,8 +226,8 @@ int8_t IAP_Update(void)
                 // Reset idle count (received data means transmission is ongoing)
                 consecutive_idle = 0;
 
-                // ✅ Key modification 5: Restart DMA after processing
-                // ✅ This is the safest place!
+                // Key modification 5: Restart DMA after processing
+                // This is the safest place!
                 HAL_UART_AbortReceive(&huart1);  // Completely stop and reset DMA
                 status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
                 if (status == HAL_OK) {
@@ -236,7 +236,7 @@ int8_t IAP_Update(void)
             }
             else if(rx_len == 1 && rx_buffer[0] == 0xFF)
             {
-                // ✅ Key modification 6: This is the real "transmission end" judgment logic
+                // Key modification 6: This is the real "transmission end" judgment logic
                 consecutive_idle++;
 
                 SerialPutString("\r\n[IDLE] Bus idle detected (");
@@ -252,7 +252,7 @@ int8_t IAP_Update(void)
 
                     if (total_received > 0)
                     {
-                        // ✅ Transmission successful
+                        // Transmission successful
                         SerialPutString("\r\n=== Update Successful! ===\r\n");
                         uint8_t size_str[12];
                         Int2Str(size_str, total_received);
@@ -290,17 +290,17 @@ int8_t IAP_Update(void)
 }
 
 /************************************************************************/
-int8_t IAP_Erase(void)
-{
-	uint8_t erase_cont[3] = {0};
-	Int2Str(erase_cont, FLASH_IMAGE_SIZE / PAGE_SIZE);
-	SerialPutString(" @");//?�????���bug
-	SerialPutString(erase_cont);
-	SerialPutString("@");
-	if(EraseSomePages(FLASH_IMAGE_SIZE, 1))
-		return 0;
-	else
-		return -1;
-}
+//int8_t IAP_Erase(void)
+//{
+//	uint8_t erase_cont[3] = {0};
+//	Int2Str(erase_cont, FLASH_IMAGE_SIZE / PAGE_SIZE);
+//	SerialPutString(" @");//?�????���bug
+//	SerialPutString(erase_cont);
+//	SerialPutString("@");
+//	if(EraseSomePages(FLASH_IMAGE_SIZE, 1))
+//		return 0;
+//	else
+//		return -1;
+//}
 	
 

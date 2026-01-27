@@ -27,27 +27,27 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000036  00000000  00000000  0000802c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001d15f  00000000  00000000  00008062  2**0
+ 12 .debug_info   0001d0b4  00000000  00000000  00008062  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00003e82  00000000  00000000  000251c1  2**0
+ 13 .debug_abbrev 00003e64  00000000  00000000  00025116  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000cb8  00000000  00000000  00029048  2**3
+ 14 .debug_aranges 00000cb0  00000000  00000000  00028f80  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00001ab6  00000000  00000000  00029d00  2**0
+ 15 .debug_rnglists 00001ab0  00000000  00000000  00029c30  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00020f15  00000000  00000000  0002b7b6  2**0
+ 16 .debug_macro  00020f15  00000000  00000000  0002b6e0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001f669  00000000  00000000  0004c6cb  2**0
+ 17 .debug_line   0001f630  00000000  00000000  0004c5f5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000c3557  00000000  00000000  0006bd34  2**0
+ 18 .debug_str    000c354d  00000000  00000000  0006bc25  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  0012f28b  2**0
+ 19 .comment      00000043  00000000  00000000  0012f172  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000025d4  00000000  00000000  0012f2d0  2**2
+ 20 .debug_frame  000025b8  00000000  00000000  0012f1b8  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_loclists 0000ee19  00000000  00000000  001318a4  2**0
+ 21 .debug_loclists 0000ee19  00000000  00000000  00131770  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 22 .debug_line_str 00000061  00000000  00000000  001406bd  2**0
+ 22 .debug_line_str 00000061  00000000  00000000  00140589  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1454,14 +1454,14 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
  8000b72:	d000      	beq.n	8000b76 <HAL_UARTEx_RxEventCallback+0xa>
  8000b74:	4770      	bx	lr
 	{
-		// ⚠️ Update mode processing
+		// Update mode processing
 		if (UART1_in_update_mode)
  8000b76:	4a0b      	ldr	r2, [pc, #44]	@ (8000ba4 <HAL_UARTEx_RxEventCallback+0x38>)
  8000b78:	7812      	ldrb	r2, [r2, #0]
  8000b7a:	2a00      	cmp	r2, #0
  8000b7c:	d0fa      	beq.n	8000b74 <HAL_UARTEx_RxEventCallback+0x8>
 		{
-			// ✅ Only set flag, don't calculate rx_len in interrupt
+			// Only set flag, don't calculate rx_len in interrupt
 			// rx_len will be calculated in main loop by reading DMA counter (more stable)
 			UART1_Complete_flag = 1;
  8000b7e:	f04f 0c01 	mov.w	ip, #1
@@ -11580,7 +11580,7 @@ int8_t IAP_Update(void)
     start_time = HAL_GetTick();
  8004f44:	f7fb ff0a 	bl	8000d5c <HAL_GetTick>
     
-    // ✅ Key modification 1: Start first DMA reception outside the loop
+    // Key modification 1: Start first DMA reception outside the loop
     status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
  8004f48:	4f4b      	ldr	r7, [pc, #300]	@ (8005078 <IAP_Update+0x164>)
     start_time = HAL_GetTick();
@@ -11603,7 +11603,7 @@ int8_t IAP_Update(void)
             return -2;
         }
         
-        // ✅ Key modification 3: Only check flag, not status
+        // Key modification 3: Only check flag, not status
         if(UART1_Complete_flag)
  8004f62:	4c47      	ldr	r4, [pc, #284]	@ (8005080 <IAP_Update+0x16c>)
     huart1.hdmarx->XferHalfCpltCallback = NULL;
@@ -11614,7 +11614,7 @@ int8_t IAP_Update(void)
         {
             UART1_Complete_flag = 0;
             
-            // ✅ Read DMA counter in main loop, DMA is fully stable at this point
+            // Read DMA counter in main loop, DMA is fully stable at this point
             uint16_t remaining = (uint16_t)__HAL_DMA_GET_COUNTER(huart1.hdmarx);
             rx_len = sizeof(rx_buffer) - remaining;  // Actual bytes received accurately
  8004f6c:	f8df 8140 	ldr.w	r8, [pc, #320]	@ 80050b0 <IAP_Update+0x19c>
@@ -12848,7 +12848,7 @@ void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, 
 		return;
 	}
 	
-	// ⚠️ Prevent address overflow (Flash range check)
+	// Prevent address overflow (Flash range check)
 	if (WriteAddr < STM32_FLASH_BASE || 
  80057ec:	f100 4378 	add.w	r3, r0, #4160749568	@ 0xf8000000
  80057f0:	f5b3 3f00 	cmp.w	r3, #131072	@ 0x20000
@@ -12866,7 +12866,7 @@ static void STMFLASH_Write_NoCheck(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t
 		                    ((uint64_t)temp_static[6] << 32) |
 		                    ((uint64_t)temp_static[7] << 48);
 
-		// ⚠️ Critical fix: Use static variable address to avoid illegal address access from stack overflow
+		// Critical fix: Use static variable address to avoid illegal address access from stack overflow
 		// Previously stack-based qw_data address might be 0x20008000 (exceeding RAM range)
 		HAL_StatusTypeDef status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, 
  8005806:	460d      	mov	r5, r1
@@ -13021,7 +13021,7 @@ void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 		return;
 	}
 	
-	// ⚠️ Address alignment check: STM32H5 Flash programming requires 16-byte alignment
+	// Address alignment check: STM32H5 Flash programming requires 16-byte alignment
 	if ((WriteAddr & 0x0F) != 0) {
  80058ec:	f010 0f0f 	tst.w	r0, #15
  80058f0:	4683      	mov	fp, r0

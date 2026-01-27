@@ -2,4 +2,3 @@
 ../IAP/src/iap.c:41:6:IAP_Init	0	static
 ../IAP/src/iap.c:68:8:IAP_RunApp	16	static,ignoring_inline_asm
 ../IAP/src/iap.c:164:8:IAP_Update	56	static
-../IAP/src/iap.c:293:8:IAP_Erase	16	static

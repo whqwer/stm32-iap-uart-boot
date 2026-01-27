@@ -16,7 +16,7 @@ extern int8_t IAP_RunApp(void);
 extern void IAP_Main_Menu(void);
 extern int8_t IAP_Update(void);           // Protocol-based firmware update
 extern int8_t IAP_Upload(void);
-extern int8_t IAP_Erase(void);
+//extern int8_t IAP_Erase(void);
 
 
 

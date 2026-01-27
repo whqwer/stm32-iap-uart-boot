@@ -2,4 +2,3 @@
 ../IAP/src/iap.c:41:6:IAP_Init	1
 ../IAP/src/iap.c:68:8:IAP_RunApp	2
 ../IAP/src/iap.c:164:8:IAP_Update	10
-../IAP/src/iap.c:293:8:IAP_Erase	1

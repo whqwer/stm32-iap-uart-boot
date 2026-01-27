@@ -223,10 +223,10 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if (huart->Instance == USART1)
 	{
-		// ⚠️ Update mode processing
+		// Update mode processing
 		if (UART1_in_update_mode)
 		{
-			// ✅ Only set flag, don't calculate rx_len in interrupt
+			// Only set flag, don't calculate rx_len in interrupt
 			// rx_len will be calculated in main loop by reading DMA counter (more stable)
 			UART1_Complete_flag = 1;
 			

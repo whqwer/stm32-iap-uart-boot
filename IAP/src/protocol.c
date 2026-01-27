@@ -68,8 +68,6 @@ static uint8_t in_frame = 0;
 // ==================== IAP Update State (Simplified) ====================
 static uint8_t iap_started = 0;           // Whether IAP has started
 static uint32_t iap_write_addr = ApplicationAddress;  // Current Flash write address
-//static uint8_t iap_buffer[1024*5];          // Write buffer (stores data before halfword alignment)
-// ⚠️ iap_buffer reuses frame_buf (no new frame reception needed during IAP write)
 #define iap_buffer frame_buf                      // Reuse frame_buf (5KB)
 static uint16_t iap_buf_idx = 0;          // Current buffer index
 static uint32_t iap_total_received = 0;   // Total bytes received

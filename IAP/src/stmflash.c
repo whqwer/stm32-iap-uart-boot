@@ -21,19 +21,19 @@ uint16_t STMFLASH_ReadHalfWord(uint32_t faddr)
   * @retval None
   */
 
-// ⚠️ Critical fix: Move all large buffers from stack to static storage to avoid stack overflow accessing 0x20008000
+// Critical fix: Move all large buffers from stack to static storage to avoid stack overflow accessing 0x20008000
 // Use static to ensure allocation in BSS segment with alignment
 __attribute__((aligned(16))) static uint64_t qw_data_static[2];
 static uint16_t temp_static[8];  // Temporary buffer also uses static storage
 
 static void STMFLASH_Write_NoCheck(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 { 			  
-	// ⚠️ Safety check: prevent NULL pointer access and overflow
+	// afety check: prevent NULL pointer access and overflow
 	if (pBuffer == NULL || NumToWrite == 0) {
 		return;
 	}
 	
-	// ⚠️ Prevent address overflow (Flash range check)
+	// Prevent address overflow (Flash range check)
 	if (WriteAddr < STM32_FLASH_BASE || 
 	    WriteAddr >= (STM32_FLASH_BASE + 0x20000) ||
 	    WriteAddr + (NumToWrite * 2) > (STM32_FLASH_BASE + 0x20000)) {
@@ -42,14 +42,14 @@ static void STMFLASH_Write_NoCheck(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t
 	
 	uint16_t i;
 	
-	// ⚠️ Critical fix: Use static global qw_data_static to avoid stack overflow
+	// Critical fix: Use static global qw_data_static to avoid stack overflow
 	// Don't allocate on stack to prevent accessing 0x20008000 causing bus error
 	
 	// STM32H5 requires 128-bit (quadword) programming, 16-byte aligned
 	// Process 8 halfwords (16 bytes) at a time
 	for(i=0; i<NumToWrite; i+=8)
 	{
-		// ⚠️ Use static temp_static to avoid repeated stack allocation
+		// Use static temp_static to avoid repeated stack allocation
 		// Initialize with 0xFFFF padding
 		for(uint16_t k=0; k<8; k++) {
 			temp_static[k] = 0xFFFF;
@@ -70,7 +70,7 @@ static void STMFLASH_Write_NoCheck(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t
 		                    ((uint64_t)temp_static[6] << 32) |
 		                    ((uint64_t)temp_static[7] << 48);
 
-		// ⚠️ Critical fix: Use static variable address to avoid illegal address access from stack overflow
+		// Critical fix: Use static variable address to avoid illegal address access from stack overflow
 		// Previously stack-based qw_data address might be 0x20008000 (exceeding RAM range)
 		HAL_StatusTypeDef status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, 
 		                                              WriteAddr, 
@@ -119,7 +119,7 @@ void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 		return;
 	}
 	
-	// ⚠️ Address alignment check: STM32H5 Flash programming requires 16-byte alignment
+	// Address alignment check: STM32H5 Flash programming requires 16-byte alignment
 	if ((WriteAddr & 0x0F) != 0) {
 		// Address not aligned to 16-byte boundary
 		return;
@@ -164,7 +164,7 @@ void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 			EraseInitStruct.Sector    = secpos;   // Sector to erase (8KB sectors for STM32H503)
 			EraseInitStruct.NbSectors = 1;        // Erase one sector at a time
 			__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
-//			 // ⚠️ Note: interrupts already disabled at function entry
+//			 // Note: interrupts already disabled at function entry
 //			    __disable_irq();
 
 			    HAL_StatusTypeDef erase_status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
