@@ -236,6 +236,10 @@ int8_t IAP_Update(void)
         {
             UART1_Complete_flag = 0;
             
+            // ✅ 在主循环中读取 DMA 计数器，此时 DMA 已完全稳定
+            uint16_t remaining = (uint16_t)__HAL_DMA_GET_COUNTER(huart1.hdmarx);
+            rx_len = sizeof(rx_buffer) - remaining;  // 实际接收的准确字节数
+            
             // ✅ 关键改动4：根据rx_len判断数据状态
             if (rx_len > 1)
             {
@@ -248,6 +252,8 @@ int8_t IAP_Update(void)
                 consecutive_idle = 0;
 
                 // ✅ 关键改动5：处理完后重新启动DMA
+                // ✅ 这里最安全！
+                HAL_UART_AbortReceive(&huart1);  // 完全停止并重置 DMA
                 status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
                 if (status == HAL_OK) {
                     huart1.hdmarx->XferHalfCpltCallback = NULL;

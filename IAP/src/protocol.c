@@ -137,7 +137,7 @@ uint32_t decode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
     for (uint32_t i = 0; i < src_len; i++)
     {
     	// only treat interior bytes (not the first/last few header/footer bytes) as candidates for escape sequences
-    	if( i>=5 && i < src_len-5 )
+    	if( i>=1 && i < src_len-1 )
     	{
 			if (src[i] == ESCAPE_FLAG)
 			{
@@ -173,7 +173,7 @@ uint32_t encode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
     uint32_t dst_idx = 0;
     for (uint32_t i = 0; i < src_len; i++) {
     	// 只有起始和结束的0x7E标志位不转义（第0字节和最后1字节）
-    	if( i<5 || i>=src_len-5 )
+    	if( i<1 || i>=src_len-1 )
     	{
     		dst[dst_idx++] = src[i];
     	}

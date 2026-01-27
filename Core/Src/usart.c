@@ -226,18 +226,15 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 		// ⚠️ Update模式下的处理
 		if (UART1_in_update_mode)
 		{
-			rx_len=Size;
-			UART1_Complete_flag=1;
-			// ⚠️ 关键修复：Update模式下接收到数据后不要重新启动DMA
-			// 只设置标志，让主循环处理完数据后再启动下一次接收
-			// 如果在这里重新启动DMA，会中止当前正在进行的传输！
+			// ✅ 只设置标志，不在中断中计算 rx_len
+			// rx_len 将在主循环中读取 DMA 计数器计算（那时更稳定）
+			UART1_Complete_flag = 1;
 			
 			// 清除标志防止干扰
 			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
 			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_OREF);
 			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_NEF);
 			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_FEF);
-//			HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
 			return;
 		}
 
