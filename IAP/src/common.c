@@ -66,271 +66,47 @@ void STM_EVAL_COMInit(UART_InitTypeDef* UART_InitStruct)
 
 /**
   * @brief  Convert an Integer to a string
-  * @param  str: The string
-  * @param  intnum: The intger to be converted
+  * @param  str: The string buffer to store the result
+  * @param  intnum: The integer to be converted
   * @retval None
+  * @details Converts a positive integer to ASCII string representation.
+  *          Leading zeros are automatically trimmed. Uses division by powers of 10
+  *          starting from 1 billion, extracting each digit and converting to ASCII.
   */
 void Int2Str(uint8_t* str, int32_t intnum)
 {
 	uint32_t i, Div = 1000000000, j = 0, Status = 0;
 
-	for (i = 0; i < 10; i++)
+	for (i = 0; i < 10; i++)  // Process up to 10 digits (max for 32-bit int)
 	{
-		str[j++] = (intnum / Div) + 48;
+		str[j++] = (intnum / Div) + 48;  // Convert digit to ASCII ('0' = 48)
 
-		intnum = intnum % Div;
-		Div /= 10;
+		intnum = intnum % Div;  // Remove processed digit
+		Div /= 10;  // Move to next decimal place
+		// Trim leading zeros: reset index if current digit is '0' and no non-zero digit has been encountered
 		if ((str[j-1] == '0') & (Status == 0))
 		{
-			j = 0;
+			j = 0;  // Reset write position to skip leading zero
 		}
 		else
 		{
-			Status++;
+			Status++;  // Mark that we've encountered a non-zero digit
 		}
 	}
 }
 
 /**
-  * @brief  Convert a string to an integer
-  * @param  inputstr: The string to be converted
-  * @param  intnum: The intger value
-  * @retval 1: Correct
-  *         0: Error
-  */
-uint32_t Str2Int(uint8_t *inputstr, int32_t *intnum)
-{
-	uint32_t i = 0, res = 0;
-	uint32_t val = 0;
-
-	if (inputstr[0] == '0' && (inputstr[1] == 'x' || inputstr[1] == 'X'))
-	{
-		if (inputstr[2] == '\0')
-		{
-			return 0;
-		}
-		for (i = 2; i < 11; i++)
-		{
-			if (inputstr[i] == '\0')
-			{
-				*intnum = val;
-				/* return 1; */
-				res = 1;
-				break;
-			}
-			if (ISVALIDHEX(inputstr[i]))
-			{
-				val = (val << 4) + CONVERTHEX(inputstr[i]);
-			}
-			else
-			{
-				/* return 0, Invalid input */
-				res = 0;
-				break;
-			}
-		}
-		/* over 8 digit hex --invalid */
-		if (i >= 11)
-		{
-			res = 0;
-		}
-	}
-	else /* max 10-digit decimal input */
-	{
-		for (i = 0;i < 11;i++)
-		{
-			if (inputstr[i] == '\0')
-			{
-				*intnum = val;
-				/* return 1 */
-				res = 1;
-				break;
-			}
-			else if ((inputstr[i] == 'k' || inputstr[i] == 'K') && (i > 0))
-			{
-				val = val << 10;
-				*intnum = val;
-				res = 1;
-				break;
-			}
-			else if ((inputstr[i] == 'm' || inputstr[i] == 'M') && (i > 0))
-			{
-				val = val << 20;
-				*intnum = val;
-				res = 1;
-				break;
-			}
-			else if (ISVALIDDEC(inputstr[i]))
-			{
-				val = val * 10 + CONVERTDEC(inputstr[i]);
-			}
-			else
-			{
-				/* return 0, Invalid input */
-				res = 0;
-				break;
-			}
-		}
-		/* Over 10 digit decimal --invalid */
-		if (i >= 11)
-		{
-			res = 0;
-		}
-	}
-
-	return res;
-}
-
-/**
-  * @brief  Get an integer from the HyperTerminal
-  * @param  num: The inetger
-  * @retval 1: Correct
-  *         0: Error
-  */
-uint32_t GetIntegerInput(int32_t * num)
-{
-	uint8_t inputstr[16];
-
-	while (1)
-	{
-		GetInputString(inputstr);
-		if (inputstr[0] == '\0') continue;
-		if ((inputstr[0] == 'a' || inputstr[0] == 'A') && inputstr[1] == '\0')
-		{
-			SerialPutString(" User Cancelled.\r\n");
-			return 0;
-		}
-
-		if (Str2Int(inputstr, num) == 0)
-		{
-			SerialPutString(" Error, Input.\r\n");
-		}
-		else
-		{
-			return 1;
-		}
-	}
-}
-
-/**
-  * @brief  Test to see if a key has been pressed on the HyperTerminal
-  * @param  key: The key pressed
-  * @retval 1: Correct
-  *         0: Error
-  */
-uint32_t SerialKeyPressed(uint8_t *key)
-{
-	// Non-blocking: poll RXNE flag and read RDR directly
-	if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE) != RESET)
-	{
-		*key = (uint8_t)(huart1.Instance->RDR & 0xFF);
-		return 1;
-	}
-	return 0;
-}
-
-/**
-  * @brief  Get a key from the HyperTerminal
-  * @param  None
-  * @retval The Key Pressed
-  */
-uint8_t GetKey(void)
-{
-	uint8_t key = 0; 
-	/* Blocking poll until a byte is available */
-	while (SerialKeyPressed(&key) == 0) {}
-	return key;
-
-}
-
-/**
-  * @brief  Print a character on the HyperTerminal
-  * @param  c: The character to be printed
+  * @brief  Send a string to UART serial port
+  * @param  s: Pointer to null-terminated string to transmit
   * @retval None
-  */
-void SerialPutChar(uint8_t c)
-{
-	// EVAL_COM1->TDR = c;
-	// while ((EVAL_COM1->ISR & USART_ISR_TXE) == RESET)
-	// {
-	// }
-	HAL_UART_Transmit(&huart1, &c, 1, HAL_MAX_DELAY);
-}
-
-/**
-  * @brief  Print a string on the HyperTerminal
-  * @param  s: The string to be printed
-  * @retval None
+  * @details Transmits string via UART1 with 1000ms timeout.
+  *          Can be disabled via ENABLE_PUTSTR macro for production builds.
   */
 void Serial_PutString(uint8_t *s)
 {
-#if (ENABLE_PUTSTR == 1)
-	// while (*s != '\0')
-	// {
-	// 	SerialPutChar(*s);
-	// 	s++;
-	// }
+#if (ENABLE_PUTSTR == 1)  // Conditional compilation for debug output
 	HAL_UART_Transmit(&huart1, s, strlen((const char*)s),1000);
 #endif
-}
-
-/**
-  * @brief  Get Input string from the HyperTerminal
-  * @param  buffP: The input string
-  * @retval None
-  */
-void GetInputString (uint8_t * buffP)
-{
-	uint32_t bytes_read = 0;
-	uint8_t c = 0;
-	/* Ensure UART is ready and clear stale errors before blocking receive */
-	HAL_UART_AbortReceive(&huart1);
-	__HAL_UART_CLEAR_OREFLAG(&huart1);
-	__HAL_UART_CLEAR_NEFLAG(&huart1);
-	__HAL_UART_CLEAR_FEFLAG(&huart1);
-	(void)huart1.Instance->RDR; // flush data register
-	for(;;)
-	{
-		HAL_StatusTypeDef rx = HAL_UART_Receive(&huart1, &c, 1, HAL_MAX_DELAY);
-		if (rx != HAL_OK)
-		{
-			if (rx == HAL_BUSY)
-			{
-				HAL_UART_AbortReceive(&huart1);
-			}
-			__HAL_UART_CLEAR_OREFLAG(&huart1);
-			__HAL_UART_CLEAR_NEFLAG(&huart1);
-			__HAL_UART_CLEAR_FEFLAG(&huart1);
-			(void)huart1.Instance->RDR; // flush
-			continue; // retry
-		}
-		if (c == '\r' || c == '\n')
-		{
-			SerialPutString("\r\n");
-			break; // accept CR or LF as terminator
-		}
-		if (c == '\b') /* Backspace */
-		{
-			if (bytes_read > 0)
-			{
-				bytes_read --;
-				SerialPutString("\b \b");
-			}
-			continue;
-		}
-		if (bytes_read >= CMD_STRING_SIZE - 1)
-		{
-			SerialPutString(" Cmd size over.\r\n");
-			bytes_read = 0;
-			continue;
-		}
-		if (c >= 0x20 && c <= 0x7E)
-		{
-			buffP[bytes_read++] = c;
-			SerialPutChar(c);
-		}
-	}
-	buffP[bytes_read] = '\0';
 }
 
 /**
@@ -358,6 +134,17 @@ uint32_t FLASH_PagesMask(__IO uint32_t Size)
 	return pagenumber;
 }
 
+/**
+  * @brief  Erase Flash sectors for application update
+  * @param  size: Size in bytes of the area to erase
+  * @param  outPutCont: If 1, output erase progress via serial port
+  * @retval 1 on success, 0 on failure
+  * @details Erases Flash sectors starting from ApplicationAddress.
+  *          Handles dual-bank Flash architecture of STM32H5:
+  *          - Bank 1: Sectors 0-7 (each 8KB)
+  *          - Bank 2: Sectors 0-7 (each 8KB)
+  *          Automatically splits erase operation across banks when needed.
+  */
 uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
 {
 	   uint32_t EraseCounter = 0x0;
@@ -366,47 +153,49 @@ uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
 	    FLASH_EraseInitTypeDef EraseInitStruct;
 	    uint32_t SectorError = 0;
 
-	    // 计算全局起始扇区和总扇区数
-	    uint32_t global_start_sector = (ApplicationAddress - FLASH_BASE) / PAGE_SIZE;  // = 6
-	    uint32_t total_sectors = FLASH_PagesMask(size);  // 例如 = 4
+	    // Calculate global starting sector and total sectors needed
+	    uint32_t global_start_sector = (ApplicationAddress - FLASH_BASE) / PAGE_SIZE;  // e.g., = 6 for 0x0800C000
+	    uint32_t total_sectors = FLASH_PagesMask(size);  // e.g., = 4 for 32KB
 
-	    uint32_t sectors_per_bank = 8;  // 每个 Bank 8 个扇区
+	    uint32_t sectors_per_bank = 8;  // STM32H503: 8 sectors per bank
 
 	    HAL_FLASH_Unlock();
 	    EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
 
-	    // Bank 1 擦除（如果起始在 Bank 1）
+	    // Erase Bank 1 (if starting sector is in Bank 1)
 	    if (global_start_sector < sectors_per_bank) {
-	        // 计算 Bank 1 能擦除的扇区数
+	        // Calculate how many sectors can be erased in Bank 1
+	        // If all sectors fit in Bank 1, erase them all; otherwise, erase to end of Bank 1
 	        uint32_t bank1_sectors = (global_start_sector + total_sectors <= sectors_per_bank)
 	                                 ? total_sectors
 	                                 : (sectors_per_bank - global_start_sector);
 
 	        EraseInitStruct.Banks = FLASH_BANK_1;
-	        EraseInitStruct.Sector = global_start_sector;  // Bank 1 的扇区 6
+	        EraseInitStruct.Sector = global_start_sector;  // e.g., sector 6 in Bank 1
 	        EraseInitStruct.NbSectors = bank1_sectors;
 	        status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
 
-	        total_sectors -= bank1_sectors;
+	        total_sectors -= bank1_sectors;  // Subtract erased sectors from total
 	    }
 
-	    // Bank 2 擦除（如果还有剩余扇区）
+	    // Erase Bank 2 (if there are remaining sectors to erase)
 	    if (total_sectors > 0 && status == HAL_OK) {
 	        EraseInitStruct.Banks = FLASH_BANK_2;
-	        EraseInitStruct.Sector = 0;  // Bank 2 从扇区 0 开始
+	        EraseInitStruct.Sector = 0;  // Bank 2 starts from sector 0
 	        EraseInitStruct.NbSectors = total_sectors;
 	        status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
 	    }
 
+	// Output erase progress if requested
 	if(status == HAL_OK)
 	{
 		for (EraseCounter = 0; EraseCounter < total_sectors; EraseCounter++)
 		{
 			if(outPutCont == 1)
 			{
-				Int2Str(erase_cont, EraseCounter + 1);
+				Int2Str(erase_cont, EraseCounter + 1);  // Convert sector number to string
 				SerialPutString(erase_cont);
-				SerialPutString("@");
+				SerialPutString("@");  // Send progress marker
 			}
 		}
 	}
@@ -415,9 +204,9 @@ uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
 
 	if(status != HAL_OK)
 	{
-		return 0;
+		return 0;  // Erase failed
 	}
-	return 1;
+	return 1;  // Erase successful
 }
 
 

@@ -14,8 +14,7 @@ extern uint16_t IAP_ReadFlag(void);
 extern void IAP_WriteFlag(uint16_t flag);
 extern int8_t IAP_RunApp(void);
 extern void IAP_Main_Menu(void);
-extern int8_t IAP_Update(void);           // 基于协议的固件更新
-extern int8_t IAP_Update_Ymodem(void);    // 基于Ymodem的固件更新（备份）
+extern int8_t IAP_Update(void);           // Protocol-based firmware update
 extern int8_t IAP_Upload(void);
 extern int8_t IAP_Erase(void);
 

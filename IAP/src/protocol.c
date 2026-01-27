@@ -1,10 +1,10 @@
 /*
- * protocol.c - 简化版IAP协议实现
+ * protocol.c - Simplified IAP Protocol Implementation
  * 
- * 核心思路：
- * 1. Protocol_Receive() 接收UART数据，解析协议帧
- * 2. 解析成功后调用 on_protocol_frame_received() 处理命令
- * 3. on_protocol_frame_received() 根据命令类型执行相应操作
+ * Core Concept:
+ * 1. Protocol_Receive() receives UART data and parses protocol frames
+ * 2. After successful parsing, on_protocol_frame_received() handles commands
+ * 3. on_protocol_frame_received() executes corresponding operations based on command type
  */
 
 #include "protocol.h"
@@ -16,12 +16,12 @@
 #include <stdint.h>
 #include <stddef.h>
 
-// ==================== 外部函数声明 ====================
+// ==================== External Function Declarations ====================
 extern void Int2Str(uint8_t *str, int32_t intnum);
 extern uint8_t EraseSomePages(uint32_t size, uint8_t print_enable);
 extern void STMFLASH_Write(uint32_t addr, uint16_t *buffer, uint16_t count);
 
-// 从 iap_config.h 获取
+// Obtained from iap_config.h
 #ifndef ApplicationAddress
 #define ApplicationAddress    0x0800C000
 #endif
@@ -29,14 +29,14 @@ extern void STMFLASH_Write(uint32_t addr, uint16_t *buffer, uint16_t count);
 #define FLASH_IMAGE_SIZE      (80 * 1024)
 #endif
 
-// ==================== 协议帧常量 ====================
+// ==================== Protocol Frame Constants ====================
 #define START_END_FLAG    0x7E
 #define ESCAPE_FLAG       0x7A
 #define ESCAPE_7E         0x55
 #define ESCAPE_7A         0xAA
 #define MAX_FRAME_SIZE    1024*10
 
-// ==================== 协议解析状态机 ====================
+// ==================== Protocol Parsing State Machine ====================
 typedef enum {
     STATE_WAIT_START = 0,
     STATE_READ_LEN,
@@ -45,7 +45,7 @@ typedef enum {
     STATE_WAIT_END_FLAG
 } ParseState;
 
-// 协议解析全局变量
+// Protocol parsing global variables
 static ParseState state = STATE_WAIT_START;
 static uint32_t body_len = 0;
 static uint32_t body_offset = 0;
@@ -56,27 +56,27 @@ uint8_t rx_buffer[MAX_FRAME_SIZE];
 //static uint8_t crc_input[MAX_FRAME_SIZE];
 //static uint8_t frame_buffer[MAX_FRAME_SIZE];
 //static uint8_t decode_data[MAX_FRAME_SIZE];
-// decode_data 和 frame_buffer 合并（不同协议阶段使用，可以复用）
+// Merge decode_data and frame_buffer (reusable for different protocol stages)
 #define crc_input rx_buffer
-#define decode_data frame_buf                     // 复用 frame_buf（解码后存储位置）
-#define frame_buffer crc_input                    // 复用 crc_input（帧缓冲临时存储）
+#define decode_data frame_buf                     // Reuse frame_buf (storage for decoded data)
+#define frame_buffer crc_input                    // Reuse crc_input (temporary frame buffer)
 
 static uint32_t frame_pos = 0;
 static uint8_t in_frame = 0;
 //static uint8_t crc_bytes[4];
 
-// ==================== IAP更新状态（简化版）====================
-static uint8_t iap_started = 0;           // IAP是否已开始
-static uint32_t iap_write_addr = ApplicationAddress;  // 当前Flash写入地址
-//static uint8_t iap_buffer[1024*5];          // 写入缓冲区（存储半字对齐前的数据）
-// ⚠️ iap_buffer 复用 frame_buf（IAP 写入时不需要接收新帧）
-#define iap_buffer frame_buf                      // 复用 frame_buf（5KB）
-static uint16_t iap_buf_idx = 0;          // 缓冲区当前索引
-static uint32_t iap_total_received = 0;   // 总接收字节数
+// ==================== IAP Update State (Simplified) ====================
+static uint8_t iap_started = 0;           // Whether IAP has started
+static uint32_t iap_write_addr = ApplicationAddress;  // Current Flash write address
+//static uint8_t iap_buffer[1024*5];          // Write buffer (stores data before halfword alignment)
+// ⚠️ iap_buffer reuses frame_buf (no new frame reception needed during IAP write)
+#define iap_buffer frame_buf                      // Reuse frame_buf (5KB)
+static uint16_t iap_buf_idx = 0;          // Current buffer index
+static uint32_t iap_total_received = 0;   // Total bytes received
 
 
 
-// CRC32 查表（已预计算，支持 input/output reflection）
+// CRC32 lookup table (pre-calculated, supports input/output reflection)
 const uint32_t crc32_table[256] = {
 		0x00000000, 0x77073096,  0xEE0E612C, 0x990951BA,   0x076DC419, 0x706AF48F,  0xE963A535, 0x9E6495A3,
 		0x0EDB8832, 0x79DCB8A4,  0xE0D5E91E, 0x97D2D988,   0x09B64C2B, 0x7EB17CBD,  0xE7B82D07, 0x90BF1D91,
@@ -111,9 +111,15 @@ const uint32_t crc32_table[256] = {
 		0xBDBDF21C, 0xCABAC28A,  0x53B39330, 0x24B4A3A6,   0xBAD03605, 0xCDD70693,  0x54DE5729, 0x23D967BF,
 		0xB3667A2E, 0xC4614AB8,  0x5D681B02, 0x2A6F2B94,   0xB40BBE37, 0xC30C8EA1,  0x5A05DF1B, 0x2D02EF8D
 };
-// 计算缓冲区的CRC32值（多项式0x04C11DB7，标准CRC32）
-// 参数：data-数据缓冲区，len-数据长度，init_crc-初始值（通常传0xFFFFFFFF）
-// 返回：最终CRC32值（如需标准输出，需异或0xFFFFFFFF）
+/**
+ * @brief Calculate CRC32 checksum with custom initial value
+ * @details Uses polynomial 0x04C11DB7 (standard CRC32) with lookup table.
+ *          Supports input/output reflection for compatibility.
+ * @param data Pointer to data buffer
+ * @param len Length of data in bytes
+ * @param init_crc Initial CRC value (typically 0xFFFFFFFF)
+ * @return Calculated CRC32 value (need final XOR for standard output)
+ */
 uint32_t crc32_calc(const uint8_t *data, uint32_t len, uint32_t init_crc) {
     uint32_t crc = init_crc;
     while (len--) {
@@ -121,16 +127,38 @@ uint32_t crc32_calc(const uint8_t *data, uint32_t len, uint32_t init_crc) {
     }
     return crc;
 }
-// 简化接口：直接计算标准CRC32（初始值0xFFFFFFFF，结果异或0xFFFFFFFF）
+
+/**
+ * @brief Calculate standard CRC32 checksum (one-step interface)
+ * @details Convenience function with standard initial value and final XOR.
+ *          Equivalent to: crc32_calc(data, len, 0xFFFFFFFF) ^ 0xFFFFFFFF
+ * @param data Pointer to data buffer
+ * @param len Length of data in bytes  
+ * @return Standard CRC32 checksum
+ */
 uint32_t crc32_c(const uint8_t *data, uint32_t len) {
     return crc32_calc(data, len, 0xFFFFFFFF) ^ 0xFFFFFFFF;
 }
 
 
-// 转义解码函数
-// original	escaped
-// 0x7E	0x7A 0x55
-// 0x7A	0x7A 0xAA
+/**
+ * @brief Decode escape sequences in received protocol frame
+ * @details Reverses the escape encoding applied during transmission.
+ *          Escape sequences used in protocol:
+ *          - 0x7E (frame delimiter) → 0x7A 0x55 when inside frame
+ *          - 0x7A (escape marker) → 0x7A 0xAA when inside frame
+ *          
+ *          The first and last bytes (frame delimiters 0x7E) are NOT escaped.
+ *          Only interior bytes between start and end flags are processed.
+ * 
+ * @param dst Destination buffer for decoded data
+ * @param src Source buffer containing escaped data
+ * @param src_len Length of source data in bytes
+ * @return Length of decoded data (always <= src_len)
+ * 
+ * @note Assumes dst buffer is at least src_len bytes
+ * @note Frame delimiters at positions [0] and [src_len-1] are copied as-is
+ */
 uint32_t decode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
 {
     uint32_t dst_idx = 0;
@@ -152,7 +180,7 @@ uint32_t decode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
 				}
 	//			else
 	//			{
-	//				dst[dst_idx++] = src[i]; // 未知转义？直接输出
+	//				dst[dst_idx++] = src[i]; // Unknown escape? Output directly
 	//			}
 			}
 			else
@@ -165,14 +193,32 @@ uint32_t decode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
 			dst[dst_idx++] = src[i];
 		}
     }
-    return dst_idx; // 返回解码后长度
+    return dst_idx; // Return decoded length
 }
-// 实现转义编码
+/**
+ * @brief Encode escape sequences for protocol frame transmission
+ * @details Escapes special bytes to ensure frame integrity during transmission.
+ *          This prevents data bytes from being confused with frame delimiters.
+ *          
+ *          Encoding rules (applied to interior bytes only):
+ *          - 0x7E → 0x7A 0x55 (frame delimiter)
+ *          - 0x7A → 0x7A 0xAA (escape marker)
+ *          
+ *          The first and last bytes (0x7E frame delimiters) are NOT escaped.
+ * 
+ * @param dst Destination buffer for encoded data
+ * @param src Source buffer containing raw frame data
+ * @param src_len Length of source data in bytes
+ * @return Length of encoded data (may be larger than src_len due to escaping)
+ * 
+ * @note Assumes dst buffer is at least (src_len * 2) bytes to handle worst case
+ * @note Frame delimiters at positions [0] and [src_len-1] are copied as-is
+ */
 uint32_t encode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
 {
     uint32_t dst_idx = 0;
     for (uint32_t i = 0; i < src_len; i++) {
-    	// 只有起始和结束的0x7E标志位不转义（第0字节和最后1字节）
+    	// Only start and end 0x7E flags not escaped (byte 0 and last 1 byte)
     	if( i<1 || i>=src_len-1 )
     	{
     		dst[dst_idx++] = src[i];
@@ -196,8 +242,27 @@ uint32_t encode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
     return dst_idx;
 }
 
-// ==================== IAP公共接口 ====================
+// ==================== IAP Public Interface ====================
 extern UART_HandleTypeDef huart1;
+
+/**
+ * @brief Initialize IAP protocol layer and reset UART
+ * @details Performs complete UART and protocol state reset:
+ *          
+ * Reset Sequence:
+ * 1. Reset protocol state variables (addresses, buffers, counters)
+ * 2. Abort any ongoing UART operations
+ * 3. Clear all UART error flags (parity, frame, noise, overrun)
+ * 4. Flush UART receive FIFO
+ * 5. Reset UART error code
+ * 6. Wait for UART hardware to stabilize (10ms)
+ * 
+ * @param None
+ * @return None
+ * 
+ * @note Must be called before starting firmware update
+ * @note Ensures clean state for reliable protocol communication
+ */
 void Protocol_IAP_Init(void)
 {
     iap_started = 0;
@@ -207,11 +272,11 @@ void Protocol_IAP_Init(void)
     
     SerialPutString("IAP Init OK\r\n");
 
-	// 1. 终止所有正在进行的 UART 操作
+	// 1. Terminate all ongoing UART operations
 	HAL_UART_AbortReceive_IT(&huart1);
 	HAL_UART_Abort(&huart1);
 	
-	// 2. 清除所有 UART 错误标志
+	// 2. Clear all UART error flags
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_PEF);   // Parity Error
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_FEF);   // Frame Error
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_NEF);   // Noise Error
@@ -219,16 +284,16 @@ void Protocol_IAP_Init(void)
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_IDLEF); // Idle Line
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_RTOF);  // Receiver Timeout
 	
-	// 3. 清空接收 FIFO（读取所有数据）
+	// 3. Clear receive FIFO (read all data)
 	while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))
 	{
-		(void)huart1.Instance->RDR;  // 读取并丢弃
+		(void)huart1.Instance->RDR;  // Read and discard
 	}
 	
-	// 4. 重置 UART 错误代码
+	// 4. Reset UART error code
 	huart1.ErrorCode = HAL_UART_ERROR_NONE;
 	
-	// 5. 等待状态完全恢复
+	// 5. Wait for state to fully recover
 	HAL_Delay(10);
 	
 	SerialPutString("UART fully reset\r\n");
@@ -243,7 +308,7 @@ uint32_t Protocol_IAP_GetProgress(void)
 
 
 
-// 帧格式：
+// Frame format:
 // [0x7E] [len(4, LSB)] [version] [receiver] [sender] [data...] [crc(4, LSB)] [0x7E]
 static uint8_t crc_bytes[4];
 uint8_t boot_to_FPGA_UL1[8];
@@ -279,7 +344,7 @@ void parse_byte(uint8_t byte)
 			if (body_offset == body_len) {
 				state = STATE_READ_CRC;
 				recv_count = 0;
-				memset(crc_bytes, 0, 4);  // 清零 CRC 缓冲区
+				memset(crc_bytes, 0, 4);  // Clear CRC buffer
 			}
             break;
 
@@ -288,7 +353,7 @@ void parse_byte(uint8_t byte)
             crc_bytes[recv_count] = byte;
             recv_count++;
             if (recv_count == 4) {
-                // 显式小端组合
+                // Explicit little-endian combination
                 recv_crc = (uint32_t)crc_bytes[0] |
                            ((uint32_t)crc_bytes[1] << 8) |
                            ((uint32_t)crc_bytes[2] << 16) |
@@ -298,31 +363,31 @@ void parse_byte(uint8_t byte)
             break;
         case STATE_WAIT_END_FLAG:
             if (byte == START_END_FLAG) {
-				// 构造 CRC 输入：[body_length(4)] + [frame_buf(body_len)]
+				// Construct CRC input: [body_length(4)] + [frame_buf(body_len)]
 				crc_input[0] = (uint8_t)(body_len >> 0);
 				crc_input[1] = (uint8_t)(body_len >> 8);
 				crc_input[2] = (uint8_t)(body_len >> 16);
 				crc_input[3] = (uint8_t)(body_len >> 24);
 				memcpy(&crc_input[4], frame_buf, body_len);
 
-				// CRC 校验
+				// CRC validation
 				uint32_t calc_crc = crc32_c(crc_input, 4 + body_len);
 				
 				if (calc_crc == recv_crc) {
-					// CRC OK! 提取固件数据（跳过version, receiver, sender这3个字节）
+					// CRC OK! Extract firmware data (skip version, receiver, sender - 3 bytes)
 //					uint8_t receive=frame_buf[1];
 					uint8_t *firmware_data = &frame_buf[7];
 					uint32_t data_len = body_len - 7;
 					memcpy(boot_to_FPGA_UL1,&frame_buf[3],4);
 					if ( data_len > 0)
 					{
-						// 将数据拷贝到缓冲区
+						// Copy data to buffer
 						if (iap_buf_idx + data_len <= sizeof(iap_buffer))
 						{
 							memcpy(&iap_buffer[iap_buf_idx], firmware_data, data_len);
 							iap_buf_idx += data_len;
 							
-							// 当缓冲区有足够数据时写入Flash（必须半字对齐）
+							// Write to Flash when buffer has enough data (must be halfword aligned)
 							if (iap_buf_idx >= 2)
 							{
 								uint16_t write_count = iap_buf_idx / 2;
@@ -331,7 +396,7 @@ void parse_byte(uint8_t byte)
 								iap_write_addr += write_count * 2;
 								iap_total_received += write_count * 2;
 								
-								// 保留未对齐的字节
+								// Keep unaligned bytes
 								if (iap_buf_idx % 2)
 								{
 									iap_buffer[0] = iap_buffer[iap_buf_idx - 1];
@@ -342,7 +407,7 @@ void parse_byte(uint8_t byte)
 									iap_buf_idx = 0;
 								}
 								
-//								// 打印进度
+//								// Print progress
 //								if ((iap_total_received % 1024) == 0)
 //								{
 //									SerialPutString((const uint8_t*)".");
@@ -376,9 +441,9 @@ void parse_byte(uint8_t byte)
             break;
     }
 }
-// 协议接收函数
-// 参数：buf - 接收缓冲区，len - 接收数据长度
-// 返回：0 成功，-1 失败
+// Protocol receive function
+// Parameters: buf - receive buffer, len - receive data length
+// Return: 0 success, -1 failure
 int32_t Protocol_Receive(uint8_t *buf, uint32_t len)
 {
 	for (uint32_t i = 0; i < len; i++)
@@ -387,7 +452,7 @@ int32_t Protocol_Receive(uint8_t *buf, uint32_t len)
 		
 		if (!in_frame)
 		{
-			// 寻找帧头 0x7E
+			// Search for frame header 0x7E
 			if (byte == 0x7E)
 			{
 				in_frame = 1;
@@ -398,30 +463,30 @@ int32_t Protocol_Receive(uint8_t *buf, uint32_t len)
 		}
 		else
 		{
-			// 已进入帧，继续收集
+			// Already in frame, continue collecting
 			if (frame_pos < MAX_FRAME_SIZE)
 			{
 				frame_buffer[frame_pos++] = byte;
-				// 检查是否到达帧尾
+				// Check if end of frame reached
 				if (byte == 0x7E && frame_pos >= 13)
 				{
-					// 收到完整帧！进行转义解码
+					// Complete frame received! Perform escape decoding
 					uint32_t decoded_len = decode_escape(decode_data, frame_buffer, frame_pos);
 					
-					// 逐字节解析协议
+					// Parse protocol byte by byte
 					for (uint32_t j = 0; j < decoded_len; j++)
 					{
 						parse_byte(decode_data[j]);
 					}
 					
-					// 重置帧状态，准备接收下一帧
+					// Reset frame state, prepare to receive next frame
 					in_frame = 0;
 					frame_pos = 0;
 				}
 			}
 			else
 			{
-				// 缓冲区溢出，重置状态
+				// Buffer overflow, reset state
 				SerialPutString((const uint8_t*)"Frame buffer overflow!\r\n");
 				in_frame = 0;
 				frame_pos = 0;
@@ -433,14 +498,14 @@ int32_t Protocol_Receive(uint8_t *buf, uint32_t len)
 }
 
 uint8_t body[15];      //[version] [receiver] [sender] [data...]
-uint8_t crc_input_send[12]; // data_len(4) + data(8)
-uint8_t raw_frame[21]; // 转义前的数据
-uint8_t escaped_buf[40];// 预留足够空间用于转义后膨胀
+uint8_t crc_input_send[19]; // data_len(4) + body(max 15 bytes) = 19 bytes total
+uint8_t raw_frame[21]; // Data before escape
+uint8_t escaped_buf[40];// Reserved space for escape expansion
 //[0x7E] [len(4, LSB)] [version] [receiver] [sender] [data...] [crc(4, LSB)] [0x7E]
 //[cmd (2,LSB)] [page_index (2,LSB)] [status (4,LSB)]
 void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, uint32_t data_len)
 {
-    // 帧体 = version(1) + receiver(1) + sender(1) + data(data_len)
+    // Frame body = version(1) + receiver(1) + sender(1) + data(data_len)
     uint32_t body_len = 3 + data_len;
 
     body[0] = 0x01;           // version
@@ -448,7 +513,7 @@ void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, 
     body[2] = sender;
     memcpy(&body[3], data, data_len);
 
-    // 计算 CRC 输入: [body_len(小端4字节)] + body
+    // Calculate CRC input: [body_len(little-endian 4 bytes)] + body
     crc_input_send[0] = (uint8_t)(body_len >> 0);
     crc_input_send[1] = (uint8_t)(body_len >> 8);
     crc_input_send[2] = (uint8_t)(body_len >> 16);
@@ -457,22 +522,22 @@ void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, 
 
     uint32_t calc_crc = crc32_c(crc_input_send, 4 + body_len);
 
-    // 构造未转义的原始帧
+    // Construct unescaped raw frame
     int pos = 0;
 
     raw_frame[pos++] = 0x7E;  // start flag
 
-    // 写入 length (小端)
+    // Write length (little-endian)
     raw_frame[pos++] = (uint8_t)(body_len >> 0);
     raw_frame[pos++] = (uint8_t)(body_len >> 8);
     raw_frame[pos++] = (uint8_t)(body_len >> 16);
     raw_frame[pos++] = (uint8_t)(body_len >> 24);
 
-    // 写入 body
+    // Write body
     memcpy(&raw_frame[pos], body, body_len);
     pos += body_len;
 
-    // 写入 CRC (小端)
+    // Write CRC (little-endian)
     raw_frame[pos++] = (uint8_t)(calc_crc >> 0);
     raw_frame[pos++] = (uint8_t)(calc_crc >> 8);
     raw_frame[pos++] = (uint8_t)(calc_crc >> 16);
@@ -480,7 +545,7 @@ void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, 
 
     raw_frame[pos++] = 0x7E;  // end flag
 
-    // 转义编码
+    // Escape encoding
     uint32_t escaped_len = encode_escape(escaped_buf, raw_frame, pos);
     HAL_UART_Transmit(&huart1, escaped_buf, escaped_len,1000);
 

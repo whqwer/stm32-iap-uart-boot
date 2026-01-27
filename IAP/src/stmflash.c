@@ -21,36 +21,36 @@ uint16_t STMFLASH_ReadHalfWord(uint32_t faddr)
   * @retval None
   */
 
-// ⚠️ 关键修复：将所有大缓冲区从栈移到静态存储，避免栈溢出导致访问 0x20008000
-// 使用 static 确保在 BSS 段分配，且对齐
+// ⚠️ Critical fix: Move all large buffers from stack to static storage to avoid stack overflow accessing 0x20008000
+// Use static to ensure allocation in BSS segment with alignment
 __attribute__((aligned(16))) static uint64_t qw_data_static[2];
-static uint16_t temp_static[8];  // 临时缓冲区也使用静态存储
+static uint16_t temp_static[8];  // Temporary buffer also uses static storage
 
 static void STMFLASH_Write_NoCheck(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 { 			  
-	// ⚠️ 安全检查：防止 NULL 指针访问和越界
+	// ⚠️ Safety check: prevent NULL pointer access and overflow
 	if (pBuffer == NULL || NumToWrite == 0) {
 		return;
 	}
 	
-	// ⚠️ 防止地址溢出（Flash 范围检查）
+	// ⚠️ Prevent address overflow (Flash range check)
 	if (WriteAddr < STM32_FLASH_BASE || 
 	    WriteAddr >= (STM32_FLASH_BASE + 0x20000) ||
 	    WriteAddr + (NumToWrite * 2) > (STM32_FLASH_BASE + 0x20000)) {
-		return;  // 地址越界，拒绝写入
+		return;  // Address out of bounds, refuse write
 	}
 	
 	uint16_t i;
 	
-	// ⚠️ 关键修复：使用静态全局 qw_data_static 避免栈溢出
-	// 不在栈上分配，防止访问 0x20008000 导致总线错误
+	// ⚠️ Critical fix: Use static global qw_data_static to avoid stack overflow
+	// Don't allocate on stack to prevent accessing 0x20008000 causing bus error
 	
 	// STM32H5 requires 128-bit (quadword) programming, 16-byte aligned
 	// Process 8 halfwords (16 bytes) at a time
 	for(i=0; i<NumToWrite; i+=8)
 	{
-		// ⚠️ 使用静态 temp_static，避免在栈上重复分配
-		// 初始化为 0xFFFF padding
+		// ⚠️ Use static temp_static to avoid repeated stack allocation
+		// Initialize with 0xFFFF padding
 		for(uint16_t k=0; k<8; k++) {
 			temp_static[k] = 0xFFFF;
 		}
@@ -70,8 +70,8 @@ static void STMFLASH_Write_NoCheck(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t
 		                    ((uint64_t)temp_static[6] << 32) |
 		                    ((uint64_t)temp_static[7] << 48);
 
-		// ⚠️ 关键修复：使用静态变量地址，避免栈溢出导致的非法地址访问
-		// 之前栈上的 qw_data 地址可能是 0x20008000（超出 RAM 范围）
+		// ⚠️ Critical fix: Use static variable address to avoid illegal address access from stack overflow
+		// Previously stack-based qw_data address might be 0x20008000 (exceeding RAM range)
 		HAL_StatusTypeDef status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, 
 		                                              WriteAddr, 
 		                                              (uint32_t)(&qw_data_static[0]));
@@ -114,7 +114,7 @@ uint16_t STMFLASH_BUF[PAGE_SIZE / 4];     // Flash sector buffer
   */
 void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 {
-	// 安全检查：防止 NULL 指针和无效参数
+	// Safety check: prevent NULL pointer and invalid parameters
 	if (pBuffer == NULL || NumToWrite == 0) {
 		return;
 	}

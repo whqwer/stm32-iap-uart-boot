@@ -59,14 +59,26 @@ void SystemClock_Config(void);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
+  * @brief  The application entry point for IAP Bootloader
+  * @details Bootloader Main Flow:
+  *          1. Initialize vector table and barriers
+  *          2. Initialize HAL and system clock
+  *          3. Initialize peripherals (GPIO, DMA, UART)
+  *          4. Initialize IAP module
+  *          5. Main loop: Check for firmware update request
+  *             - If update requested: receive and flash firmware
+  *             - If no update: jump to user application
+  * @retval int (should never return)
   */
 int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	/* Set vector table base address to start of flash */
+	/* This ensures interrupts work correctly in bootloader */
+	SCB->VTOR = 0x08000000;
+	  __DSB();  // Data Synchronization Barrier - ensure memory operations complete
+	  __ISB();  // Instruction Synchronization Barrier - flush instruction pipeline
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -75,7 +87,8 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  /* Enable global interrupts */
+  __enable_irq();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -90,46 +103,33 @@ int main(void)
   MX_GPDMA1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  /* Initialize IAP (In-Application Programming) module */
+  /* Sets up UART and prepares for firmware update or application jump */
   IAP_Init();
-//  IAP_WriteFlag(INIT_FLAG_DATA);
+  // Debug: Uncomment to test direct UART transmission
+  //  HAL_UART_Transmit(&huart1, "boot run", 8, 100);
+  // Debug: Uncomment to force immediate jump to application
+  //  IAP_RunApp();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  /* Main Bootloader Decision Logic:
+	   * 
+	   * IAP_Update() checks for incoming firmware update request:
+	   * - Returns 0 if firmware update completed successfully
+	   * - Returns non-zero if no update request or update in progress
+	   * 
+	   * If no update is happening, jump to user application.
+	   * This allows the bootloader to automatically run the app
+	   * if no firmware update is initiated within the timeout period.
+	   */
 	  if( !IAP_Update())
 	  {
 		  IAP_RunApp();
 	  }
-//	  switch(IAP_ReadFlag())
-//	  	{
-//	  	case APPRUN_FLAG_DATA://jump to app
-//	  		if( IAP_RunApp())
-//	  			IAP_WriteFlag(INIT_FLAG_DATA);
-//	  		break;
-//	  	case INIT_FLAG_DATA://initialze state (blank mcu)
-//	  		IAP_Main_Menu();
-//	  		break;
-//	  	case UPDATE_FLAG_DATA:// download app state
-//	  		if( !IAP_Update())
-//	  			IAP_WriteFlag(APPRUN_FLAG_DATA);
-//	  		else
-//	  			IAP_WriteFlag(INIT_FLAG_DATA);
-//	  		break;
-//	  	case UPLOAD_FLAG_DATA:// upload app state
-//	  	//				if( !IAP_Upload())
-//	  	//					IAP_WriteFlag(APPRUN_FLAG_DATA);
-//	  	//				else
-//	  	//					IAP_WriteFlag(INIT_FLAG_DATA);
-//	  	break;
-//	  	case ERASE_FLAG_DATA:// erase app state
-//	  		IAP_Erase();
-//	  		IAP_WriteFlag(INIT_FLAG_DATA);
-//	  		break;
-//	  	default:
-//	  	break;
-//	  	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -213,24 +213,24 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef* uartHandle)
 
 /* USER CODE BEGIN 1 */
 #define MAX_FRAME_SIZE    1024*10
-uint8_t UART1_flag=0;
-uint8_t UART1_in_update_mode = 0;  // 标志：是否在 Update 模式
+//uint8_t UART1_flag=0;
+uint8_t UART1_in_update_mode = 0;  // Flag: whether in Update mode
 uint8_t UART1_Complete_flag=0;
-extern uint8_t cmdStr[128];
+//extern uint8_t cmdStr[128];
 uint16_t rx_len = 0;
 extern uint8_t rx_buffer[MAX_FRAME_SIZE];
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if (huart->Instance == USART1)
 	{
-		// ⚠️ Update模式下的处理
+		// ⚠️ Update mode processing
 		if (UART1_in_update_mode)
 		{
-			// ✅ 只设置标志，不在中断中计算 rx_len
-			// rx_len 将在主循环中读取 DMA 计数器计算（那时更稳定）
+			// ✅ Only set flag, don't calculate rx_len in interrupt
+			// rx_len will be calculated in main loop by reading DMA counter (more stable)
 			UART1_Complete_flag = 1;
 			
-			// 清除标志防止干扰
+			// Clear flags to prevent interference
 			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_IDLEF);
 			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_OREF);
 			__HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_NEF);
@@ -238,15 +238,15 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 			return;
 		}
 
-		// Menu 模式：使用中断接收
-		uint32_t event_type = HAL_UARTEx_GetRxEventType(huart);
-		// 如果是空闲事件，设置标志让主循环知道
-		if (event_type == HAL_UART_RXEVENT_IDLE)  // 或 HAL_UART_RXEVENT_TC
-		{
-			__HAL_UART_CLEAR_IDLEFLAG(huart);
-			UART1_flag=1;
-		}
-		HAL_UARTEx_ReceiveToIdle_IT(&huart1, cmdStr, 128);
+//		// Menu mode: use interrupt reception
+//		uint32_t event_type = HAL_UARTEx_GetRxEventType(huart);
+//		// If idle event, set flag to let main loop know
+//		if (event_type == HAL_UART_RXEVENT_IDLE)  // or HAL_UART_RXEVENT_TC
+//		{
+//			__HAL_UART_CLEAR_IDLEFLAG(huart);
+//			UART1_flag=1;
+//		}
+//		HAL_UARTEx_ReceiveToIdle_IT(&huart1, cmdStr, 128);
 	}
 }
 /* USER CODE END 1 */

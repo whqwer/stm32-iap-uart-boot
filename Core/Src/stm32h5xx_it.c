@@ -71,9 +71,9 @@ extern UART_HandleTypeDef huart1;
 void NMI_Handler(void)
 {
   /* USER CODE BEGIN NonMaskableInt_IRQn 0 */
-  volatile uint32_t nmi_source = 0;  // 用于调试观察NMI源
+  volatile uint32_t nmi_source = 0;  // For debugging NMI source observation
   
-  // 1. 检查 HSE 时钟安全系统
+  // 1. Check HSE Clock Security System
   if (__HAL_RCC_GET_IT(RCC_IT_HSECSS))
   {
     nmi_source = 1;  // HSE CSS
@@ -81,37 +81,37 @@ void NMI_Handler(void)
     NVIC_SystemReset();
   }
 //
-//  // 2. 检查 LSE 时钟安全系统
+//  // 2. Check LSE Clock Security System
 //  if (__HAL_RCC_GET_IT(RCC_IT_LSECSS))
 //  {
 //    nmi_source = 2;  // LSE CSS
 //    __HAL_RCC_CLEAR_IT(RCC_IT_LSECSS);
 //  }
   
-  // 3. 检查 Flash ECC 错误（双bit错误会触发NMI）
+  // 3. Check Flash ECC error (double-bit error triggers NMI)
   if (READ_BIT(FLASH->ECCDETR, FLASH_ECCR_ECCD) != 0U)
   {
     nmi_source = 3;  // Flash ECC Double Detection
-    // 记录错误地址
+    // Record error address
     volatile uint32_t ecc_addr = FLASH->ECCDR & FLASH_ECCR_ADDR_ECC;
-    SET_BIT(FLASH->ECCDETR, FLASH_ECCR_ECCD);  // 清除标志
-    (void)ecc_addr;  // 防止编译器优化
+    SET_BIT(FLASH->ECCDETR, FLASH_ECCR_ECCD);  // Clear flag
+    (void)ecc_addr;  // Prevent compiler optimization
   }
   
-  // 4. 检查 SRAM ECC 错误
+  // 4. Check SRAM ECC error
   if (READ_BIT(RAMCFG_SRAM1->IER, RAMCFG_IER_ECCNMI) != 0U)
   {
     if (READ_BIT(RAMCFG_SRAM1->ISR, RAMCFG_ISR_DED) != 0U)
     {
-      nmi_source = 4;  // SRAM ECC错误
-      SET_BIT(RAMCFG_SRAM1->ICR, RAMCFG_ICR_CDED);  // 清除标志
+      nmi_source = 4;  // SRAM ECC error
+      SET_BIT(RAMCFG_SRAM1->ICR, RAMCFG_ICR_CDED);  // Clear flag
     }
   }
   
-  // 5. 如果没有找到明确的NMI源，可能是硬件问题或栈溢出
+  // 5. If no explicit NMI source found, could be hardware issue or stack overflow
   if (nmi_source == 0)
   {
-    nmi_source = 99;  // 未知NMI源
+    nmi_source = 99;  // Unknown NMI source
   }
   
   /* USER CODE END NonMaskableInt_IRQn 0 */

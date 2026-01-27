@@ -1,5 +1,4 @@
-../Drivers/CMSIS/Include/core_cm33.h:2711:34:__NVIC_SystemReset	1
-../Core/Src/stm32h5xx_it.c:71:6:NMI_Handler	5
+../Core/Src/stm32h5xx_it.c:71:6:NMI_Handler	6
 ../Core/Src/stm32h5xx_it.c:131:6:HardFault_Handler	1
 ../Core/Src/stm32h5xx_it.c:149:6:MemManage_Handler	1
 ../Core/Src/stm32h5xx_it.c:164:6:BusFault_Handler	1

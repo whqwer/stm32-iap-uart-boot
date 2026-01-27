@@ -1,9 +1,5 @@
-../IAP/src/iap.c:13:13:FLASH_DisableWriteProtectionPages	1
-../IAP/src/iap.c:20:6:IAP_WriteFlag	1
-../IAP/src/iap.c:31:10:IAP_ReadFlag	1
-../IAP/src/iap.c:43:6:IAP_UART_Init	1
-../IAP/src/iap.c:48:6:IAP_Init	1
-../IAP/src/iap.c:57:8:IAP_RunApp	4
-../IAP/src/iap.c:124:6:IAP_Main_Menu	8
-../IAP/src/iap.c:189:8:IAP_Update	12
-../IAP/src/iap.c:318:8:IAP_Erase	2
+../IAP/src/iap.c:32:6:IAP_UART_Init	1
+../IAP/src/iap.c:41:6:IAP_Init	1
+../IAP/src/iap.c:68:8:IAP_RunApp	2
+../IAP/src/iap.c:164:8:IAP_Update	10
+../IAP/src/iap.c:293:8:IAP_Erase	1
