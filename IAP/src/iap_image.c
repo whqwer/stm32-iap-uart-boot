@@ -75,12 +75,74 @@ int8_t Config_Write(const ImageConfig_t *config)
 }
 
 /**
+ * @brief Check if a valid firmware exists at given address (by checking SP)
+ * @param image_base Flash address
+ * @return Estimated firmware size if valid, 0 if invalid
+ */
+static uint32_t Detect_Firmware_Size(uint32_t image_base)
+{
+    /* Check stack pointer validity */
+    uint32_t sp = *(__IO uint32_t*)image_base;
+    if (sp < 0x20000000 || sp > 0x20008000) {
+        return 0;  /* Invalid stack pointer, no valid firmware */
+    }
+    
+    /* Check reset vector validity */
+    uint32_t reset_vector = *(__IO uint32_t*)(image_base + 4);
+    if (reset_vector < image_base || reset_vector > (image_base + IMAGE_A_SIZE)) {
+        return 0;  /* Invalid reset vector */
+    }
+    
+    /* Firmware exists, estimate size by scanning for end of code */
+    /* Simple approach: scan backwards from max size to find non-0xFF data */
+    uint32_t size = IMAGE_A_SIZE;
+    uint8_t *end_ptr = (uint8_t*)(image_base + size - 1);
+    
+    while (size > 0 && *end_ptr == 0xFF) {
+        end_ptr--;
+        size--;
+    }
+    
+    /* Align to 16 bytes (quadword) */
+    size = (size + 15) & ~15;
+    
+    /* Minimum size check */
+    if (size < 256) {
+        size = 256;  /* At least 256 bytes for vector table */
+    }
+    
+    return size;
+}
+
+/**
  * @brief Initialize config sector with default values
+ * @details If valid firmware is detected at Image A/B, auto-record CRC and size
  * @return 0=success, -1=failed
  */
 int8_t Config_Init(void)
 {
     ImageConfig_t default_config = IMAGE_CONFIG_DEFAULT;
+    
+    /* Auto-detect existing firmware at Image A */
+    uint32_t size_a = Detect_Firmware_Size(IMAGE_A_BASE);
+    if (size_a > 0) {
+        default_config.size_A = size_a;
+        default_config.crc_A = crc32_c((uint8_t*)IMAGE_A_BASE, size_a);
+        default_config.active_image = 0;  /* Default to Image A */
+    }
+    
+    /* Auto-detect existing firmware at Image B */
+    uint32_t size_b = Detect_Firmware_Size(IMAGE_B_BASE);
+    if (size_b > 0) {
+        default_config.size_B = size_b;
+        default_config.crc_B = crc32_c((uint8_t*)IMAGE_B_BASE, size_b);
+        
+        /* If Image A is empty but B is valid, set B as active */
+        if (size_a == 0) {
+            default_config.active_image = 1;
+        }
+    }
+    
     return Config_Write(&default_config);
 }
 

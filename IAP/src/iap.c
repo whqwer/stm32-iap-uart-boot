@@ -21,6 +21,8 @@
 #include "stmflash.h"
 #include "protocol.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 
 pFunction Jump_To_Application;
@@ -55,10 +57,12 @@ void IAP_Init(void)
     
     /* Load or initialize dual-image config */
     if (Config_Read(&g_config) != 0) {
-        /* Config invalid, initialize with defaults */
+        /* Config invalid, initialize with defaults (auto-detect existing firmware) */
+//        HAL_UART_Transmit(&huart1, (uint8_t*)"Config invalid, init...\r\n", 25, 100);
         Config_Init();
         Config_Read(&g_config);
     }
+    
 }
 /************************************************************************/
 extern UART_HandleTypeDef huart1;

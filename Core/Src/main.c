@@ -134,6 +134,7 @@ int main(void)
 	  {
 		  IAP_RunApp();
 	  }
+	  IAP_RunApp();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
