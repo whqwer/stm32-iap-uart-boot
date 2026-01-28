@@ -1,0 +1,13 @@
+../IAP/src/iap_image.c:23:8:Config_Read	8	static
+../IAP/src/iap_image.c:35:8:Config_Write	64	static
+../IAP/src/iap_image.c:81:8:Config_Init	32	static
+../IAP/src/iap_image.c:97:10:Calculate_Image_CRC	0	static
+../IAP/src/iap_image.c:109:8:Verify_Image	8	static
+../IAP/src/iap_image.c:134:10:Select_Boot_Image	24	static
+../IAP/src/iap_image.c:180:9:Select_Update_Target	0	static
+../IAP/src/iap_image.c:190:10:Get_Update_Address	0	static
+../IAP/src/iap_image.c:200:6:Update_Start	0	static
+../IAP/src/iap_image.c:214:6:Update_Complete	0	static
+../IAP/src/iap_image.c:230:6:Update_Failed	0	static
+../IAP/src/iap_image.c:240:6:Confirm_Boot_Success	0	static
+../IAP/src/iap_image.c:257:9:Erase_Image	40	static

@@ -1,4 +1,7 @@
-../IAP/src/iap.c:32:6:IAP_UART_Init	0	static
-../IAP/src/iap.c:41:6:IAP_Init	0	static
-../IAP/src/iap.c:68:8:IAP_RunApp	16	static,ignoring_inline_asm
-../IAP/src/iap.c:164:8:IAP_Update	56	static
+../IAP/src/iap.c:43:6:IAP_UART_Init	0	static
+../IAP/src/iap.c:52:6:IAP_Init	8	static
+../IAP/src/iap.c:84:8:IAP_RunApp	16	static,ignoring_inline_asm
+../IAP/src/iap.c:188:8:IAP_Update	40	static
+../IAP/src/iap.c:304:8:IAP_Erase	8	static
+../IAP/src/iap.c:314:16:IAP_GetConfig	0	static
+../IAP/src/iap.c:322:6:IAP_ConfirmBoot	0	static

@@ -1,4 +1,7 @@
-../IAP/src/iap.c:32:6:IAP_UART_Init	1
-../IAP/src/iap.c:41:6:IAP_Init	1
-../IAP/src/iap.c:68:8:IAP_RunApp	2
-../IAP/src/iap.c:164:8:IAP_Update	10
+../IAP/src/iap.c:43:6:IAP_UART_Init	1
+../IAP/src/iap.c:52:6:IAP_Init	2
+../IAP/src/iap.c:84:8:IAP_RunApp	5
+../IAP/src/iap.c:188:8:IAP_Update	10
+../IAP/src/iap.c:304:8:IAP_Erase	1
+../IAP/src/iap.c:314:16:IAP_GetConfig	1
+../IAP/src/iap.c:322:6:IAP_ConfirmBoot	1

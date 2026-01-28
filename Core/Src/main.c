@@ -26,6 +26,8 @@
 /* USER CODE BEGIN Includes */
 #include "common.h"
 #include "iap.h"
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,7 +109,9 @@ int main(void)
   /* Sets up UART and prepares for firmware update or application jump */
   IAP_Init();
   // Debug: Uncomment to test direct UART transmission
-  //  HAL_UART_Transmit(&huart1, "boot run", 8, 100);
+    // HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
+    // HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
+    // HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
   // Debug: Uncomment to force immediate jump to application
   //  IAP_RunApp();
   /* USER CODE END 2 */

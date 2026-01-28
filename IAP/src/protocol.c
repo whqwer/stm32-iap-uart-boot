@@ -67,7 +67,9 @@ static uint8_t in_frame = 0;
 
 // ==================== IAP Update State (Simplified) ====================
 static uint8_t iap_started = 0;           // Whether IAP has started
-static uint32_t iap_write_addr = ApplicationAddress;  // Current Flash write address
+/* Use external target address from iap.c for dual-image support */
+extern uint32_t g_update_target_addr;
+static uint32_t iap_write_addr = 0;       // Current Flash write address (set on init)
 #define iap_buffer frame_buf                      // Reuse frame_buf (5KB)
 static uint16_t iap_buf_idx = 0;          // Current buffer index
 static uint32_t iap_total_received = 0;   // Total bytes received
@@ -264,11 +266,10 @@ extern UART_HandleTypeDef huart1;
 void Protocol_IAP_Init(void)
 {
     iap_started = 0;
-    iap_write_addr = ApplicationAddress;
+    /* Use dynamic target address from iap.c for dual-image support */
+    iap_write_addr = g_update_target_addr;
     iap_buf_idx = 0;
     iap_total_received = 0;
-    
-    SerialPutString("IAP Init OK\r\n");
 
 	// 1. Terminate all ongoing UART operations
 	HAL_UART_AbortReceive_IT(&huart1);
@@ -293,8 +294,6 @@ void Protocol_IAP_Init(void)
 	
 	// 5. Wait for state to fully recover
 	HAL_Delay(10);
-	
-	SerialPutString("UART fully reset\r\n");
 }
 
 uint32_t Protocol_IAP_GetProgress(void)
@@ -485,7 +484,6 @@ int32_t Protocol_Receive(uint8_t *buf, uint32_t len)
 			else
 			{
 				// Buffer overflow, reset state
-				SerialPutString((const uint8_t*)"Frame buffer overflow!\r\n");
 				in_frame = 0;
 				frame_pos = 0;
 				return -1;

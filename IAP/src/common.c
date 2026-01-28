@@ -147,8 +147,7 @@ uint32_t FLASH_PagesMask(__IO uint32_t Size)
   */
 uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
 {
-	   uint32_t EraseCounter = 0x0;
-	    uint8_t erase_cont[3] = {0};
+	    (void)outPutCont;  /* Unused */
 	    HAL_StatusTypeDef status = HAL_OK;
 	    FLASH_EraseInitTypeDef EraseInitStruct;
 	    uint32_t SectorError = 0;
@@ -185,20 +184,6 @@ uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
 	        EraseInitStruct.NbSectors = total_sectors;
 	        status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
 	    }
-
-	// Output erase progress if requested
-	if(status == HAL_OK)
-	{
-		for (EraseCounter = 0; EraseCounter < total_sectors; EraseCounter++)
-		{
-			if(outPutCont == 1)
-			{
-				Int2Str(erase_cont, EraseCounter + 1);  // Convert sector number to string
-				SerialPutString(erase_cont);
-				SerialPutString("@");  // Send progress marker
-			}
-		}
-	}
 
 	HAL_FLASH_Lock();
 

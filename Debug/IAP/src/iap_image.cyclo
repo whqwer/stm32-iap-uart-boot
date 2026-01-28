@@ -1,0 +1,13 @@
+../IAP/src/iap_image.c:23:8:Config_Read	2
+../IAP/src/iap_image.c:35:8:Config_Write	5
+../IAP/src/iap_image.c:81:8:Config_Init	1
+../IAP/src/iap_image.c:97:10:Calculate_Image_CRC	2
+../IAP/src/iap_image.c:109:8:Verify_Image	4
+../IAP/src/iap_image.c:134:10:Select_Boot_Image	17
+../IAP/src/iap_image.c:180:9:Select_Update_Target	1
+../IAP/src/iap_image.c:190:10:Get_Update_Address	1
+../IAP/src/iap_image.c:200:6:Update_Start	1
+../IAP/src/iap_image.c:214:6:Update_Complete	2
+../IAP/src/iap_image.c:230:6:Update_Failed	1
+../IAP/src/iap_image.c:240:6:Confirm_Boot_Success	2
+../IAP/src/iap_image.c:257:9:Erase_Image	4
