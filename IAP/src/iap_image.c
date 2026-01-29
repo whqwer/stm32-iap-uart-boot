@@ -261,7 +261,15 @@ uint32_t Get_Update_Address(const ImageConfig_t *config)
  */
 void Update_Start(ImageConfig_t *config, uint8_t target_image)
 {
-    (void)target_image;
+    /* Clear target image data to invalidate it immediately */
+    if (target_image == 0) { 
+        config->size_A = 0; 
+        config->crc_A = 0; 
+    } else { 
+        config->size_B = 0; 
+        config->crc_B = 0; 
+    }
+    
     config->updating = 1;
     Config_Write(config);
 }

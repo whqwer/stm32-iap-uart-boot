@@ -6,8 +6,8 @@
 ../IAP/src/iap_image.c:196:10:Select_Boot_Image	17
 ../IAP/src/iap_image.c:242:9:Select_Update_Target	1
 ../IAP/src/iap_image.c:252:10:Get_Update_Address	1
-../IAP/src/iap_image.c:262:6:Update_Start	1
-../IAP/src/iap_image.c:276:6:Update_Complete	2
-../IAP/src/iap_image.c:292:6:Update_Failed	1
-../IAP/src/iap_image.c:302:6:Confirm_Boot_Success	2
-../IAP/src/iap_image.c:319:9:Erase_Image	4
+../IAP/src/iap_image.c:262:6:Update_Start	2
+../IAP/src/iap_image.c:284:6:Update_Complete	2
+../IAP/src/iap_image.c:300:6:Update_Failed	1
+../IAP/src/iap_image.c:310:6:Confirm_Boot_Success	2
+../IAP/src/iap_image.c:327:9:Erase_Image	4

@@ -1,5 +1,3 @@
 ../IAP/src/common.c:60:6:STM_EVAL_COMInit	0	static
 ../IAP/src/common.c:76:6:Int2Str	8	static
 ../IAP/src/common.c:105:6:Serial_PutString	8	static
-../IAP/src/common.c:121:10:FLASH_PagesMask	8	static
-../IAP/src/common.c:148:9:EraseSomePages	48	static

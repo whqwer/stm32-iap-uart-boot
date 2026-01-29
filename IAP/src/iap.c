@@ -89,49 +89,49 @@ int8_t IAP_RunApp(void)
 {
     /* Select boot image using dual-image logic */
     uint32_t boot_address = Select_Boot_Image(&g_config);
-    
+
     /* Send boot_address to host PC via UART1 as string */
-    const char *addr_str = (boot_address == 0x08008000) ? "0x08008000\r\n" : 
+    const char *addr_str = (boot_address == 0x08008000) ? "0x08008000\r\n" :
                            (boot_address == 0x08014000) ? "0x08014000\r\n" : "0x00000000\r\n";
-    HAL_UART_Transmit(&huart1, (uint8_t *)"Burn to ", strlen("Burn to "), 100);
+    HAL_UART_Transmit(&huart1, (uint8_t *)"program start at ", strlen("program start at "), 100);
     HAL_UART_Transmit(&huart1, (uint8_t*)addr_str, strlen(addr_str), 100);
 
     if (boot_address == 0) {
         return -1;
     }
-    
+
     /* Read application's initial stack pointer */
     uint32_t sp = (*(__IO uint32_t*)boot_address);
-    
+
     /* Validate stack pointer (STM32H503 SRAM: 0x20000000-0x20008000, 32KB) */
     if (sp >= 0x20000000 && sp <= 0x20008000)
     {
         HAL_Delay(10);
-        
+
         /* 1. Disable global interrupts */
         __disable_irq();
-        
+
         /* 2. De-initialize peripherals */
         HAL_UART_MspDeInit(&huart1);
         HAL_DeInit();
-        
+
         /* 3. Disable SysTick */
         SysTick->CTRL = 0;
         SysTick->LOAD = 0;
         SysTick->VAL = 0;
-        
+
         /* 4. Clear all pending interrupts */
         for (uint8_t i = 0; i < 8; i++)
         {
             NVIC->ICER[i] = 0xFFFFFFFF;
             NVIC->ICPR[i] = 0xFFFFFFFF;
         }
-        
+
         /* 5. Set vector table offset to application address */
         SCB->VTOR = boot_address;
         __DSB();  // 数据同步屏障
         __ISB();  // 指令同步屏障
-        
+
         /* 6. STM32H5 cache handling - clear and disable cache */
         #if (__ICACHE_PRESENT == 1)
         SCB_InvalidateICache();
@@ -141,17 +141,17 @@ int8_t IAP_RunApp(void)
         SCB_CleanInvalidateDCache();
         SCB_DisableDCache();
         #endif
-        
+
         /* 7. Set main stack pointer */
         __set_MSP(*(__IO uint32_t*) boot_address);
-        
+
         /* 8. Get reset vector address and jump */
         JumpAddress = *(__IO uint32_t*) (boot_address + 4);
         Jump_To_Application = (pFunction) JumpAddress;
-        
+
         /* 9. Jump to application */
         Jump_To_Application();
-        
+
         return 0;
     }
     else
@@ -213,7 +213,7 @@ int8_t IAP_Update(void)
     
     /* 3. Send target image info to host PC (0=A, 1=B) */
     /* Host should send app_a.bin for target=0, app_b.bin for target=1 */
-     HAL_UART_Transmit(&huart1, (uint8_t *)"fireware start:", strlen("fireware start:"), 100);
+     HAL_UART_Transmit(&huart1, (uint8_t *)"fireware update start at:", strlen("fireware update start at:"), 100);
     const char *target_addr_str = (target_image == 0) ? "0x08008000\r\n" : "0x08014000\r\n";
     HAL_UART_Transmit(&huart1, (uint8_t*)target_addr_str, strlen(target_addr_str), 100);
     
@@ -238,8 +238,8 @@ int8_t IAP_Update(void)
     /* 5. Main loop: wait and process data */
     while (1)
     {
-        /* Check total timeout (30 seconds) */
-        if ((HAL_GetTick() - start_time) > 30000)
+        /* Check total timeout (20 seconds) */
+        if ((HAL_GetTick() - start_time) > 20000)
         {
             Update_Failed(&g_config);
             UART1_in_update_mode = 0;

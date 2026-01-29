@@ -118,21 +118,21 @@ void Serial_PutString(uint8_t *s)
   * @param  Size: The image size
   * @retval The number of pages
   */
-uint32_t FLASH_PagesMask(__IO uint32_t Size)
-{
-	uint32_t pagenumber = 0x0;
-	uint32_t size = Size;
-
-	if ((size % PAGE_SIZE) != 0)
-	{
-		pagenumber = (size / PAGE_SIZE) + 1;
-	}
-	else
-	{
-		pagenumber = size / PAGE_SIZE;
-	}
-	return pagenumber;
-}
+//uint32_t FLASH_PagesMask(__IO uint32_t Size)
+//{
+//	uint32_t pagenumber = 0x0;
+//	uint32_t size = Size;
+//
+//	if ((size % PAGE_SIZE) != 0)
+//	{
+//		pagenumber = (size / PAGE_SIZE) + 1;
+//	}
+//	else
+//	{
+//		pagenumber = size / PAGE_SIZE;
+//	}
+//	return pagenumber;
+//}
 
 /**
   * @brief  Erase Flash sectors for application update
@@ -145,54 +145,54 @@ uint32_t FLASH_PagesMask(__IO uint32_t Size)
   *          - Bank 2: Sectors 0-7 (each 8KB)
   *          Automatically splits erase operation across banks when needed.
   */
-uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
-{
-	    (void)outPutCont;  /* Unused */
-	    HAL_StatusTypeDef status = HAL_OK;
-	    FLASH_EraseInitTypeDef EraseInitStruct;
-	    uint32_t SectorError = 0;
-
-	    // Calculate global starting sector and total sectors needed
-	    uint32_t global_start_sector = (ApplicationAddress - FLASH_BASE) / PAGE_SIZE;  // e.g., = 6 for 0x0800C000
-	    uint32_t total_sectors = FLASH_PagesMask(size);  // e.g., = 4 for 32KB
-
-	    uint32_t sectors_per_bank = 8;  // STM32H503: 8 sectors per bank
-
-	    HAL_FLASH_Unlock();
-	    EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
-
-	    // Erase Bank 1 (if starting sector is in Bank 1)
-	    if (global_start_sector < sectors_per_bank) {
-	        // Calculate how many sectors can be erased in Bank 1
-	        // If all sectors fit in Bank 1, erase them all; otherwise, erase to end of Bank 1
-	        uint32_t bank1_sectors = (global_start_sector + total_sectors <= sectors_per_bank)
-	                                 ? total_sectors
-	                                 : (sectors_per_bank - global_start_sector);
-
-	        EraseInitStruct.Banks = FLASH_BANK_1;
-	        EraseInitStruct.Sector = global_start_sector;  // e.g., sector 6 in Bank 1
-	        EraseInitStruct.NbSectors = bank1_sectors;
-	        status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
-
-	        total_sectors -= bank1_sectors;  // Subtract erased sectors from total
-	    }
-
-	    // Erase Bank 2 (if there are remaining sectors to erase)
-	    if (total_sectors > 0 && status == HAL_OK) {
-	        EraseInitStruct.Banks = FLASH_BANK_2;
-	        EraseInitStruct.Sector = 0;  // Bank 2 starts from sector 0
-	        EraseInitStruct.NbSectors = total_sectors;
-	        status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
-	    }
-
-	HAL_FLASH_Lock();
-
-	if(status != HAL_OK)
-	{
-		return 0;  // Erase failed
-	}
-	return 1;  // Erase successful
-}
+//uint8_t EraseSomePages(__IO uint32_t size, uint8_t outPutCont)
+//{
+//	    (void)outPutCont;  /* Unused */
+//	    HAL_StatusTypeDef status = HAL_OK;
+//	    FLASH_EraseInitTypeDef EraseInitStruct;
+//	    uint32_t SectorError = 0;
+//
+//	    // Calculate global starting sector and total sectors needed
+//	    uint32_t global_start_sector = (ApplicationAddress - FLASH_BASE) / PAGE_SIZE;  // e.g., = 6 for 0x0800C000
+//	    uint32_t total_sectors = FLASH_PagesMask(size);  // e.g., = 4 for 32KB
+//
+//	    uint32_t sectors_per_bank = 8;  // STM32H503: 8 sectors per bank
+//
+//	    HAL_FLASH_Unlock();
+//	    EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
+//
+//	    // Erase Bank 1 (if starting sector is in Bank 1)
+//	    if (global_start_sector < sectors_per_bank) {
+//	        // Calculate how many sectors can be erased in Bank 1
+//	        // If all sectors fit in Bank 1, erase them all; otherwise, erase to end of Bank 1
+//	        uint32_t bank1_sectors = (global_start_sector + total_sectors <= sectors_per_bank)
+//	                                 ? total_sectors
+//	                                 : (sectors_per_bank - global_start_sector);
+//
+//	        EraseInitStruct.Banks = FLASH_BANK_1;
+//	        EraseInitStruct.Sector = global_start_sector;  // e.g., sector 6 in Bank 1
+//	        EraseInitStruct.NbSectors = bank1_sectors;
+//	        status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
+//
+//	        total_sectors -= bank1_sectors;  // Subtract erased sectors from total
+//	    }
+//
+//	    // Erase Bank 2 (if there are remaining sectors to erase)
+//	    if (total_sectors > 0 && status == HAL_OK) {
+//	        EraseInitStruct.Banks = FLASH_BANK_2;
+//	        EraseInitStruct.Sector = 0;  // Bank 2 starts from sector 0
+//	        EraseInitStruct.NbSectors = total_sectors;
+//	        status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
+//	    }
+//
+//	HAL_FLASH_Lock();
+//
+//	if(status != HAL_OK)
+//	{
+//		return 0;  // Erase failed
+//	}
+//	return 1;  // Erase successful
+//}
 
 
 /*******************(C)COPYRIGHT 2010 STMicroelectronics *****END OF FILE******/
