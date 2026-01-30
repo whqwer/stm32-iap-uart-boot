@@ -20,24 +20,25 @@
 3. 自动完成更新和重启
 4. **安全**：更新失败自动回滚到旧版本
 
-### 双镜像（A/B）工作原理
+### 升级区/运行区工作原理
 
-设备 Flash 分为两个独立的镜像区：
-- **镜像 A**：存储一个固件版本
-- **镜像 B**：存储另一个固件版本
-- **配置区**：记录当前激活的镜像、CRC 校验值、启动失败计数
+设备 Flash 分为两个区域：
+- **升级区（UPDATE）**：临时存储新固件版本
+- **运行区（RUNAPP）**：存储当前运行的固件版本
+- **配置区**：记录升级标志、运行区 CRC 校验值、固件大小
 
 **升级流程：**
-1. 当前运行镜像 A → 新固件写入镜像 B
-2. 写入完成后切换激活镜像为 B
-3. 下次启动从镜像 B 运行
-4. 如果 B 启动失败（CRC 错误或连续启动失败 3 次）→ 自动回滚到镜像 A
+1. 设备启动 → 检查配置区的升级标志
+2. 如果需要升级 → 接收新固件并写入升级区
+3. 写入完成后 → 将升级区的代码复制到运行区
+4. 验证运行区的 CRC 校验值 → 确保复制成功
+5. 清除升级标志 → 下次启动直接运行运行区的固件
 
 **关键优势：**
 - ✅ 升级失败不会导致设备变砖
 - ✅ 自动 CRC 校验保证固件完整性
-- ✅ 启动失败计数机制检测运行时崩溃
 - ✅ 断电保护：更新过程中断电可自动恢复
+- ✅ 简单直接的升级流程
 
 ### 工作原理
 
@@ -66,39 +67,36 @@
 | `ENABLE_PUTSTR` | `1` | 串口调试输出开关 | 1=启用，0=关闭（节省Flash） |
 | 更新超时 | `30000` ms | 等待固件超时时间 | 在`iap.c`中修改 |
 
-### 内存分配图（双镜像架构）
+### 内存分配图（升级区/运行区架构）
 
 ```
 Flash (128KB 总容量)
 ┌─────────────────────────────────────┐ 0x08000000
-│  Bootloader 区域 (32KB)              │ 
-│  ├─ 代码区 (24KB)                    │
-│  │  - 引导程序代码                   │
-│  │  - IAP 协议处理                   │
-│  │  - Flash 操作函数                 │
-│  │  - 双镜像管理逻辑                 │
-├─────────────────────────────────────┤ 0x08006000
-│  └─ 配置区 (8KB)                     │
-│     - ImageConfig_t 结构体           │
-│     - 激活镜像标记 (active_image)    │
-│     - CRC 校验值 (crc_A, crc_B)      │
-│     - 固件大小 (size_A, size_B)      │
-│     - 启动计数 (boot_count)          │
-│     - 更新标志 (updating)            │
-├─────────────────────────────────────┤ 0x08008000 ← IMAGE_A_BASE
-│  镜像 A 区域 (48KB)                  │
-│  - 应用程序版本 1                    │
-│  - 可通过串口更新                    │
-├─────────────────────────────────────┤ 0x08014000 ← IMAGE_B_BASE
-│  镜像 B 区域 (48KB)                  │
-│  - 应用程序版本 2                    │
-│  - 备份/新版本固件                   │
+│  Bootloader 区域 (24KB)              │ 
+│  - 引导程序代码                      │
+│  - IAP 协议处理                      │
+│  - Flash 操作函数                    │
+│  - 升级区/运行区管理逻辑              │
+├─────────────────────────────────────┤ 0x08006000 ← CONFIG_BASE
+│  配置区 (8KB)                        │
+│  - ImageConfig_t 结构体              │
+│  - 升级标志 (update_flag)            │
+│  - 运行区 CRC 校验值 (run_crc)       │
+│  - 运行区固件大小 (run_size)         │
+├─────────────────────────────────────┤ 0x08008000 ← UPDATE_REGION_BASE
+│  升级区 (48KB)                       │
+│  - 临时存储新固件                    │
+│  - 升级完成后复制到运行区            │
+├─────────────────────────────────────┤ 0x08014000 ← RUNAPP_REGION_BASE
+│  运行区 (48KB)                       │
+│  - 当前运行的应用程序                │
+│  - 稳定版本的固件                    │
 └─────────────────────────────────────┘ 0x08020000
 
 SRAM (32KB)
 ┌─────────────────────────────────────┐ 0x20000000
 │  运行时数据 (变量、堆栈等)           │
-└─────────────────────────────────────┘ 0x20008000
+└─────────────────────────────────────┘ 0x08008000
 ```
 
 ### 配置结构体（ImageConfig_t）
@@ -106,22 +104,18 @@ SRAM (32KB)
 ```c
 typedef struct {
     uint32_t magic;           // 必须为 0x41535444 ("ASTD")
-    uint8_t  active_image;    // 0=镜像A, 1=镜像B
-    uint8_t  updating;        // 0=空闲, 1=更新中（断电保护）
-    uint8_t  boot_count;      // 启动失败计数（应用确认后清零）
-    uint8_t  reserved;        // 对齐填充
-    uint32_t crc_A;           // 镜像A的CRC32值
-    uint32_t crc_B;           // 镜像B的CRC32值
-    uint32_t size_A;          // 镜像A固件大小（0=空）
-    uint32_t size_B;          // 镜像B固件大小（0=空）
-} ImageConfig_t;  // 总共32字节
+    uint8_t  update_flag;      // 0=正常运行, 1=需要升级
+    uint8_t  reserved[3];      // 对齐填充
+    uint32_t run_crc;          // 运行区的CRC32值
+    uint32_t run_size;         // 运行区固件大小（0=空）
+} ImageConfig_t;  // 总共16字节
 ```
 
 ---
 
 ## 🔄 完整工作流程
 
-### 启动流程（双镜像选择）
+### 启动流程（升级区/运行区架构）
 
 ```
 设备上电/复位
@@ -134,99 +128,83 @@ typedef struct {
 └──────┬───────────────┘
        ↓
 ┌─────────────────────────────────┐
-│ 双镜像启动选择逻辑              │
+│ 升级区/运行区启动选择逻辑       │
 │ Select_Boot_Image(&config)      │
 ├─────────────────────────────────┤
-│ 1. 检查更新标志(updating)       │
-│    如果=1 → 上次更新被中断      │
-│    → 清除失败镜像，回滚         │
+│ 1. 检查升级标志(update_flag)    │
+│    如果=1 → 需要升级             │
+│    → 进入更新模式等待固件        │
 ├─────────────────────────────────┤
-│ 2. 检查启动计数(boot_count)     │
-│    如果≥3 → 当前镜像反复失败    │
-│    → 切换到备份镜像             │
-├─────────────────────────────────┤
-│ 3. 验证激活镜像CRC              │
-│    CRC有效 → 从该镜像启动       │
-│    CRC无效 → 尝试备份镜像       │
-├─────────────────────────────────┤
-│ 4. 验证备份镜像CRC              │
-│    CRC有效 → 从备份镜像启动     │
-│    CRC无效 → 两个镜像都坏了     │
-│    → 进入更新模式等待固件       │
+│ 2. 不需要升级 → 验证运行区CRC   │
+│    CRC有效 → 从运行区启动        │
+│    CRC无效 → 进入更新模式等待固件│
 └──────┬──────────────────────────┘
        ↓
-    有有效镜像?
+    需要升级?
     ┌───┴───┐
    是│      │否
     ↓       ↓
-┌────────┐ ┌──────────────┐
-│跳转运行│ │等待串口固件  │
-│镜像A/B │ │(30秒超时)    │
-└────────┘ └──────┬───────┘
-                  ↓
-              收到固件数据?
-              ┌───┴───┐
-             是│      │否
-              ↓       ↓
-          ┌────────┐ ┌────────┐
-          │固件更新│ │超时后  │
-          │流程    │ │尝试启动│
-          └────────┘ └────────┘
+┌──────────┐ ┌──────────┐
+│进入更新  │ │跳转运行  │
+│模式      │ │运行区固件│
+└────┬─────┘ └──────────┘
+     ↓
+  收到固件数据?
+  ┌───┴───┐
+  是│      │否
+   ↓       ↓
+┌───────┐ ┌────────┐
+│固件更新│ │超时后  │
+│流程    │ │尝试启动│
+└───────┘ └────────┘
 ```
 
-### 固件更新详细流程（双镜像写入）
+### 固件更新详细流程（升级区/运行区架构）
 
 ```
-1. 选择更新目标
-   ├─ Select_Update_Target(&config)
-   ├─ 读取 active_image (当前激活的镜像)
-   ├─ 目标 = 1 - active_image (选择未激活的镜像)
-   ├─ 例如：当前运行A(0) → 更新写入B(1)
-   └─ 发送目标地址给上位机
-      ├─ target=0 → 发送 "0x08008000" (镜像A地址)
-      └─ target=1 → 发送 "0x08014000" (镜像B地址)
-
-2. 标记更新开始
-   ├─ Update_Start(&config, target)
-   ├─ 设置 updating = 1 (断电保护标志)
+1. 标记升级开始
+   ├─ 设置 update_flag = 1 (升级标志)
    └─ 写入配置区 Flash
 
-3. 擦除目标镜像区
-   ├─ Erase_Image(target)
+2. 擦除升级区
+   ├─ Erase_Image(0)  // 0=升级区
    ├─ 自动处理 Bank1/Bank2 跨区擦除
    └─ 48KB (6个扇区)
 
-4. 接收并写入固件数据
+3. 接收并写入固件数据
    ├─ 通过UART DMA接收
    ├─ 自动解析协议帧
    │  ├─ 帧头/尾: 0x7E
    │  ├─ 转义处理: 0x7A
    │  └─ CRC32 校验
-   ├─ 写入目标镜像区 Flash
+   ├─ 写入升级区 Flash
    └─ 实时进度反馈
 
-5. 更新完成处理
-   ├─ Calculate_Image_CRC(target_addr, size)
-   ├─ Update_Complete(&config, target, size, crc)
-   │  ├─ 保存新固件的 size 和 crc
-   │  ├─ 切换 active_image = target
-   │  ├─ 清除 updating = 0
-   │  └─ 重置 boot_count = 0
+4. 复制升级区到运行区
+   ├─ Copy_Update_To_Runapp(size)
+   ├─ 自动擦除运行区
+   └─ 一次性复制所有代码
+
+5. 验证运行区CRC
+   ├─ Calculate_Image_CRC(RUNAPP_REGION_BASE, size)
+   ├─ 比较与升级区CRC是否一致
+   │  ├─ CRC一致 → 升级成功 ✓
+   │  └─ CRC不一致 → 升级失败 ✗
+   └─ 失败则清除升级标志，保持旧固件
+
+6. 更新完成处理
+   ├─ 保存运行区的 size 和 crc
+   ├─ 清除 update_flag = 0
    └─ 写入配置区
 
-6. 重启验证
+7. 重启验证
    ├─ 设备重启
    ├─ Bootloader 读取配置区
-   ├─ 发现 active_image = 新镜像
-   ├─ 验证新镜像 CRC
-   │  ├─ CRC正确 → 从新镜像启动 ✓
-   │  └─ CRC错误 → 自动回滚到旧镜像 ✗
-   └─ boot_count++ (启动失败计数)
-
-7. 应用确认成功启动
-   ├─ 应用代码调用 IAP_ConfirmBoot()
-   ├─ 清零 boot_count = 0
-   └─ 表示新固件运行正常
+   ├─ 发现 update_flag = 0
+   ├─ 验证运行区 CRC
+   │  ├─ CRC正确 → 从运行区启动 ✓
+   │  └─ CRC错误 → 进入更新模式等待固件 ✗
+   └─ 直接运行运行区固件
 ```
 
 ### 故障自动恢复机制
@@ -235,18 +213,16 @@ typedef struct {
 场景1: 更新过程中断电
 ┌────────────────────────────────┐
 │ 写入一半时断电                 │
-│ updating = 1 标志已写入        │
+│ update_flag = 1 标志已写入     │
 └────────┬───────────────────────┘
          ↓
     重新上电后
          ↓
 ┌────────────────────────────────┐
-│ Select_Boot_Image 检测到       │
-│ updating = 1                   │
+│ Bootloader 检测到 update_flag=1 │
 ├────────────────────────────────┤
-│ → 清除失败镜像的 size/crc      │
-│ → 重置 updating = 0            │
-│ → 从旧镜像启动                 │
+│ → 进入更新模式等待固件          │
+│ → 重新接收固件数据              │
 └────────────────────────────────┘
    结果：设备仍可正常运行 ✓
 
@@ -256,57 +232,36 @@ typedef struct {
 │ 或写入Flash时出错              │
 └────────┬───────────────────────┘
          ↓
-    重启后CRC验证
+    复制后CRC验证
          ↓
 ┌────────────────────────────────┐
-│ Verify_Image(new) = -1 失败    │
+│ 运行区CRC与升级区不一致         │
 ├────────────────────────────────┤
-│ → 尝试验证旧镜像               │
-│ → Verify_Image(old) = 0 成功   │
-│ → 从旧镜像启动                 │
+│ → 清除 update_flag = 0         │
+│ → 保持旧固件不变               │
+│ → 下次启动从旧固件运行         │
 └────────────────────────────────┘
-   结果：自动回滚到旧版本 ✓
+   结果：自动保持旧版本 ✓
 
-场景3: 新固件运行崩溃
+场景3: 运行区固件损坏
 ┌────────────────────────────────┐
-│ 新固件有BUG，启动后死机        │
-│ 设备反复重启                   │
+│ 运行区CRC校验失败              │
 └────────┬───────────────────────┘
          ↓
-    连续3次启动失败
+    启动时CRC验证
          ↓
 ┌────────────────────────────────┐
-│ boot_count 每次启动 +1         │
-│ boot_count >= 3 触发回滚       │
+│ Verify_Run_Image() = -1 失败    │
 ├────────────────────────────────┤
-│ → 切换 active_image            │
-│ → 从旧镜像启动                 │
+│ → 进入更新模式等待固件          │
+│ → 重新接收并写入新固件          │
 └────────────────────────────────┘
-   结果：自动回滚到稳定版本 ✓
-```
-   │  └─ CRC32 校验
-   └─ 提取固件数据
-
-2. 写入Flash
-   ├─ 首次接收时自动擦除Application区域
-   ├─ 按半字(2字节)对齐写入
-   ├─ 自动管理写入地址
-   └─ 实时进度反馈(25%/50%/75%/100%)
-
-3. 接收完成判定
-   ├─ 检测总线空闲(UART Idle中断)
-   ├─ 连续空闲检测(避免误判)
-   └─ 完成后显示接收字节数
-
-4. 验证与跳转
-   ├─ 数据完整性由协议层CRC32保证
-   ├─ 重启设备
-   └─ Bootloader检测到有效应用程序后跳转
+   结果：自动进入更新模式 ✓
 ```
 
 ---
 
-## � 通信协议说明
+## 🔗 通信协议说明
 
 ### 协议帧格式
 
@@ -475,7 +430,7 @@ void Confirm_Boot_Success_To_Bootloader(void)
 
 **原因**：中断向量表需要指向应用程序区域，否则中断无法正常工作。固件大小不能超过 48KB。
 
-### 第三步：通过串口更新固件（双镜像流程）
+### 第三步：通过串口更新固件（升级区/运行区流程）
 
 #### 硬件连接
 
@@ -490,65 +445,63 @@ GND         <----> GND
 #### 更新步骤
 
 1. **重启设备** - 让 Bootloader 运行
-2. **观察串口输出** - 会显示当前启动的镜像地址
+2. **观察串口输出** - 会显示当前启动的运行区地址
    ```
-   Boot from: 0x08008000    // 或 0x08014000
+   Boot from: 0x08014000    // 运行区地址
    ```
 3. **触发更新模式** - 发送更新命令或在30秒超时前发送数据
-4. **接收目标地址** - Bootloader 会发送升级目标地址
+4. **接收目标地址** - Bootloader 会发送升级目标地址（固定为升级区）
    ```
-   0x08014000              // 示例：当前运行A，升级到B
+   0x08008000              // 升级区地址
    ```
-5. **上位机选择固件** - 根据接收到的地址
-   - 收到 `0x08008000` → 发送 `app_a.bin`
-   - 收到 `0x08014000` → 发送 `app_b.bin`
-6. **发送固件** - 使用支持协议的上位机工具
-7. **等待完成** - 观察进度和完成提示
-8. **自动重启** - 固件更新完成后自动重启
-9. **验证启动** - 观察是否从新镜像成功启动
+5. **发送固件** - 使用支持协议的上位机工具，直接发送 `app.bin`
+6. **等待完成** - 观察进度和完成提示
+7. **自动复制** - 升级完成后自动从升级区复制到运行区
+8. **验证CRC** - 自动验证运行区的CRC校验值
+9. **自动重启** - 验证成功后自动重启
+10. **验证启动** - 观察是否从运行区成功启动
 
 #### 串口输出示例（完整升级流程）
 
 ```
-=== STM32H503 Dual-Image IAP Bootloader ===
+=== STM32H503 Update/RUNAPP IAP Bootloader ===
 Reading config...
-Active image: 0 (Image A)
-Boot count: 0
-Verifying Image A...
-Image A CRC: OK
-Boot from: 0x08008000
+Update flag: 0
+Verifying RUNAPP region...
+RUNAPP CRC: OK
+Boot from: 0x08014000
 
 [User triggers update mode]
 
 Entering update mode...
-Update target: Image B
-Target address: 0x08014000
+Update target: UPDATE region
+Target address: 0x08008000
 
-[Host PC sends app_b.bin]
+[Host PC sends app.bin]
 
-Erasing Image B...
+Erasing UPDATE region...
 Erase complete
 Protocol frame received
-Writing to 0x08014000...
+Writing to 0x08008000...
 Progress: 25%
 Progress: 50%
 Progress: 75%
 Progress: 100%
 
+copy update to runapp...
 === Update Complete ===
 Total received: 12288 bytes
 Calculated CRC: 0xABCD1234
-Switching to Image B
+RUNAPP CRC verified: OK
 Resetting...
 
 [Device reboots]
 
-=== STM32H503 Dual-Image IAP Bootloader ===
+=== STM32H503 Update/RUNAPP IAP Bootloader ===
 Reading config...
-Active image: 1 (Image B)
-Boot count: 1
-Verifying Image B...
-Image B CRC: OK
+Update flag: 0
+Verifying RUNAPP region...
+RUNAPP CRC: OK
 Boot from: 0x08014000
 
 [Jumping to new firmware...]
@@ -563,10 +516,11 @@ Progress: 50%
 
 [设备重启]
 Reading config...
-Detected interrupted update (updating=1)
-Clearing failed image...
-Falling back to Image A
-Boot from: 0x08008000    ✓ 回滚成功
+Detected update flag=1
+Entering update mode...
+Waiting for firmware data...
+[重新发送固件]
+✓ 更新成功
 ```
 
 **测试2：CRC校验失败**
@@ -576,19 +530,23 @@ Boot from: 0x08008000    ✓ 回滚成功
 CRC mismatch! Expected vs Actual
 
 [设备重启]
-Verifying Image B... FAILED
-Falling back to Image A
-Boot from: 0x08008000    ✓ 回滚成功
+Reading config...
+Update flag=0
+Verifying RUNAPP region... OK
+Boot from: 0x08014000    ✓ 保持旧版本成功
 ```
 
-**测试3：新固件崩溃**
+**测试3：运行区固件损坏**
 ```
-[新固件运行，但有BUG导致死机]
-[设备复位] boot_count=1
-[再次死机] boot_count=2
-[第三次]   boot_count=3 → 触发回滚
-Switching to Image A
-Boot from: 0x08008000    ✓ 回滚成功
+[运行区CRC校验失败]
+
+[设备重启]
+Reading config...
+Verifying RUNAPP region... FAILED
+Entering update mode...
+Waiting for firmware data...
+[发送新固件]
+✓ 更新成功
 ```
 
 ---
@@ -603,26 +561,25 @@ Boot from: 0x08008000    ✓ 回滚成功
 
 | 检查项 | 如何检查 | 解决方法 |
 |--------|---------|---------|
-| 应用程序链接地址 | 查看 `.ld` 文件中 `FLASH ORIGIN` | 必须为 `0x08008000` (镜像A) 或 `0x08014000` (镜像B) |
+| 应用程序链接地址 | 查看 `.ld` 文件中 `FLASH ORIGIN` | 必须为 `0x08014000` (运行区地址) |
 | 向量表重定位 | 搜索应用程序代码中 `SCB->VTOR` | 在 `main()` 开头添加，地址与链接地址一致 |
 | 应用程序大小 | `ls -lh app.bin` | 不能超过 48KB (49152字节) |
-| 固件地址匹配 | 确认上位机发送的固件对应目标地址 | 镜像A用 app_a.bin，镜像B用 app_b.bin |
 | 配置区初始化 | 首次烧录 Bootloader 后正常 | 通过 IAP 更新一次固件即可初始化 |
 
 ### Q2: 固件更新后设备反复重启
 
-**原因**：新固件有BUG导致启动失败，触发自动回滚机制
+**原因**：新固件有BUG导致启动失败，运行区CRC校验失败
 
 **现象**：
-- `boot_count` 不断增加
-- 达到 3 次后自动切换到旧镜像
-- 串口输出显示 "boot_count >= 3, switching image"
+- Bootloader 显示 "RUNAPP CRC: FAILED"
+- 进入更新模式等待新固件
+- 串口输出显示 "Verifying RUNAPP region... FAILED"
 
 **解决方法**：
 1. 检查新固件代码是否有致命错误（如栈溢出、未初始化的外设等）
 2. 确认向量表地址设置正确
-3. 验证固件链接地址与写入地址匹配
-4. 在应用稳定运行后调用确认机制清零 `boot_count`
+3. 验证固件链接地址是否为 `0x08014000`
+4. 重新发送固件并确保传输过程稳定
 
 ### Q3: CRC 校验总是失败
 
@@ -639,75 +596,55 @@ Boot from: 0x08008000    ✓ 回滚成功
 4. 使用支持协议的上位机工具
 5. 查看串口输出的具体 CRC 值对比
 
-### Q4: 如何手动切换镜像
+### Q4: 如何重置升级标志
 
-**方法1：通过串口命令（需要实现）**
-
-可在 Bootloader 中添加命令解析，例如：
-- 发送 `"SWITCH_A"` → 强制切换到镜像A
-- 发送 `"SWITCH_B"` → 强制切换到镜像B
-
-**方法2：通过 ST-Link 修改配置区**
+**方法**：通过 ST-Link 修改配置区
 
 使用 STM32CubeProgrammer：
 1. 连接 ST-Link
 2. 读取地址 `0x08006000` 的配置区
-3. 修改 `active_image` 字段（偏移 +4 字节）
-   - 设为 `0x00` → 镜像A
-   - 设为 `0x01` → 镜像B
+3. 修改 `update_flag` 字段（偏移 +4 字节）
+   - 设为 `0x00` → 正常运行模式
 4. 写回配置区
 5. 重启设备
 
-**方法3：擦除配置区重置**
+**注意**：如果设备无法启动，Bootloader 会自动进入更新模式等待新固件。
 
-擦除 `0x08006000` 扇区，Bootloader 会重新初始化配置，默认激活镜像A。
-
-### Q5: 双镜像占用空间太大怎么办
+### Q5: 升级区/运行区占用空间太大怎么办
 
 **当前配置**：
-- Bootloader: 32KB
-- 镜像 A: 48KB
-- 镜像 B: 48KB
+- Bootloader: 24KB
+- 配置区: 8KB
+- 升级区: 48KB
+- 运行区: 48KB
 - 总计: 128KB (正好用满)
 
 **优化方案**：
 
-**选项1**：减小单个镜像大小
+**选项**：减小升级区和运行区大小
 ```c
 // iap_config.h
-#define IMAGE_A_SIZE  (40 * 1024)  // 改为 40KB
-#define IMAGE_B_SIZE  (40 * 1024)
+#define UPDATE_REGION_SIZE  (40 * 1024)  // 改为 40KB
+#define RUNAPP_REGION_SIZE  (40 * 1024)
 ```
 优点：节省 16KB 空间  
 缺点：固件大小限制更严格
-
-**选项2**：采用单镜像 + 临时区方案（不推荐）
-- 固件区: 80KB
-- 临时区: 40KB（仅存储新固件，验证后拷贝到固件区）
-
-优点：固件可用 80KB  
-缺点：失去实时双备份能力，拷贝耗时
 
 ### Q6: 如何验证应用程序配置正确
 
 ```bash
 # 查看链接脚本
 grep "FLASH.*ORIGIN" your_app.ld
-# 应显示: ORIGIN = 0x08008000 或 0x08014000
+# 应显示: ORIGIN = 0x08014000
 
 # 查看编译后的向量表
 arm-none-eabi-objdump -s -j .isr_vector app.elf | head -20
 # 第一行前4字节(栈指针)应在 0x20000000-0x20008000 范围
-# 第二行是复位向量，应指向对应镜像区地址
+# 第二行是复位向量，应指向 0x08014000 附近
 
 # 使用 ST-Link 直接烧录测试
-# 测试镜像A
 openocd -f interface/stlink.cfg -f target/stm32h5x.cfg \
-        -c "program app_a.bin 0x08008000 verify reset exit"
-
-# 测试镜像B
-openocd -f interface/stlink.cfg -f target/stm32h5x.cfg \
-        -c "program app_b.bin 0x08014000 verify reset exit"
+        -c "program app.bin 0x08014000 verify reset exit"
 ```
 
 ---
@@ -734,9 +671,9 @@ if ((HAL_GetTick() - start_time) > 30000)  // 30秒超时
 
 **注意**：设置过大会导致故障固件反复重启多次才回滚，设置过小可能误判正常启动为失败。
 
-### 修改内存分配（双镜像架构）
+### 修改内存分配（升级区/运行区架构）
 
-如需调整 Bootloader 和镜像大小，需同步修改多个文件：
+如需调整 Bootloader 和区域大小，需同步修改多个文件：
 
 **1. Bootloader 链接脚本** `STM32H503CBTX_FLASH.ld`
 ```ld
@@ -746,26 +683,24 @@ FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 24K  // 代码区
 
 **2. IAP 配置** `IAP/inc/iap_config.h`
 ```c
-#define BOOTLOADER_SIZE   (32 * 1024)   // Bootloader总大小
+#define BOOTLOADER_SIZE   (24 * 1024)   // Bootloader大小
 #define CONFIG_BASE       0x08006000     // 配置区地址
-#define IMAGE_A_BASE      0x08008000     // 镜像A起始
-#define IMAGE_A_SIZE      (48 * 1024)    // 镜像A大小
-#define IMAGE_B_BASE      0x08014000     // 镜像B起始
-#define IMAGE_B_SIZE      (48 * 1024)    // 镜像B大小
+#define UPDATE_REGION_BASE  0x08008000   // 升级区起始
+#define UPDATE_REGION_SIZE  (48 * 1024)  // 升级区大小
+#define RUNAPP_REGION_BASE  0x08014000   // 运行区起始
+#define RUNAPP_REGION_SIZE  (48 * 1024)  // 运行区大小
 ```
 
-**3. 应用程序链接脚本**（两个版本）
+**3. 应用程序链接脚本**
 ```ld
-// app_a.ld
-FLASH (rx) : ORIGIN = 0x08008000, LENGTH = 48K
-
-// app_b.ld
+// app.ld
 FLASH (rx) : ORIGIN = 0x08014000, LENGTH = 48K
 ```
 
 **约束条件**：
-- `IMAGE_A_BASE` 必须是 `BOOTLOADER_BASE + BOOTLOADER_SIZE`
-- `IMAGE_B_BASE` 必须是 `IMAGE_A_BASE + IMAGE_A_SIZE`
+- `CONFIG_BASE` 必须是 `BOOTLOADER_BASE + BOOTLOADER_SIZE`
+- `UPDATE_REGION_BASE` 必须是 `CONFIG_BASE + CONFIG_SIZE`
+- `RUNAPP_REGION_BASE` 必须是 `UPDATE_REGION_BASE + UPDATE_REGION_SIZE`
 - 总大小不能超过 128KB
 - 所有地址必须 8KB 对齐（Flash 扇区大小）
 
@@ -778,28 +713,9 @@ FLASH (rx) : ORIGIN = 0x08014000, LENGTH = 48K
 
 节省约 2-3KB 空间。
 
-### 禁用双镜像功能（退回单镜像模式）
+### 注意事项
 
-**不推荐**，但如需回退到简单单镜像模式：
-
-1. 修改 `iap_config.h`：
-```c
-#define ApplicationAddress  IMAGE_A_BASE  // 固定使用镜像A
-#define FLASH_IMAGE_SIZE    IMAGE_A_SIZE
-```
-
-2. 修改 `iap.c` 中的 `IAP_RunApp()`：
-```c
-// 替换双镜像选择逻辑为简单跳转
-uint32_t boot_address = IMAGE_A_BASE;
-```
-
-3. 修改 `IAP_Update()` 中的目标地址：
-```c
-g_update_target_addr = IMAGE_A_BASE;  // 固定写入A区
-```
-
-但这样会失去自动回滚能力。
+**重要**：本项目采用升级区/运行区架构，不再支持双镜像模式。如果需要恢复到双镜像模式，需要重新修改代码结构和配置文件。
 
 ---
 
@@ -811,31 +727,28 @@ g_update_target_addr = IMAGE_A_BASE;  // 固定写入A区
 |------|------|
 | `IAP/src/protocol.c` | 协议解析、帧转义、CRC32校验 |
 | `IAP/src/iap.c` | IAP主逻辑、更新流程控制、跳转管理 |
-| `IAP/src/iap_image.c` | **双镜像管理核心模块**<br>- 镜像选择逻辑<br>- CRC校验<br>- 配置区读写<br>- 故障检测与回滚 |
+| `IAP/src/iap_image.c` | **升级区/运行区管理核心模块**<br>- 运行区验证逻辑<br>- CRC校验<br>- 配置区读写<br>- 故障检测与处理 |
 | `IAP/src/stmflash.c` | Flash擦除、写入底层操作 |
 | `Core/Src/main.c` | Bootloader入口、系统初始化 |
 | `IAP/inc/iap_config.h` | **所有关键参数配置**<br>- 内存布局定义<br>- ImageConfig_t结构体 |
-| `IAP/inc/iap_image.h` | 双镜像管理函数声明 |
+| `IAP/inc/iap_image.h` | 升级区/运行区管理函数声明 |
 
 ### 核心函数解析
 
-#### 双镜像管理函数（iap_image.c）
+#### 升级区/运行区管理函数（iap_image.c）
 
 | 函数 | 功能 |
 |------|------|
 | `Config_Read()` | 从 Flash 配置区读取 ImageConfig_t |
 | `Config_Write()` | 写入配置区（含擦除） |
 | `Config_Init()` | 初始化配置为默认值 |
-| `Calculate_Image_CRC()` | 计算指定镜像的 CRC32 |
-| `Verify_Image()` | 验证镜像有效性（CRC + 栈指针检查） |
-| `Select_Boot_Image()` | **启动时选择有效镜像**<br>1. 检查更新标志<br>2. 检查启动计数<br>3. 验证CRC<br>4. 返回启动地址 |
-| `Select_Update_Target()` | 选择升级目标（未激活镜像） |
-| `Get_Update_Address()` | 获取升级目标 Flash 地址 |
-| `Update_Start()` | 标记更新开始（设置 updating=1） |
-| `Update_Complete()` | 更新完成（保存CRC、切换镜像） |
-| `Update_Failed()` | 更新失败（清除 updating 标志） |
-| `Confirm_Boot_Success()` | 确认启动成功（清零 boot_count） |
-| `Erase_Image()` | 擦除指定镜像区（自动处理 Bank1/2） |
+| `Calculate_Image_CRC()` | 计算指定区域的 CRC32 |
+| `Verify_Run_Image()` | 验证运行区有效性（CRC + 栈指针检查） |
+| `Select_Boot_Image()` | **启动时选择运行区**<br>1. 检查升级标志<br>2. 验证运行区CRC<br>3. 返回启动地址 |
+| `Update_Start()` | 标记更新开始（设置 update_flag=1） |
+| `Update_Failed()` | 更新失败（清除 update_flag 标志） |
+| `Confirm_Boot_Success()` | 确认启动成功（清除 update_flag 标志） |
+| `Erase_Image()` | 擦除指定区域（自动处理 Bank1/2） |
 
 ### 扩展阅读
 
@@ -845,31 +758,31 @@ g_update_target_addr = IMAGE_A_BASE;  // 固定写入A区
 
 ### 技术要点
 
-- **双镜像架构** - 红蓝备份机制，确保升级失败自动回滚
-- **CRC32 校验** - 每个镜像独立 CRC，启动前必须验证
-- **启动失败计数** - 检测运行时崩溃，连续失败 3 次自动切换镜像
-- **断电保护** - `updating` 标志确保更新中断电可恢复
-- **配置区持久化** - 8KB 独立扇区存储镜像管理信息
+- **升级区/运行区架构** - 临时存储 + 最终运行区机制，确保升级安全
+- **CRC32 校验** - 运行区 CRC 验证，确保固件完整性
+- **断电保护** - `update_flag` 标志确保更新中断电可恢复
+- **配置区持久化** - 8KB 独立扇区存储升级管理信息
 - **DMA 接收** - 使用 `HAL_UARTEx_ReceiveToIdle_DMA` 高效接收数据
 - **半字对齐** - Flash 写入时自动处理字节对齐问题（STM32H5 需 16 字节对齐）
 - **双缓冲机制** - 接收缓冲区复用，节省 SRAM
 - **状态机解析** - 健壮的协议帧解析状态机
 - **跨 Bank 擦除** - 自动处理 Flash Bank1/Bank2 边界
+- **一次性复制** - 升级完成后一次性复制所有代码到运行区
 
-### 双镜像方案的优势
+### 升级区/运行区方案的优势
 
-| 传统单镜像 | 双镜像（本项目） |
-|-----------|---------------|
-| 更新失败 → 设备变砖 | ✅ 自动回滚到旧版本 |
-| 无法检测运行时崩溃 | ✅ 启动失败计数自动切换 |
-| 断电后可能无法恢复 | ✅ updating 标志保护 |
+| 传统单镜像 | 升级区/运行区（本项目） |
+|-----------|-------------------|
+| 更新失败 → 设备变砖 | ✅ 自动保持旧版本 |
+| 无法检测运行时崩溃 | ✅ 运行区CRC校验自动检测 |
+| 断电后可能无法恢复 | ✅ update_flag 标志保护 |
 | 需要手动恢复 | ✅ 完全自动化故障恢复 |
-| 固件可用 80KB | ⚠️ 单个固件限 48KB（双份占用） |
+| 固件可用 80KB | ⚠️ 单个固件限 48KB |
 
 **适用场景**：
 - ✅ 远程设备，无法物理接触
 - ✅ 高可靠性要求（如工业、医疗设备）
-- ✅ 固件迭代频繁，需要快速回滚能力
+- ✅ 固件迭代频繁，需要快速更新能力
 - ✅ 网络环境不稳定，传输可能中断
 - ⚠️ 固件体积较小（<48KB）
 
@@ -882,5 +795,5 @@ STM32 HAL 驱动库遵循 ST 的 BSD-3-Clause 许可协议。
 
 ---
 
-**最后更新**: 2026年1月28日  
-**版本**: v2.0 - 双镜像（A/B）架构
+**最后更新**: 2026年1月30日  
+**版本**: v3.0 - 升级区/运行区架构
