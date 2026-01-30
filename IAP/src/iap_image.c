@@ -116,31 +116,18 @@ static uint32_t Detect_Firmware_Size(uint32_t image_base)
 
 /**
  * @brief Initialize config sector with default values
- * @details If valid firmware is detected at Image A/B, auto-record CRC and size
+ * @details If valid firmware is detected at 运行区, auto-record CRC and size
  * @return 0=success, -1=failed
  */
 int8_t Config_Init(void)
 {
     ImageConfig_t default_config = IMAGE_CONFIG_DEFAULT;
     
-    /* Auto-detect existing firmware at Image A */
-    uint32_t size_a = Detect_Firmware_Size(IMAGE_A_BASE);
-    if (size_a > 0) {
-        default_config.size_A = size_a;
-        default_config.crc_A = crc32_c((uint8_t*)IMAGE_A_BASE, size_a);
-        default_config.active_image = 0;  /* Default to Image A */
-    }
-    
-    /* Auto-detect existing firmware at Image B */
-    uint32_t size_b = Detect_Firmware_Size(IMAGE_B_BASE);
+    /* Auto-detect existing firmware at 运行区 */
+    uint32_t size_b = Detect_Firmware_Size(RUNAPP_REGION_BASE);
     if (size_b > 0) {
-        default_config.size_B = size_b;
-        default_config.crc_B = crc32_c((uint8_t*)IMAGE_B_BASE, size_b);
-        
-        /* If Image A is empty but B is valid, set B as active */
-        if (size_a == 0) {
-            default_config.active_image = 1;
-        }
+        default_config.run_size = size_b;
+        default_config.run_crc = crc32_c((uint8_t*)RUNAPP_REGION_BASE, size_b);
     }
     
     return Config_Write(&default_config);
@@ -158,21 +145,20 @@ int8_t Config_Init(void)
  */
 uint32_t Calculate_Image_CRC(uint32_t image_base, uint32_t size)
 {
-    if (size == 0 || size > IMAGE_A_SIZE) return 0;
+    if (size == 0 || size > UPDATE_REGION_SIZE) return 0;
     return crc32_c((uint8_t*)image_base, size);
 }
 
 /**
- * @brief Verify image region validity (CRC and stack pointer check)
- * @param image_index 0=A, 1=B
+ * @brief Verify 运行区 validity (CRC and stack pointer check)
  * @param config Image management structure
  * @return 0=valid, -1=invalid
  */
-int8_t Verify_Image(uint8_t image_index, const ImageConfig_t *config)
+int8_t Verify_Run_Image(const ImageConfig_t *config)
 {
-    uint32_t image_base = (image_index == 0) ? IMAGE_A_BASE : IMAGE_B_BASE;
-    uint32_t expected_crc = (image_index == 0) ? config->crc_A : config->crc_B;
-    uint32_t expected_size = (image_index == 0) ? config->size_A : config->size_B;
+    uint32_t image_base = RUNAPP_REGION_BASE;
+    uint32_t expected_crc = config->run_crc;
+    uint32_t expected_size = config->run_size;
     
     if (expected_size == 0) return -1;
     
@@ -191,40 +177,13 @@ int8_t Verify_Image(uint8_t image_index, const ImageConfig_t *config)
 /**
  * @brief Select valid image region as boot entry on startup
  * @param config Image management structure (may be updated)
- * @return Image entry address (A or B), 0=no valid image
+ * @return Image entry address (运行区), 0=no valid image
  */
 uint32_t Select_Boot_Image(ImageConfig_t *config)
 {
-    /* Case 1: Update interrupted */
-    if (config->updating) {
-        uint8_t failed_image = 1 - config->active_image;
-        if (failed_image == 0) { config->size_A = 0; config->crc_A = 0; }
-        else { config->size_B = 0; config->crc_B = 0; }
-        config->updating = 0;
-        config->boot_count = 0;
-        Config_Write(config);
-    }
-    
-    /* Case 2: Too many failures */
-    if (config->boot_count >= MAX_BOOT_ATTEMPTS) {
-        config->active_image = 1 - config->active_image;
-        config->boot_count = 0;
-        Config_Write(config);
-    }
-    
-    /* Case 3: Try active then backup */
-    for (uint8_t attempt = 0; attempt < 2; attempt++) {
-        uint8_t try_image = (attempt == 0) ? config->active_image : (1 - config->active_image);
-        
-        if (Verify_Image(try_image, config) == 0) {
-            uint32_t boot_addr = (try_image == 0) ? IMAGE_A_BASE : IMAGE_B_BASE;
-            if (try_image != config->active_image) {
-                config->active_image = try_image;
-            }
-            config->boot_count++;
-            Config_Write(config);
-            return boot_addr;
-        }
+    /* 检查运行区是否有效 */
+    if (Verify_Run_Image(config) == 0) {
+        return RUNAPP_REGION_BASE;
     }
     
     return 0;  /* No valid image */
@@ -235,84 +194,33 @@ uint32_t Select_Boot_Image(ImageConfig_t *config)
  *============================================================================*/
 
 /**
- * @brief Select update target region (inactive image)
+ * @brief Mark update start, set update_flag
  * @param config Image management structure
- * @return 0=A, 1=B
- */
-uint8_t Select_Update_Target(const ImageConfig_t *config)
-{
-    return 1 - config->active_image;
-}
-
-/**
- * @brief Get Flash write address for update target region
- * @param config Image management structure
- * @return Target region start address
- */
-uint32_t Get_Update_Address(const ImageConfig_t *config)
-{
-    return (Select_Update_Target(config) == 0) ? IMAGE_A_BASE : IMAGE_B_BASE;
-}
-
-/**
- * @brief Mark update start, set updating flag
- * @param config Image management structure
- * @param target_image Target region index
  */
 void Update_Start(ImageConfig_t *config, uint8_t target_image)
 {
-    /* Clear target image data to invalidate it immediately */
-    if (target_image == 0) { 
-        config->size_A = 0; 
-        config->crc_A = 0; 
-    } else { 
-        config->size_B = 0; 
-        config->crc_B = 0; 
-    }
-    
-    config->updating = 1;
+    config->update_flag = 1;
     Config_Write(config);
 }
 
 /**
- * @brief Update complete, save new image info and switch active region
- * @param config Image management structure
- * @param target_image Target region index
- * @param size New image length
- * @param crc New image CRC32
- */
-void Update_Complete(ImageConfig_t *config, uint8_t target_image, 
-                     uint32_t size, uint32_t crc)
-{
-    if (target_image == 0) { config->size_A = size; config->crc_A = crc; }
-    else { config->size_B = size; config->crc_B = crc; }
-    
-    config->active_image = target_image;
-    config->updating = 0;
-    config->boot_count = 0;
-    Config_Write(config);
-}
-
-/**
- * @brief Update failed, clear updating flag, keep original active region
+ * @brief Update failed, clear update_flag
  * @param config Image management structure
  */
 void Update_Failed(ImageConfig_t *config)
 {
-    config->updating = 0;
+    config->update_flag = 0;
     Config_Write(config);
 }
 
 /**
- * @brief After successful app boot, reset boot count
+ * @brief After successful app boot, reset update_flag
  * @param config Image management structure
  */
 void Confirm_Boot_Success(ImageConfig_t *config)
 {
-    if (config->boot_count > 0) {
-        config->boot_count = 0;
-        Config_Write(config);
-    }
+    config->update_flag = 0;
+    Config_Write(config);
 }
 
 /*============================================================================

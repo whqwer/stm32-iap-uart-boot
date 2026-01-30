@@ -26,6 +26,7 @@
 /* USER CODE BEGIN Includes */
 #include "common.h"
 #include "iap.h"
+#include "iap_image.h"
 #include <stdio.h>
 #include <string.h>
 /* USER CODE END Includes */
@@ -122,19 +123,28 @@ int main(void)
   {
 	  /* Main Bootloader Decision Logic:
 	   * 
-	   * IAP_Update() checks for incoming firmware update request:
-	   * - Returns 0 if firmware update completed successfully
-	   * - Returns non-zero if no update request or update in progress
-	   * 
-	   * If no update is happening, jump to user application.
-	   * This allows the bootloader to automatically run the app
-	   * if no firmware update is initiated within the timeout period.
+	   * 1. 检查标志区是否需要升级
+	   * 2. 如果需要升级，执行IAP_Update()
+	   * 3. 升级完成后跳转到运行区
+	   * 4. 如果不需要升级，直接跳转到运行区
 	   */
-	  if( !IAP_Update())
-	  {
+	  
+	  // 读取标志区数据，判断是否需要升级
+	  ImageConfig_t config;
+	  if (Config_Read(&config) == 0 && config.update_flag) {
+		  // 需要升级
+		  HAL_UART_Transmit(&huart1, "update mode\n", 12, 100);
+		  if (IAP_Update() == 0) {
+			  // 升级成功，跳转到运行区
+			  IAP_RunApp();
+		  }
+	  } else {
+		  // 不需要升级，直接跳转到运行区
+		  HAL_UART_Transmit(&huart1, "run mode\n", 9, 100);
 		  IAP_RunApp();
 	  }
-	  IAP_RunApp();
+	  
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

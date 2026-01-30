@@ -22,23 +22,23 @@
 
 /* Bootloader Region ------------------------------------------*/
 #define BOOTLOADER_BASE       0x08000000
-#define BOOTLOADER_SIZE       (32 * 1024)   /* 32KB */
+#define BOOTLOADER_SIZE       (24 * 1024)   /* 24KB */
 
-/* Config Sector (last sector of Bootloader) ------------------*/
+/* Config Sector (标志区) ------------------*/
 #define CONFIG_BASE           0x08006000    /* Sector 3 */
-#define CONFIG_SIZE           PAGE_SIZE     /* 8KB */
+#define CONFIG_SIZE           (8 * 1024)    /* 8KB */
 
-/* App A Region -----------------------------------------------*/
-#define IMAGE_A_BASE          0x08008000    /* Sector 4 */
-#define IMAGE_A_SIZE          (48 * 1024)   /* 48KB (6 sectors) */
+/* 升级区 Region -----------------------------------------------*/
+#define UPDATE_REGION_BASE    0x08008000    /* Sector 4 */
+#define UPDATE_REGION_SIZE    (48 * 1024)   /* 48KB (6 sectors) */
 
-/* App B Region -----------------------------------------------*/
-#define IMAGE_B_BASE          0x08014000    /* Sector 10 */
-#define IMAGE_B_SIZE          (48 * 1024)   /* 48KB (6 sectors) */
+/* 运行区 Region -----------------------------------------------*/
+#define RUNAPP_REGION_BASE    0x08014000    /* Sector 10 */
+#define RUNAPP_REGION_SIZE    (48 * 1024)   /* 48KB (6 sectors) */
 
-/* Compatibility: Default to Image A as ApplicationAddress ----*/
-#define ApplicationAddress    IMAGE_A_BASE
-#define FLASH_IMAGE_SIZE      IMAGE_A_SIZE
+/* Compatibility: Default to UPDATE as ApplicationAddress ----*/
+#define ApplicationAddress    UPDATE_REGION_BASE
+#define FLASH_IMAGE_SIZE      UPDATE_REGION_SIZE
 
 /*============================================================================
  * Image Configuration Structure (Simplified)
@@ -52,30 +52,22 @@
 #define CONFIG_MAGIC          0x41535444    /* "ASTD" in ASCII */
 #define MAX_BOOT_ATTEMPTS     3             /* Max boot failures before rollback */
 
-/* Simplified Image Config Structure (32 bytes) */
+/* Simplified Image Config Structure (16 bytes) */
 typedef struct {
     uint32_t magic;           /* Must be CONFIG_MAGIC (0x41535444) */
-    uint8_t  active_image;    /* 0=App A, 1=App B */
-    uint8_t  updating;        /* 0=idle, 1=updating (protect against power loss) */
-    uint8_t  boot_count;      /* Boot failure counter (reset on app confirm) */
-    uint8_t  reserved;        /* Alignment padding */
-    uint32_t crc_A;           /* CRC32 of App A */
-    uint32_t crc_B;           /* CRC32 of App B */
-    uint32_t size_A;          /* Size of App A in bytes (0=empty) */
-    uint32_t size_B;          /* Size of App B in bytes (0=empty) */
+    uint8_t  update_flag;      /* 0=正常运行, 1=需要升级 */
+    uint8_t  reserved[3];      /* Alignment padding */
+    uint32_t run_crc;          /* CRC32 of 运行区 */
+    uint32_t run_size;         /* Size of 运行区 in bytes (0=empty) */
 } ImageConfig_t;
 
-/* Default config (all images invalid) */
+/* Default config */
 #define IMAGE_CONFIG_DEFAULT { \
     .magic = CONFIG_MAGIC,     \
-    .active_image = 0,         \
-    .updating = 0,             \
-    .boot_count = 0,           \
-    .reserved = 0,             \
-    .crc_A = 0,                \
-    .crc_B = 0,                \
-    .size_A = 0,               \
-    .size_B = 0                \
+    .update_flag = 0,          \
+    .reserved = {0},           \
+    .run_crc = 0,              \
+    .run_size = 0              \
 }
 
 #endif /* __IAP_CONFIG_H__ */

@@ -189,59 +189,79 @@ extern uint16_t rx_len;
  * 
  * @return 0 on success, -1 on erase failure, -2 on timeout, -3 on no data
  */
+/**
+ * @brief 复制升级区代码到运行区
+ * @param size 代码大小
+ * @return 0=成功, -1=失败
+ */
+static int8_t Copy_Update_To_Runapp(uint32_t size)
+{
+    // 计算需要复制的半字数量
+    uint16_t num_halfwords = size / 2;
+    if (size % 2 != 0) {
+        num_halfwords += 1; // 处理奇数大小
+    }
+    
+    // 直接使用STMFLASH_Write函数复制数据
+    // STMFLASH_Write会自动处理擦除和写入操作
+    STMFLASH_Write(RUNAPP_REGION_BASE, (uint16_t*)UPDATE_REGION_BASE, num_halfwords);
+    
+    return 0;
+}
+
 int8_t IAP_Update(void)
 {
     uint32_t start_time;
     HAL_StatusTypeDef status;
     uint8_t consecutive_idle = 0;
     
-    /* Reload config in case it changed */
-    Config_Read(&g_config);
-    
-    /* Select update target (always the inactive image) */
-    uint8_t target_image = Select_Update_Target(&g_config);
-    g_update_target_addr = Get_Update_Address(&g_config);
+    /* 固定升级到升级区 */
+    g_update_target_addr = UPDATE_REGION_BASE;
     
     /* Set flag: Enter Update mode */
     UART1_in_update_mode = 1;
     
-    /* 1. Mark update started (protection against power loss) */
-    Update_Start(&g_config, target_image);
+    /* 1. 标记升级开始 */
+    g_config.update_flag = 1;
+    Config_Write(&g_config);
     
     /* 2. Initialize protocol layer */
     Protocol_IAP_Init();
     
-    /* 3. Send target image info to host PC (0=A, 1=B) */
-    /* Host should send app_a.bin for target=0, app_b.bin for target=1 */
-     HAL_UART_Transmit(&huart1, (uint8_t *)"fireware update start at:", strlen("fireware update start at:"), 100);
-    const char *target_addr_str = (target_image == 0) ? "0x08008000\r\n" : "0x08014000\r\n";
-    HAL_UART_Transmit(&huart1, (uint8_t*)target_addr_str, strlen(target_addr_str), 100);
+    /* 3. Send target image info to host PC */
+    HAL_UART_Transmit(&huart1, (uint8_t *)"fireware update start at:", strlen("fireware update start at:"), 100);
+    HAL_UART_Transmit(&huart1, (uint8_t*)"0x08008000\r\n", strlen("0x08008000\r\n"), 100);
     
+    /* 4. 擦除升级区 */
+    uint8_t target_image = 0; // 0=升级区
     if (!Erase_Image(target_image))
     {
-        Update_Failed(&g_config);
+        g_config.update_flag = 0;
+        Config_Write(&g_config);
         UART1_in_update_mode = 0;
         return -1;
     }
     
     start_time = HAL_GetTick();
     
-    /* 4. Start first DMA reception */
+    /* 5. Start first DMA reception */
     status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
     if (status != HAL_OK) {
-        Update_Failed(&g_config);
+        g_config.update_flag = 0;
+        Config_Write(&g_config);
         UART1_in_update_mode = 0;
         return -1;
     }
     huart1.hdmarx->XferHalfCpltCallback = NULL;
 
-    /* 5. Main loop: wait and process data */
+    /* 6. Main loop: wait and process data */
     while (1)
     {
         /* Check total timeout (20 seconds) */
         if ((HAL_GetTick() - start_time) > 20000)
         {
-            Update_Failed(&g_config);
+            g_config.update_flag = 0;
+            Config_Write(&g_config);
             UART1_in_update_mode = 0;
             return -2;
         }
@@ -278,14 +298,43 @@ int8_t IAP_Update(void)
 
                     if (total_received > 0)
                     {
-                        uint32_t new_crc = Calculate_Image_CRC(g_update_target_addr, total_received);
-                        Update_Complete(&g_config, target_image, total_received, new_crc);
+                        /* 计算升级区的CRC */
+                        uint32_t update_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
+                        
+                        /* 复制升级区代码到运行区 */
+                        HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
+                        if (Copy_Update_To_Runapp(total_received) != 0) {
+                            g_config.update_flag = 0;
+                            Config_Write(&g_config);
+                            UART1_in_update_mode = 0;
+                            HAL_UART_Transmit(&huart1, (uint8_t *)"copy failed\r\n", strlen("copy failed\r\n"), 100);
+                            return -4;
+                        }
+                        
+                        /* 验证运行区的CRC */
+                        uint32_t run_crc = Calculate_Image_CRC(RUNAPP_REGION_BASE, total_received);
+                        if (run_crc != update_crc) {
+                            g_config.update_flag = 0;
+                            Config_Write(&g_config);
+                            UART1_in_update_mode = 0;
+                            HAL_UART_Transmit(&huart1, (uint8_t *)"CRC check failed\r\n", strlen("CRC check failed\r\n"), 100);
+                            return -5;
+                        }
+                        
+                        /* 更新配置 */
+                        g_config.run_size = total_received; // 运行区大小
+                        g_config.run_crc = run_crc;       // 运行区CRC
+                        g_config.update_flag = 0;          // 清除升级标志
+                        Config_Write(&g_config);
+                        
+                        HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", strlen("update success\r\n"), 100);
                         UART1_in_update_mode = 0;
                         return 0;
                     }
                     else
                     {
-                        Update_Failed(&g_config);
+                        g_config.update_flag = 0;
+                        Config_Write(&g_config);
                         UART1_in_update_mode = 0;
                         return -3;
                     }
