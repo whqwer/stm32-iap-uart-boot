@@ -11,11 +11,12 @@
   *
   * This software is licensed under terms that can be found in the LICENSE file
   * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
+  * If no LICENSE file comes with this, it is provided AS-IS.
   *
   ******************************************************************************
   */
 /* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "gpdma.h"
@@ -131,7 +132,7 @@ int main(void)
 	  
 	  // 读取标志区数据，判断是否需要升级
 	  ImageConfig_t config;
-	  if (Config_Read(&config) == 0 && config.update_flag) {
+	  if (Config_Read(&config) == 0 && config.page_count != 0) {
 		  // 需要升级
 		  HAL_UART_Transmit(&huart1, "update mode\n", 12, 100);
 		  if (IAP_Update() == 0) {
@@ -198,7 +199,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB3CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
@@ -231,7 +232,7 @@ void Error_Handler(void)
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
   * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
+  * @param  line: assert_param error line source
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)

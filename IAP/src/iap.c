@@ -6,13 +6,13 @@
  * - Jumping from bootloader to user application
  * - Protocol-based firmware update over UART
  * - Flash memory management for firmware storage
- * - Dual Image (A/B) management for fail-safe updates
+ * - Upgrade/RunApp management for fail-safe updates
  * 
  * Memory Layout:
- * - Bootloader: 0x08000000 - 0x08008000 (32KB)
+ * - Bootloader: 0x08000000 - 0x08006000 (24KB)
  * - Config:     0x08006000 - 0x08008000 (8KB, last sector of bootloader)
- * - App A:      0x08008000 - 0x08014000 (48KB)
- * - App B:      0x08014000 - 0x08020000 (48KB)
+ * - Update:     0x08008000 - 0x08014000 (48KB)
+ * - RunApp:     0x08014000 - 0x08020000 (48KB)
  */
 
 #include "iap_config.h"
@@ -28,11 +28,11 @@
 pFunction Jump_To_Application;
 uint32_t JumpAddress;
 
-/* Global config for dual-image management */
+/* Global config for upgrade/runapp management */
 static ImageConfig_t g_config;
 
 /* Current update target address (used by protocol.c via extern) */
-__attribute__((used)) uint32_t g_update_target_addr = IMAGE_A_BASE;
+__attribute__((used)) uint32_t g_update_target_addr = UPDATE_REGION_BASE;
 
 
 
@@ -49,13 +49,13 @@ void IAP_UART_Init(void)
 
 /**
  * @brief Initialize IAP module
- * @details Initializes UART and loads config for dual-image management
+ * @details Initializes UART and loads config for upgrade/runapp management
  */
 void IAP_Init(void)
 {
     IAP_UART_Init();
     
-    /* Load or initialize dual-image config */
+    /* Load or initialize upgrade/runapp config */
     if (Config_Read(&g_config) != 0) {
         /* Config invalid, initialize with defaults (auto-detect existing firmware) */
 //        HAL_UART_Transmit(&huart1, (uint8_t*)"Config invalid, init...\r\n", 25, 100);
@@ -64,15 +64,16 @@ void IAP_Init(void)
     }
     
 }
+
 /************************************************************************/
 extern UART_HandleTypeDef huart1;
 
 /**
  * @brief Jump from bootloader to user application
- * @details Performs dual-image selection and jumps to the valid application.
+ * @details Performs upgrade/runapp selection and jumps to the valid application.
  *          
  * Jump Process:
- * 1. Select boot image (A or B) based on config and CRC verification
+ * 1. Select boot image based on config and CRC verification
  * 2. Validates application stack pointer in SRAM range
  * 3. Disables all interrupts and peripherals
  * 4. Resets SysTick timer
@@ -87,7 +88,7 @@ extern UART_HandleTypeDef huart1;
  */
 int8_t IAP_RunApp(void)
 {
-    /* Select boot image using dual-image logic */
+    /* Select boot image using upgrade/runapp logic */
     uint32_t boot_address = Select_Boot_Image(&g_config);
 
     /* Send boot_address to host PC via UART1 as string */
@@ -163,7 +164,6 @@ int8_t IAP_RunApp(void)
 
 
 
-
 /************************************************************************/
 #define MAX_FRAME_SIZE    1024*10
 /* UART receive buffer (receive up to 1024*10 bytes at once) */
@@ -174,21 +174,6 @@ extern uint8_t UART1_in_update_mode;  /* Declare external variable */
 extern uint8_t UART1_Complete_flag;
 extern uint16_t rx_len;
 
-/**
- * @brief Execute protocol-based firmware update over UART with dual-image support
- * @details Complete firmware update process:
- *          
- * Update Flow:
- * 1. Select update target (inactive image)
- * 2. Mark update as started (updating=1)
- * 3. Erase target image region (48KB)
- * 4. Start DMA reception for incoming firmware data
- * 5. Main loop: receive and write firmware
- * 6. On success: Calculate CRC, switch to new image
- * 7. On failure: Keep old image active
- * 
- * @return 0 on success, -1 on erase failure, -2 on timeout, -3 on no data
- */
 /**
  * @brief 复制升级区代码到运行区
  * @param size 代码大小
@@ -222,7 +207,7 @@ int8_t IAP_Update(void)
     UART1_in_update_mode = 1;
     
     /* 1. 标记升级开始 */
-    g_config.update_flag = 1;
+    g_config.page_count = 1;
     Config_Write(&g_config);
     
     /* 2. Initialize protocol layer */
@@ -236,7 +221,7 @@ int8_t IAP_Update(void)
     uint8_t target_image = 0; // 0=升级区
     if (!Erase_Image(target_image))
     {
-        g_config.update_flag = 0;
+        g_config.page_count = 0;
         Config_Write(&g_config);
         UART1_in_update_mode = 0;
         return -1;
@@ -247,7 +232,7 @@ int8_t IAP_Update(void)
     /* 5. Start first DMA reception */
     status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
     if (status != HAL_OK) {
-        g_config.update_flag = 0;
+        g_config.page_count = 0;
         Config_Write(&g_config);
         UART1_in_update_mode = 0;
         return -1;
@@ -260,7 +245,7 @@ int8_t IAP_Update(void)
         /* Check total timeout (20 seconds) */
         if ((HAL_GetTick() - start_time) > 20000)
         {
-            g_config.update_flag = 0;
+            g_config.page_count = 0;
             Config_Write(&g_config);
             UART1_in_update_mode = 0;
             return -2;
@@ -304,7 +289,7 @@ int8_t IAP_Update(void)
                         /* 复制升级区代码到运行区 */
                         HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
                         if (Copy_Update_To_Runapp(total_received) != 0) {
-                            g_config.update_flag = 0;
+                            g_config.page_count = 0;
                             Config_Write(&g_config);
                             UART1_in_update_mode = 0;
                             HAL_UART_Transmit(&huart1, (uint8_t *)"copy failed\r\n", strlen("copy failed\r\n"), 100);
@@ -314,7 +299,7 @@ int8_t IAP_Update(void)
                         /* 验证运行区的CRC */
                         uint32_t run_crc = Calculate_Image_CRC(RUNAPP_REGION_BASE, total_received);
                         if (run_crc != update_crc) {
-                            g_config.update_flag = 0;
+                            g_config.page_count = 0;
                             Config_Write(&g_config);
                             UART1_in_update_mode = 0;
                             HAL_UART_Transmit(&huart1, (uint8_t *)"CRC check failed\r\n", strlen("CRC check failed\r\n"), 100);
@@ -322,9 +307,8 @@ int8_t IAP_Update(void)
                         }
                         
                         /* 更新配置 */
-                        g_config.run_size = total_received; // 运行区大小
-                        g_config.run_crc = run_crc;       // 运行区CRC
-                        g_config.update_flag = 0;          // 清除升级标志
+                        g_config.firmware_CRC = run_crc;       // 运行区CRC
+                        g_config.page_count = 0;          // 清除升级标志
                         Config_Write(&g_config);
                         
                         HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", strlen("update success\r\n"), 100);
@@ -333,7 +317,7 @@ int8_t IAP_Update(void)
                     }
                     else
                     {
-                        g_config.update_flag = 0;
+                        g_config.page_count = 0;
                         Config_Write(&g_config);
                         UART1_in_update_mode = 0;
                         return -3;
@@ -356,7 +340,7 @@ int8_t IAP_Update(void)
 /************************************************************************/
 int8_t IAP_Erase(void)
 {
-    uint8_t target = Select_Update_Target(&g_config);
+    uint8_t target = 0; // 固定升级区
     return Erase_Image(target) ? 0 : -1;
 }
 
@@ -377,4 +361,3 @@ void IAP_ConfirmBoot(void)
     Confirm_Boot_Success(&g_config);
 }
 	
-
