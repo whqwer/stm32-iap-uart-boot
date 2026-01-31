@@ -24,7 +24,7 @@ int8_t Config_Read(ImageConfig_t *config)
 {
     if (config == NULL) return -1;
     memcpy(config, (void*)CONFIG_BASE, sizeof(ImageConfig_t));
-    return (config->magic == CONFIG_MAGIC) ? 0 : -1;
+    return 0;
 }
 
 /**
@@ -57,7 +57,7 @@ int8_t Config_Write(const ImageConfig_t *config)
     uint64_t *src = (uint64_t*)config;
     uint32_t addr = CONFIG_BASE;
     
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 1; i++) {
         __attribute__((aligned(16))) uint64_t qw_data[2];
         qw_data[0] = src[i * 2];
         qw_data[1] = src[i * 2 + 1];
@@ -116,7 +116,7 @@ static uint32_t Detect_Firmware_Size(uint32_t image_base)
 
 /**
  * @brief Initialize config sector with default values
- * @details If valid firmware is detected at 运行区, auto-record CRC and size
+ * @details If valid firmware is detected at 运行区, auto-record CRC
  * @return 0=success, -1=failed
  */
 int8_t Config_Init(void)
@@ -127,6 +127,8 @@ int8_t Config_Init(void)
     uint32_t size_b = Detect_Firmware_Size(RUNAPP_REGION_BASE);
     if (size_b > 0) {
         default_config.firmware_CRC = crc32_c((uint8_t*)RUNAPP_REGION_BASE, size_b);
+        /* 计算页数 */
+        default_config.page_count = (size_b + PAGE_SIZE - 1) / PAGE_SIZE;
     }
     
     return Config_Write(&default_config);

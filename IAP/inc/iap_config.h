@@ -45,24 +45,19 @@
 /*============================================================================
  * Image Configuration Structure (Simplified)
  *============================================================================
- * Only 3 essential fields:
- * - magic: Config valid identifier
+ * Only 2 essential fields:
  * - page_count: Page counter (2 bytes)
  * - firmware_CRC: Firmware CRC32 value (4 bytes)
  *============================================================================*/
 
-#define CONFIG_MAGIC          0x41535444    /* "ASTD" in ASCII */
-
-/* Simplified Image Config Structure (8 bytes) */
+/* Simplified Image Config Structure (6 bytes) */
 typedef struct {
-    uint32_t magic;           /* Must be CONFIG_MAGIC (0x41535444) */
-    uint16_t page_count;       /* 页计数（用于判断是否需要升级） */
+    uint16_t page_count;       /* 页计数（固件占用页数） */
     uint32_t firmware_CRC;     /* 固件CRC32值 */
 } ImageConfig_t;
 
 /* Default config */
 #define IMAGE_CONFIG_DEFAULT { \
-    .magic = CONFIG_MAGIC,     \
     .page_count = 0,           \
     .firmware_CRC = 0           \
 }
