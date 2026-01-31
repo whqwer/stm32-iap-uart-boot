@@ -78,11 +78,11 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	/* Set vector table base address to start of flash */
-	/* This ensures interrupts work correctly in bootloader */
-	SCB->VTOR = 0x08000000;
-	  __DSB();  // Data Synchronization Barrier - ensure memory operations complete
-	  __ISB();  // Instruction Synchronization Barrier - flush instruction pipeline
+  /* Set vector table base address to start of flash */
+  /* This ensures interrupts work correctly in bootloader */
+  SCB->VTOR = 0x08000000;
+  __DSB();  // Data Synchronization Barrier - ensure memory operations complete
+  __ISB();  // Instruction Synchronization Barrier - flush instruction pipeline
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -111,42 +111,41 @@ int main(void)
   /* Sets up UART and prepares for firmware update or application jump */
   IAP_Init();
   // Debug: Uncomment to test direct UART transmission
-     HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
-     HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
-     HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
+  //  HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
+  //  HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
+  //  HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
   // Debug: Uncomment to force immediate jump to application
   //  IAP_RunApp();
-//     IAP_Update();
+  //  IAP_Update();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  /* Main Bootloader Decision Logic:
-	   * 
-	   * 1. 检查标志区是否需要升级
-	   * 2. 如果需要升级，执行IAP_Update()
-	   * 3. 升级完成后跳转到运行区
-	   * 4. 如果不需要升级，直接跳转到运行区
-	   */
-	  
-	  // 读取标志区数据，判断是否需要升级
-	  ImageConfig_t config;
-	  if (Config_Read(&config) == 0 && config.page_count != 0) {
-		  // 需要升级
-		  HAL_UART_Transmit(&huart1, "update mode\n", 12, 100);
-		  if (IAP_Update() == 0) {
-			  // 升级成功，跳转到运行区
-			  IAP_RunApp();
-		  }
-	  } else {
-		  // 不需要升级，直接跳转到运行区
-		  HAL_UART_Transmit(&huart1, "run mode\n", 9, 100);
-		  IAP_RunApp();
-	  }
-	  
-	  HAL_Delay(1000);
+    /* Main Bootloader Decision Logic:
+     *
+     * 1. Check if the flag area requires an upgrade
+     * 2. If upgrade is needed, execute IAP_Update()
+     * 3. After upgrade, jump to the run region
+     * 4. If no upgrade is needed, jump directly to the run region
+     */
+
+    // Read the flag area data to determine if an upgrade is needed
+    ImageConfig_t config;
+    if (Config_Read(&config) == 0 && config.page_count != 0) {
+      // Upgrade is needed
+      HAL_UART_Transmit(&huart1, "update mode\n", 12, 100);
+      if (IAP_Update() == 0) {
+        // Upgrade successful, jump to run region
+        IAP_RunApp();
+      }
+    } else {
+      // No upgrade needed, jump directly to run region
+      HAL_UART_Transmit(&huart1, "run mode\n", 9, 100);
+      IAP_RunApp();
+    }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

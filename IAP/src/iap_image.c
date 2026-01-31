@@ -86,31 +86,31 @@ static uint32_t Detect_Firmware_Size(uint32_t image_base)
     if (sp < 0x20000000 || sp > 0x20008000) {
         return 0;  /* Invalid stack pointer, no valid firmware */
     }
-    
+
     /* Check reset vector validity */
     uint32_t reset_vector = *(__IO uint32_t*)(image_base + 4);
     if (reset_vector < image_base || reset_vector > (image_base + RUNAPP_REGION_SIZE)) {
         return 0;  /* Invalid reset vector */
     }
-    
+
     /* Firmware exists, estimate size by scanning for end of code */
     /* Simple approach: scan backwards from max size to find non-0xFF data */
     uint32_t size = RUNAPP_REGION_SIZE;
     uint8_t *end_ptr = (uint8_t*)(image_base + size - 1);
-    
+
     while (size > 0 && *end_ptr == 0xFF) {
         end_ptr--;
         size--;
     }
-    
+
     /* Align to 16 bytes (quadword) */
     size = (size + 15) & ~15;
-    
+
     /* Minimum size check */
     if (size < 256) {
         size = 256;  /* At least 256 bytes for vector table */
     }
-    
+
     return size;
 }
 
@@ -122,15 +122,15 @@ static uint32_t Detect_Firmware_Size(uint32_t image_base)
 int8_t Config_Init(void)
 {
     ImageConfig_t default_config = IMAGE_CONFIG_DEFAULT;
-    
-    /* Auto-detect existing firmware at 运行区 */
+
+    /* Auto-detect existing firmware at run region */
     uint32_t size_b = Detect_Firmware_Size(RUNAPP_REGION_BASE);
     if (size_b > 0) {
         default_config.firmware_CRC = crc32_c((uint8_t*)RUNAPP_REGION_BASE, size_b);
-        /* 计算页数 */
+        /* Calculate page count */
         default_config.page_count = (size_b + PAGE_SIZE - 1) / PAGE_SIZE;
     }
-    
+
     return Config_Write(&default_config);
 }
 
@@ -151,27 +151,27 @@ uint32_t Calculate_Image_CRC(uint32_t image_base, uint32_t size)
 }
 
 /**
- * @brief Verify 运行区 validity (CRC and stack pointer check)
+ * @brief Verify run region validity (CRC and stack pointer check)
  * @param config Image management structure
  * @return 0=valid, -1=invalid
  */
-int8_t Verify_Run_Image(const ImageConfig_t *config)
-{
-    uint32_t image_base = RUNAPP_REGION_BASE;
-    uint32_t expected_crc = config->firmware_CRC;
-    
-    if (expected_crc == 0) return -1;
-    
-    /* Check stack pointer validity */
-    uint32_t sp = *(__IO uint32_t*)image_base;
-    if (sp < 0x20000000 || sp > 0x20008000) return -1;
-    
-    /* Calculate current CRC */
-    uint32_t current_crc = Calculate_Image_CRC(image_base, Detect_Firmware_Size(image_base));
-    
-    /* Compare CRC */
-    return (current_crc == expected_crc) ? 0 : -1;
-}
+//int8_t Verify_Run_Image(const ImageConfig_t *config)
+//{
+//    uint32_t image_base = RUNAPP_REGION_BASE;
+//    uint32_t expected_crc = config->firmware_CRC;
+//
+//    if (expected_crc == 0) return -1;
+//
+//    /* Check stack pointer validity */
+//    uint32_t sp = *(__IO uint32_t*)image_base;
+//    if (sp < 0x20000000 || sp > 0x20008000) return -1;
+//
+//    /* Calculate current CRC */
+//    uint32_t current_crc = Calculate_Image_CRC(image_base, Detect_Firmware_Size(image_base));
+//
+//    /* Compare CRC */
+//    return (current_crc == expected_crc) ? 0 : -1;
+//}
 
 /*============================================================================
  * Boot Image Selection
@@ -180,21 +180,21 @@ int8_t Verify_Run_Image(const ImageConfig_t *config)
 /**
  * @brief Select valid image region as boot entry on startup
  * @param config Image management structure (may be updated)
- * @return Image entry address (运行区), 0=no valid image
+ * @return Image entry address (run region), 0=no valid image
  */
-uint32_t Select_Boot_Image(ImageConfig_t *config)
-{
-    /* 检查page_count是否为0 */
-    if (config->page_count == 0) {
-        /* 不需要升级，检查运行区是否有效 */
-        if (Verify_Run_Image(config) == 0) {
-            return RUNAPP_REGION_BASE;
-        }
-    }
-    
-    /* page_count不为0，需要升级 */
-    return 0;  /* No valid image, enter update mode */
-}
+//uint32_t Select_Boot_Image(ImageConfig_t *config)
+//{
+//    /* Check if page_count is 0 */
+//    if (config->page_count == 0) {
+//        /* No update needed, check if run region is valid */
+//        if (Verify_Run_Image(config) == 0) {
+//            return RUNAPP_REGION_BASE;
+//        }
+//    }
+
+//    /* page_count is not 0, update needed */
+//    return 0;  /* No valid image, enter update mode */
+//}
 
 /*============================================================================
  * Update Operations
@@ -204,31 +204,31 @@ uint32_t Select_Boot_Image(ImageConfig_t *config)
  * @brief Mark update start, set page_count
  * @param config Image management structure
  */
-void Update_Start(ImageConfig_t *config, uint8_t target_image)
-{
-    config->page_count = 1;  /* 设置为1表示需要升级 */
-    Config_Write(config);
-}
+//void Update_Start(ImageConfig_t *config, uint8_t target_image)
+//{
+//    config->page_count = 1;  /* Set to 1 to indicate update needed */
+//    Config_Write(config);
+//}
 
 /**
  * @brief Update failed, clear page_count
  * @param config Image management structure
  */
-void Update_Failed(ImageConfig_t *config)
-{
-    config->page_count = 0;  /* 清除升级标志 */
-    Config_Write(config);
-}
+//void Update_Failed(ImageConfig_t *config)
+//{
+//    config->page_count = 0;  /* Clear update flag */
+//    Config_Write(config);
+//}
 
 /**
  * @brief After successful app boot, reset page_count
  * @param config Image management structure
  */
-void Confirm_Boot_Success(ImageConfig_t *config)
-{
-    config->page_count = 0;  /* 清除升级标志 */
-    Config_Write(config);
-}
+//void Confirm_Boot_Success(ImageConfig_t *config)
+//{
+//    config->page_count = 0;  /* Clear update flag */
+//    Config_Write(config);
+//}
 
 /*============================================================================
  * Flash Erase
@@ -236,7 +236,7 @@ void Confirm_Boot_Success(ImageConfig_t *config)
 
 /**
  * @brief Erase specified image region Flash space (auto handle Bank1/Bank2)
- * @param target_image 0=升级区, 1=运行区
+ * @param target_image 0=update region, 1=run region
  * @return 1=success, 0=failed
  */
 uint8_t Erase_Image(uint8_t target_image)

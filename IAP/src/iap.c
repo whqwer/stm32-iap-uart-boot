@@ -134,8 +134,8 @@ int8_t IAP_RunApp(void)
 
         /* 5. Set vector table offset to application address */
         SCB->VTOR = boot_address;
-        __DSB();  // 数据同步屏障
-        __ISB();  // 指令同步屏障
+        __DSB();  // Data Synchronization Barrier
+        __ISB();  // Instruction Synchronization Barrier
 
         /* 6. STM32H5 cache handling - clear and disable cache */
         #if (__ICACHE_PRESENT == 1)
@@ -179,9 +179,9 @@ extern uint8_t UART1_Complete_flag;
 extern uint16_t rx_len;
 
 /**
- * @brief 复制升级区代码到运行区
- * @param page_count 页数
- * @return 0=成功, -1=失败
+ * @brief Copy the update region code to the run region
+ * @param page_count Number of pages
+ * @return 0=success, -1=failure
  */
 static int8_t Copy_Update_To_Runapp(uint16_t page_count)
 {
@@ -189,8 +189,8 @@ static int8_t Copy_Update_To_Runapp(uint16_t page_count)
     uint32_t runapp_addr = RUNAPP_REGION_BASE;
     uint16_t remaining_pages = page_count;
     
-    /* 4. 擦除运行区 */
-       uint8_t target_image = 1; // 1=运行区
+    /* 4. Erase the run region */
+       uint8_t target_image = 1; // 1=run region
        if (!Erase_Image(target_image))
        {
            g_config.page_count = 0;
@@ -218,7 +218,7 @@ int8_t IAP_Update(void)
     uint32_t start_time;
     HAL_StatusTypeDef status;
     
-    /* 固定升级到升级区 */
+    /* Always update to the update region */
     g_update_target_addr = UPDATE_REGION_BASE;
     
     /* Set expected page count from config */
@@ -227,7 +227,7 @@ int8_t IAP_Update(void)
     /* Set flag: Enter Update mode */
     UART1_in_update_mode = 1;
     
-//    /* 1. 标记升级开始 */
+//    /* 1. Mark the start of the update */
 //    g_config.page_count = 1;
 //    Config_Write(&g_config);
     
@@ -238,8 +238,8 @@ int8_t IAP_Update(void)
     HAL_UART_Transmit(&huart1, (uint8_t *)"fireware update start at:", strlen("fireware update start at:"), 100);
     HAL_UART_Transmit(&huart1, (uint8_t*)"0x08008000\r\n", strlen("0x08008000\r\n"), 100);
     
-    /* 4. 擦除升级区 */
-    uint8_t target_image = 0; // 0=升级区
+    /* 4. Erase the update region */
+    uint8_t target_image = 0; // 0=update region
     if (!Erase_Image(target_image))
     {
         g_config.page_count = 0;
@@ -293,10 +293,10 @@ int8_t IAP_Update(void)
                     /* Get total received size for CRC calculation */
                     uint32_t total_received = Protocol_IAP_GetProgress();
                     
-                    /* 计算升级区的CRC */
+                    /* Calculate the CRC of the update region */
                     uint32_t update_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
                     
-                    /* 复制升级区代码到运行区 */
+                    /* Copy the update region code to the run region */
                     HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
                     if (Copy_Update_To_Runapp(g_expected_page_count) != 0) {
                         g_config.page_count = 0;
@@ -306,7 +306,7 @@ int8_t IAP_Update(void)
                         return -4;
                     }
                     
-                    /* 验证运行区的CRC */
+                    /* Verify the CRC of the run region */
                     uint32_t run_crc = Calculate_Image_CRC(RUNAPP_REGION_BASE, total_received);
                     if (run_crc != update_crc) {
                         g_config.page_count = 0;
@@ -316,9 +316,9 @@ int8_t IAP_Update(void)
                         return -5;
                     }
                     
-                    /* 更新配置 */
-                    g_config.firmware_CRC = run_crc;       // 运行区CRC
-                    g_config.page_count = 0;          // 清除升级标志
+                    /* Update the config */
+                    g_config.firmware_CRC = run_crc;       // CRC of run region
+                    g_config.page_count = 0;          // Clear update flag
                     Config_Write(&g_config);
                     
                     HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", strlen("update success\r\n"), 100);
@@ -349,7 +349,7 @@ int8_t IAP_Update(void)
 /************************************************************************/
 int8_t IAP_Erase(void)
 {
-    uint8_t target = 0; // 固定升级区
+    uint8_t target = 0; // Always update region
     return Erase_Image(target) ? 0 : -1;
 }
 

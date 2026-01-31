@@ -26,15 +26,15 @@
 #define BOOTLOADER_BASE       0x08000000
 #define BOOTLOADER_SIZE       (24 * 1024)   /* 24KB */
 
-/* Config Sector (标志区) ------------------*/
+/* Config Sector (Flag Area) ------------------*/
 #define CONFIG_BASE           0x08006000    /* Sector 3 */
 #define CONFIG_SIZE           (8 * 1024)    /* 8KB */
 
-/* 升级区 Region -----------------------------------------------*/
+/* Update Region -----------------------------------------------*/
 #define UPDATE_REGION_BASE    0x08008000    /* Sector 4 */
 #define UPDATE_REGION_SIZE    (48 * 1024)   /* 48KB (6 sectors) */
 
-/* 运行区 Region -----------------------------------------------*/
+/* RunApp Region -----------------------------------------------*/
 #define RUNAPP_REGION_BASE    0x08014000    /* Sector 10 */
 #define RUNAPP_REGION_SIZE    (48 * 1024)   /* 48KB (6 sectors) */
 
@@ -52,8 +52,8 @@
 
 /* Simplified Image Config Structure (6 bytes) */
 typedef struct {
-    uint16_t page_count;       /* 页计数（固件占用页数） */
-    uint32_t firmware_CRC;     /* 固件CRC32值 */
+    uint16_t page_count;       /* Page count (number of pages used by firmware) */
+    uint32_t firmware_CRC;     /* Firmware CRC32 value */
 } ImageConfig_t;
 
 /* Default config */
