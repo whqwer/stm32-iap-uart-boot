@@ -34,6 +34,9 @@ static ImageConfig_t g_config;
 /* Current update target address (used by protocol.c via extern) */
 __attribute__((used)) uint32_t g_update_target_addr = UPDATE_REGION_BASE;
 
+/* Expected total page count for update completion check */
+__attribute__((used)) uint16_t g_expected_page_count = 0;
+
 
 
 
@@ -176,20 +179,25 @@ extern uint16_t rx_len;
 
 /**
  * @brief 复制升级区代码到运行区
- * @param size 代码大小
+ * @param page_count 页数
  * @return 0=成功, -1=失败
  */
-static int8_t Copy_Update_To_Runapp(uint32_t size)
+static int8_t Copy_Update_To_Runapp(uint16_t page_count)
 {
-    // 计算需要复制的半字数量
-    uint16_t num_halfwords = size / 2;
-    if (size % 2 != 0) {
-        num_halfwords += 1; // 处理奇数大小
-    }
+    uint32_t update_addr = UPDATE_REGION_BASE;
+    uint32_t runapp_addr = RUNAPP_REGION_BASE;
+    uint16_t remaining_pages = page_count;
     
-    // 直接使用STMFLASH_Write函数复制数据
-    // STMFLASH_Write会自动处理擦除和写入操作
-    STMFLASH_Write(RUNAPP_REGION_BASE, (uint16_t*)UPDATE_REGION_BASE, num_halfwords);
+    while (remaining_pages > 0)
+    {
+        uint16_t num_halfwords = PAGE_SIZE / 2;
+        
+        STMFLASH_Write(runapp_addr, (uint16_t*)update_addr, num_halfwords);
+        
+        runapp_addr += PAGE_SIZE;
+        update_addr += PAGE_SIZE;
+        remaining_pages--;
+    }
     
     return 0;
 }
@@ -198,10 +206,12 @@ int8_t IAP_Update(void)
 {
     uint32_t start_time;
     HAL_StatusTypeDef status;
-    uint8_t consecutive_idle = 0;
     
     /* 固定升级到升级区 */
     g_update_target_addr = UPDATE_REGION_BASE;
+    
+    /* Set expected page count from config */
+    g_expected_page_count = g_config.page_count;
     
     /* Set flag: Enter Update mode */
     UART1_in_update_mode = 1;
@@ -264,8 +274,46 @@ int8_t IAP_Update(void)
                 Protocol_Receive(rx_buffer, rx_len);
                 memset(rx_buffer, 0, MAX_FRAME_SIZE);
                 
-                /* Reset idle count */
-                consecutive_idle = 0;
+                /* Check if last page received using page_index */
+                uint16_t current_page_index = Protocol_IAP_GetCurrentPageIndex();
+                
+                if (g_expected_page_count > 0 && current_page_index >= g_expected_page_count - 1)
+                {
+                    /* Get total received size for CRC calculation */
+                    uint32_t total_received = Protocol_IAP_GetProgress();
+                    
+                    /* 计算升级区的CRC */
+                    uint32_t update_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
+                    
+                    /* 复制升级区代码到运行区 */
+                    HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
+                    if (Copy_Update_To_Runapp(g_expected_page_count) != 0) {
+                        g_config.page_count = 0;
+                        Config_Write(&g_config);
+                        UART1_in_update_mode = 0;
+                        HAL_UART_Transmit(&huart1, (uint8_t *)"copy failed\r\n", strlen("copy failed\r\n"), 100);
+                        return -4;
+                    }
+                    
+                    /* 验证运行区的CRC */
+                    uint32_t run_crc = Calculate_Image_CRC(RUNAPP_REGION_BASE, total_received);
+                    if (run_crc != update_crc) {
+                        g_config.page_count = 0;
+                        Config_Write(&g_config);
+                        UART1_in_update_mode = 0;
+                        HAL_UART_Transmit(&huart1, (uint8_t *)"CRC check failed\r\n", strlen("CRC check failed\r\n"), 100);
+                        return -5;
+                    }
+                    
+                    /* 更新配置 */
+                    g_config.firmware_CRC = run_crc;       // 运行区CRC
+                    g_config.page_count = 0;          // 清除升级标志
+                    Config_Write(&g_config);
+                    
+                    HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", strlen("update success\r\n"), 100);
+                    UART1_in_update_mode = 0;
+                    return 0;
+                }
 
                 /* Restart DMA after processing */
                 HAL_UART_AbortReceive(&huart1);
@@ -274,61 +322,11 @@ int8_t IAP_Update(void)
                     huart1.hdmarx->XferHalfCpltCallback = NULL;
                 }
             }
-            else if(rx_len == 1 && rx_buffer[0] == 0xFF)
+            else
             {
-                consecutive_idle++;
-                if (consecutive_idle >= 1)
-                {
-                    uint32_t total_received = Protocol_IAP_GetProgress();
-
-                    if (total_received > 0)
-                    {
-                        /* 计算升级区的CRC */
-                        uint32_t update_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
-                        
-                        /* 复制升级区代码到运行区 */
-                        HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
-                        if (Copy_Update_To_Runapp(total_received) != 0) {
-                            g_config.page_count = 0;
-                            Config_Write(&g_config);
-                            UART1_in_update_mode = 0;
-                            HAL_UART_Transmit(&huart1, (uint8_t *)"copy failed\r\n", strlen("copy failed\r\n"), 100);
-                            return -4;
-                        }
-                        
-                        /* 验证运行区的CRC */
-                        uint32_t run_crc = Calculate_Image_CRC(RUNAPP_REGION_BASE, total_received);
-                        if (run_crc != update_crc) {
-                            g_config.page_count = 0;
-                            Config_Write(&g_config);
-                            UART1_in_update_mode = 0;
-                            HAL_UART_Transmit(&huart1, (uint8_t *)"CRC check failed\r\n", strlen("CRC check failed\r\n"), 100);
-                            return -5;
-                        }
-                        
-                        /* 更新配置 */
-                        g_config.firmware_CRC = run_crc;       // 运行区CRC
-                        g_config.page_count = 0;          // 清除升级标志
-                        Config_Write(&g_config);
-                        
-                        HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", strlen("update success\r\n"), 100);
-                        UART1_in_update_mode = 0;
-                        return 0;
-                    }
-                    else
-                    {
-                        g_config.page_count = 0;
-                        Config_Write(&g_config);
-                        UART1_in_update_mode = 0;
-                        return -3;
-                    }
-                }
-                else
-                {
-                    status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
-                    if (status == HAL_OK) {
-                        huart1.hdmarx->XferHalfCpltCallback = NULL;
-                    }
+                status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
+                if (status == HAL_OK) {
+                    huart1.hdmarx->XferHalfCpltCallback = NULL;
                 }
             }
         }

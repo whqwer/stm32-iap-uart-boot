@@ -77,6 +77,12 @@ int8_t Protocol_IAP_Update(uint32_t timeout_ms);
 uint32_t Protocol_IAP_GetProgress(void);
 
 /**
+ * @brief Get current page index from received frame
+ * @return Current page index (from frame_buf[5] and frame_buf[6], LSB format)
+ */
+uint16_t Protocol_IAP_GetCurrentPageIndex(void);
+
+/**
  * @brief Send a protocol frame over UART
  * @param receiver Receiver ID (destination address)
  * @param sender Sender ID (source address)

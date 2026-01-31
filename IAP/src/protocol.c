@@ -73,6 +73,8 @@ static uint32_t iap_write_addr = 0;       // Current Flash write address (set on
 #define iap_buffer frame_buf                      // Reuse frame_buf (5KB)
 static uint16_t iap_buf_idx = 0;          // Current buffer index
 static uint32_t iap_total_received = 0;   // Total bytes received
+static uint16_t current_page_index = 0;  // Current page index (from frame_buf[5] and frame_buf[6], LSB)
+extern uint16_t g_expected_page_count;    // Expected total page count from config
 
 
 
@@ -145,8 +147,8 @@ uint32_t crc32_c(const uint8_t *data, uint32_t len) {
  * @brief Decode escape sequences in received protocol frame
  * @details Reverses the escape encoding applied during transmission.
  *          Escape sequences used in protocol:
- *          - 0x7E (frame delimiter) → 0x7A 0x55 when inside frame
- *          - 0x7A (escape marker) → 0x7A 0xAA when inside frame
+ *          - 0x7E (frame delimiter) �?0x7A 0x55 when inside frame
+ *          - 0x7A (escape marker) �?0x7A 0xAA when inside frame
  *          
  *          The first and last bytes (frame delimiters 0x7E) are NOT escaped.
  *          Only interior bytes between start and end flags are processed.
@@ -201,8 +203,8 @@ uint32_t decode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
  *          This prevents data bytes from being confused with frame delimiters.
  *          
  *          Encoding rules (applied to interior bytes only):
- *          - 0x7E → 0x7A 0x55 (frame delimiter)
- *          - 0x7A → 0x7A 0xAA (escape marker)
+ *          - 0x7E �?0x7A 0x55 (frame delimiter)
+ *          - 0x7A �?0x7A 0xAA (escape marker)
  *          
  *          The first and last bytes (0x7E frame delimiters) are NOT escaped.
  * 
@@ -225,11 +227,11 @@ uint32_t encode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
     	}
     	else{
 			switch (src[i]) {
-				case START_END_FLAG:  // 0x7E → 0x7A 0x55
+				case START_END_FLAG:  // 0x7E �?0x7A 0x55
 					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
 					dst[dst_idx++] = ESCAPE_7E;       // 0x55
 					break;
-				case ESCAPE_FLAG:     // 0x7A → 0x7A 0xAA
+				case ESCAPE_FLAG:     // 0x7A �?0x7A 0xAA
 					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
 					dst[dst_idx++] = ESCAPE_7A;       // 0xAA
 					break;
@@ -299,6 +301,11 @@ void Protocol_IAP_Init(void)
 uint32_t Protocol_IAP_GetProgress(void)
 {
     return iap_total_received;
+}
+
+uint16_t Protocol_IAP_GetCurrentPageIndex(void)
+{
+    return current_page_index;
 }
 
 
@@ -375,6 +382,10 @@ void parse_byte(uint8_t byte)
 //					uint8_t receive=frame_buf[1];
 					uint8_t *firmware_data = &frame_buf[7];
 					uint32_t data_len = body_len - 7;
+					
+					// Read page index from frame_buf[5] and frame_buf[6] (LSB format)
+					current_page_index = (uint16_t)frame_buf[5] | ((uint16_t)frame_buf[6] << 8);
+					
 					memcpy(boot_to_FPGA_UL1,&frame_buf[3],4);
 					if ( data_len > 0)
 					{
