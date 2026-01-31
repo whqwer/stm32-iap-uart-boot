@@ -1,0 +1,10 @@
+../IAP/src/protocol.c:124:10:crc32_calc	2
+../IAP/src/protocol.c:140:10:crc32_c	1
+../IAP/src/protocol.c:163:10:decode_escape	7
+../IAP/src/protocol.c:218:10:encode_escape	6
+../IAP/src/protocol.c:267:6:Protocol_IAP_Init	2
+../IAP/src/protocol.c:299:10:Protocol_IAP_GetProgress	1
+../IAP/src/protocol.c:304:10:Protocol_IAP_GetCurrentPageIndex	1
+../IAP/src/protocol.c:511:6:send_protocol_frame	1
+../IAP/src/protocol.c:317:6:parse_byte	19
+../IAP/src/protocol.c:453:9:Protocol_Receive	8

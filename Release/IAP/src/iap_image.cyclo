@@ -1,0 +1,11 @@
+../IAP/src/iap_image.c:82:17:Detect_Firmware_Size.constprop	5
+../IAP/src/iap_image.c:23:8:Config_Read	2
+../IAP/src/iap_image.c:35:8:Config_Write	4
+../IAP/src/iap_image.c:122:8:Config_Init	2
+../IAP/src/iap_image.c:147:10:Calculate_Image_CRC	2
+../IAP/src/iap_image.c:158:8:Verify_Run_Image	3
+../IAP/src/iap_image.c:185:10:Select_Boot_Image	3
+../IAP/src/iap_image.c:207:6:Update_Start	1
+../IAP/src/iap_image.c:217:6:Update_Failed	1
+../IAP/src/iap_image.c:227:6:Confirm_Boot_Success	1
+../IAP/src/iap_image.c:242:9:Erase_Image	4

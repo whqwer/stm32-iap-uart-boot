@@ -66,7 +66,6 @@ static uint8_t in_frame = 0;
 //static uint8_t crc_bytes[4];
 
 // ==================== IAP Update State (Simplified) ====================
-static uint8_t iap_started = 0;           // Whether IAP has started
 /* Use external target address from iap.c for dual-image support */
 extern uint32_t g_update_target_addr;
 static uint32_t iap_write_addr = 0;       // Current Flash write address (set on init)
@@ -267,7 +266,6 @@ extern UART_HandleTypeDef huart1;
  */
 void Protocol_IAP_Init(void)
 {
-    iap_started = 0;
     /* Use dynamic target address from iap.c for dual-image support */
     iap_write_addr = g_update_target_addr;
     iap_buf_idx = 0;

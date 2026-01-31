@@ -92,17 +92,18 @@ extern UART_HandleTypeDef huart1;
 int8_t IAP_RunApp(void)
 {
     /* Select boot image using upgrade/runapp logic */
-    uint32_t boot_address = Select_Boot_Image(&g_config);
-
-    /* Send boot_address to host PC via UART1 as string */
-    const char *addr_str = (boot_address == 0x08008000) ? "0x08008000\r\n" :
-                           (boot_address == 0x08014000) ? "0x08014000\r\n" : "0x00000000\r\n";
-    HAL_UART_Transmit(&huart1, (uint8_t *)"program start at ", strlen("program start at "), 100);
-    HAL_UART_Transmit(&huart1, (uint8_t*)addr_str, strlen(addr_str), 100);
-
-    if (boot_address == 0) {
-        return -1;
-    }
+//    uint32_t boot_address = Select_Boot_Image(&g_config);
+//
+//    /* Send boot_address to host PC via UART1 as string */
+//    const char *addr_str = (boot_address == 0x08008000) ? "0x08008000\r\n" :
+//                           (boot_address == 0x08014000) ? "0x08014000\r\n" : "0x00000000\r\n";
+//    HAL_UART_Transmit(&huart1, (uint8_t *)"program start at ", strlen("program start at "), 100);
+//    HAL_UART_Transmit(&huart1, (uint8_t*)addr_str, strlen(addr_str), 100);
+//
+//    if (boot_address == 0) {
+//        return -1;
+//    }
+	uint32_t boot_address = RUNAPP_REGION_BASE;
 
     /* Read application's initial stack pointer */
     uint32_t sp = (*(__IO uint32_t*)boot_address);
@@ -188,6 +189,16 @@ static int8_t Copy_Update_To_Runapp(uint16_t page_count)
     uint32_t runapp_addr = RUNAPP_REGION_BASE;
     uint16_t remaining_pages = page_count;
     
+    /* 4. 擦除运行区 */
+       uint8_t target_image = 1; // 1=运行区
+       if (!Erase_Image(target_image))
+       {
+           g_config.page_count = 0;
+           Config_Write(&g_config);
+           UART1_in_update_mode = 0;
+           return -1;
+       }
+
     while (remaining_pages > 0)
     {
         uint16_t num_halfwords = PAGE_SIZE / 2;
@@ -216,9 +227,9 @@ int8_t IAP_Update(void)
     /* Set flag: Enter Update mode */
     UART1_in_update_mode = 1;
     
-    /* 1. 标记升级开始 */
-    g_config.page_count = 1;
-    Config_Write(&g_config);
+//    /* 1. 标记升级开始 */
+//    g_config.page_count = 1;
+//    Config_Write(&g_config);
     
     /* 2. Initialize protocol layer */
     Protocol_IAP_Init();
@@ -275,7 +286,7 @@ int8_t IAP_Update(void)
                 memset(rx_buffer, 0, MAX_FRAME_SIZE);
                 
                 /* Check if last page received using page_index */
-                uint16_t current_page_index = Protocol_IAP_GetCurrentPageIndex();
+                volatile uint16_t current_page_index = Protocol_IAP_GetCurrentPageIndex();
                 
                 if (g_expected_page_count > 0 && current_page_index >= g_expected_page_count - 1)
                 {
