@@ -50,16 +50,18 @@
  * - firmware_CRC: Firmware CRC32 value (4 bytes)
  *============================================================================*/
 
-/* Simplified Image Config Structure (6 bytes) */
+/* Simplified Image Config Structure (10 bytes) */
 typedef struct {
     uint16_t page_count;       /* Page count (number of pages used by firmware) */
     uint32_t firmware_CRC;     /* Firmware CRC32 value */
+    uint32_t version;          /* Firmware version number (preserved during updates) */
 } ImageConfig_t;
 
 /* Default config */
 #define IMAGE_CONFIG_DEFAULT { \
     .page_count = 0,           \
-    .firmware_CRC = 0           \
+    .firmware_CRC = 0,         \
+    .version = 0               \
 }
 
 #endif /* __IAP_CONFIG_H__ */

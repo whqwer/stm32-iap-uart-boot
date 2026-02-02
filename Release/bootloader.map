@@ -762,6 +762,10 @@ Discarded input sections
  .text          0x00000000        0x0 ./IAP/src/iap_image.o
  .data          0x00000000        0x0 ./IAP/src/iap_image.o
  .bss           0x00000000        0x0 ./IAP/src/iap_image.o
+ .text.Config_Set_Version
+                0x00000000       0x70 ./IAP/src/iap_image.o
+ .text.Config_Get_Version
+                0x00000000       0x16 ./IAP/src/iap_image.o
  .text          0x00000000        0x0 ./IAP/src/protocol.o
  .data          0x00000000        0x0 ./IAP/src/protocol.o
  .bss           0x00000000        0x0 ./IAP/src/protocol.o
@@ -1090,7 +1094,7 @@ LOAD /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.
                 0x08000000                g_pfnVectors
                 0x08000258                        . = ALIGN (0x4)
 
-.text           0x08000258     0x4888
+.text           0x08000258     0x48a8
                 0x08000258                        . = ALIGN (0x4)
  *(.text)
  .text          0x08000258       0x40 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
@@ -1487,162 +1491,162 @@ LOAD /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.
                 0x080040b4      0x20c ./IAP/src/iap.o
                 0x080040b4                IAP_Update
  .text.Config_Read
-                0x080042c0       0x1c ./IAP/src/iap_image.o
+                0x080042c0       0x20 ./IAP/src/iap_image.o
                 0x080042c0                Config_Read
  .text.Config_Write
-                0x080042dc       0x68 ./IAP/src/iap_image.o
-                0x080042dc                Config_Write
+                0x080042e0       0x80 ./IAP/src/iap_image.o
+                0x080042e0                Config_Write
  .text.Config_Init
-                0x08004344       0x74 ./IAP/src/iap_image.o
-                0x08004344                Config_Init
+                0x08004360       0x78 ./IAP/src/iap_image.o
+                0x08004360                Config_Init
  .text.Calculate_Image_CRC
-                0x080043b8       0x10 ./IAP/src/iap_image.o
-                0x080043b8                Calculate_Image_CRC
+                0x080043d8       0x10 ./IAP/src/iap_image.o
+                0x080043d8                Calculate_Image_CRC
  .text.Erase_Image
-                0x080043c8       0x74 ./IAP/src/iap_image.o
-                0x080043c8                Erase_Image
+                0x080043e8       0x74 ./IAP/src/iap_image.o
+                0x080043e8                Erase_Image
  .text.crc32_calc
-                0x0800443c       0x28 ./IAP/src/protocol.o
-                0x0800443c                crc32_calc
- .text.crc32_c  0x08004464        0xe ./IAP/src/protocol.o
-                0x08004464                crc32_c
+                0x0800445c       0x28 ./IAP/src/protocol.o
+                0x0800445c                crc32_calc
+ .text.crc32_c  0x08004484        0xe ./IAP/src/protocol.o
+                0x08004484                crc32_c
  .text.decode_escape
-                0x08004472       0x3e ./IAP/src/protocol.o
-                0x08004472                decode_escape
+                0x08004492       0x3e ./IAP/src/protocol.o
+                0x08004492                decode_escape
  .text.encode_escape
-                0x080044b0       0x44 ./IAP/src/protocol.o
-                0x080044b0                encode_escape
+                0x080044d0       0x44 ./IAP/src/protocol.o
+                0x080044d0                encode_escape
  .text.Protocol_IAP_Init
-                0x080044f4       0x6c ./IAP/src/protocol.o
-                0x080044f4                Protocol_IAP_Init
+                0x08004514       0x6c ./IAP/src/protocol.o
+                0x08004514                Protocol_IAP_Init
  .text.Protocol_IAP_GetProgress
-                0x08004560        0xc ./IAP/src/protocol.o
-                0x08004560                Protocol_IAP_GetProgress
+                0x08004580        0xc ./IAP/src/protocol.o
+                0x08004580                Protocol_IAP_GetProgress
  .text.Protocol_IAP_GetCurrentPageIndex
-                0x0800456c        0xc ./IAP/src/protocol.o
-                0x0800456c                Protocol_IAP_GetCurrentPageIndex
+                0x0800458c        0xc ./IAP/src/protocol.o
+                0x0800458c                Protocol_IAP_GetCurrentPageIndex
  .text.send_protocol_frame
-                0x08004578       0xc4 ./IAP/src/protocol.o
-                0x08004578                send_protocol_frame
+                0x08004598       0xc4 ./IAP/src/protocol.o
+                0x08004598                send_protocol_frame
  .text.parse_byte
-                0x0800463c      0x1b0 ./IAP/src/protocol.o
-                0x0800463c                parse_byte
+                0x0800465c      0x1b0 ./IAP/src/protocol.o
+                0x0800465c                parse_byte
  .text.Protocol_Receive
-                0x080047ec       0x94 ./IAP/src/protocol.o
-                0x080047ec                Protocol_Receive
+                0x0800480c       0x94 ./IAP/src/protocol.o
+                0x0800480c                Protocol_Receive
  .text.STMFLASH_Write_NoCheck.part.0
-                0x08004880       0x84 ./IAP/src/stmflash.o
+                0x080048a0       0x84 ./IAP/src/stmflash.o
  .text.STMFLASH_Read
-                0x08004904       0x14 ./IAP/src/stmflash.o
-                0x08004904                STMFLASH_Read
+                0x08004924       0x14 ./IAP/src/stmflash.o
+                0x08004924                STMFLASH_Read
  .text.STMFLASH_Write
-                0x08004918      0x13c ./IAP/src/stmflash.o
-                0x08004918                STMFLASH_Write
- .text.memset   0x08004a54       0x10 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v8-m.main+fp/hard/libc_nano.a(libc_a-memset.o)
-                0x08004a54                memset
+                0x08004938      0x13c ./IAP/src/stmflash.o
+                0x08004938                STMFLASH_Write
+ .text.memset   0x08004a74       0x10 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v8-m.main+fp/hard/libc_nano.a(libc_a-memset.o)
+                0x08004a74                memset
  .text.__libc_init_array
-                0x08004a64       0x48 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v8-m.main+fp/hard/libc_nano.a(libc_a-init.o)
-                0x08004a64                __libc_init_array
- .text.memcpy   0x08004aac       0x1a /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v8-m.main+fp/hard/libc_nano.a(libc_a-memcpy-stub.o)
-                0x08004aac                memcpy
+                0x08004a84       0x48 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v8-m.main+fp/hard/libc_nano.a(libc_a-init.o)
+                0x08004a84                __libc_init_array
+ .text.memcpy   0x08004acc       0x1a /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/../../../../arm-none-eabi/lib/thumb/v8-m.main+fp/hard/libc_nano.a(libc_a-memcpy-stub.o)
+                0x08004acc                memcpy
  *(.glue_7)
- .glue_7        0x08004ac6        0x0 linker stubs
+ .glue_7        0x08004ae6        0x0 linker stubs
  *(.glue_7t)
- .glue_7t       0x08004ac6        0x0 linker stubs
+ .glue_7t       0x08004ae6        0x0 linker stubs
  *(.eh_frame)
- *fill*         0x08004ac6        0x2 
- .eh_frame      0x08004ac8        0x0 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
+ *fill*         0x08004ae6        0x2 
+ .eh_frame      0x08004ae8        0x0 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
  *(.init)
- .init          0x08004ac8        0x4 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crti.o
-                0x08004ac8                _init
- .init          0x08004acc        0x8 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtn.o
+ .init          0x08004ae8        0x4 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crti.o
+                0x08004ae8                _init
+ .init          0x08004aec        0x8 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtn.o
  *(.fini)
- .fini          0x08004ad4        0x4 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crti.o
-                0x08004ad4                _fini
- .fini          0x08004ad8        0x8 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtn.o
-                0x08004ae0                        . = ALIGN (0x4)
-                0x08004ae0                        _etext = .
+ .fini          0x08004af4        0x4 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crti.o
+                0x08004af4                _fini
+ .fini          0x08004af8        0x8 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtn.o
+                0x08004b00                        . = ALIGN (0x4)
+                0x08004b00                        _etext = .
 
-.vfp11_veneer   0x08004ae0        0x0
- .vfp11_veneer  0x08004ae0        0x0 linker stubs
+.vfp11_veneer   0x08004b00        0x0
+ .vfp11_veneer  0x08004b00        0x0 linker stubs
 
-.v4_bx          0x08004ae0        0x0
- .v4_bx         0x08004ae0        0x0 linker stubs
+.v4_bx          0x08004b00        0x0
+ .v4_bx         0x08004b00        0x0 linker stubs
 
-.iplt           0x08004ae0        0x0
- .iplt          0x08004ae0        0x0 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
+.iplt           0x08004b00        0x0
+ .iplt          0x08004b00        0x0 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
 
-.rodata         0x08004ae0      0x4cc
-                0x08004ae0                        . = ALIGN (0x4)
+.rodata         0x08004b00      0x4cc
+                0x08004b00                        . = ALIGN (0x4)
  *(.rodata)
  *(.rodata*)
  .rodata.main.str1.1
-                0x08004ae0       0x8b ./Core/Src/main.o
+                0x08004b00       0x8b ./Core/Src/main.o
                                  0x17 (size before relaxing)
  .rodata.APBPrescTable
-                0x08004b6b        0x8 ./Core/Src/system_stm32h5xx.o
-                0x08004b6b                APBPrescTable
+                0x08004b8b        0x8 ./Core/Src/system_stm32h5xx.o
+                0x08004b8b                APBPrescTable
  .rodata.AHBPrescTable
-                0x08004b73       0x10 ./Core/Src/system_stm32h5xx.o
-                0x08004b73                AHBPrescTable
- *fill*         0x08004b83        0x1 
+                0x08004b93       0x10 ./Core/Src/system_stm32h5xx.o
+                0x08004b93                AHBPrescTable
+ *fill*         0x08004ba3        0x1 
  .rodata.UARTPrescTable
-                0x08004b84       0x18 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart.o
-                0x08004b84                UARTPrescTable
+                0x08004ba4       0x18 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart.o
+                0x08004ba4                UARTPrescTable
  .rodata.denominator.0
-                0x08004b9c        0x8 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.o
+                0x08004bbc        0x8 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.o
  .rodata.numerator.1
-                0x08004ba4        0x8 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.o
+                0x08004bc4        0x8 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.o
  .rodata.IAP_Update.str1.1
-                0x08004bac       0x74 ./IAP/src/iap.o
+                0x08004bcc       0x74 ./IAP/src/iap.o
  .rodata.crc32_table
-                0x08004bac      0x400 ./IAP/src/protocol.o
-                0x08004bac                crc32_table
-                0x08004fac                        . = ALIGN (0x4)
+                0x08004bcc      0x400 ./IAP/src/protocol.o
+                0x08004bcc                crc32_table
+                0x08004fcc                        . = ALIGN (0x4)
 
-.ARM.extab      0x08004fac        0x0
-                0x08004fac                        . = ALIGN (0x4)
+.ARM.extab      0x08004fcc        0x0
+                0x08004fcc                        . = ALIGN (0x4)
  *(.ARM.extab* .gnu.linkonce.armextab.*)
-                0x08004fac                        . = ALIGN (0x4)
+                0x08004fcc                        . = ALIGN (0x4)
 
-.ARM            0x08004fac        0x8
-                0x08004fac                        . = ALIGN (0x4)
-                0x08004fac                        __exidx_start = .
+.ARM            0x08004fcc        0x8
+                0x08004fcc                        . = ALIGN (0x4)
+                0x08004fcc                        __exidx_start = .
  *(.ARM.exidx*)
- .ARM.exidx     0x08004fac        0x8 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/libgcc.a(_udivmoddi4.o)
-                0x08004fb4                        __exidx_end = .
-                0x08004fb4                        . = ALIGN (0x4)
+ .ARM.exidx     0x08004fcc        0x8 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/libgcc.a(_udivmoddi4.o)
+                0x08004fd4                        __exidx_end = .
+                0x08004fd4                        . = ALIGN (0x4)
 
-.preinit_array  0x08004fb4        0x0
-                0x08004fb4                        . = ALIGN (0x4)
-                0x08004fb4                        PROVIDE (__preinit_array_start = .)
+.preinit_array  0x08004fd4        0x0
+                0x08004fd4                        . = ALIGN (0x4)
+                0x08004fd4                        PROVIDE (__preinit_array_start = .)
  *(.preinit_array*)
-                0x08004fb4                        PROVIDE (__preinit_array_end = .)
-                0x08004fb4                        . = ALIGN (0x4)
+                0x08004fd4                        PROVIDE (__preinit_array_end = .)
+                0x08004fd4                        . = ALIGN (0x4)
 
-.init_array     0x08004fb4        0x4
-                0x08004fb4                        . = ALIGN (0x4)
-                0x08004fb4                        PROVIDE (__init_array_start = .)
+.init_array     0x08004fd4        0x4
+                0x08004fd4                        . = ALIGN (0x4)
+                0x08004fd4                        PROVIDE (__init_array_start = .)
  *(SORT_BY_NAME(.init_array.*))
  *(.init_array*)
- .init_array    0x08004fb4        0x4 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
-                0x08004fb8                        PROVIDE (__init_array_end = .)
-                0x08004fb8                        . = ALIGN (0x4)
+ .init_array    0x08004fd4        0x4 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
+                0x08004fd8                        PROVIDE (__init_array_end = .)
+                0x08004fd8                        . = ALIGN (0x4)
 
-.fini_array     0x08004fb8        0x4
-                0x08004fb8                        . = ALIGN (0x4)
+.fini_array     0x08004fd8        0x4
+                0x08004fd8                        . = ALIGN (0x4)
                 [!provide]                        PROVIDE (__fini_array_start = .)
  *(SORT_BY_NAME(.fini_array.*))
  *(.fini_array*)
- .fini_array    0x08004fb8        0x4 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
+ .fini_array    0x08004fd8        0x4 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
                 [!provide]                        PROVIDE (__fini_array_end = .)
-                0x08004fbc                        . = ALIGN (0x4)
-                0x08004fbc                        _sidata = LOADADDR (.data)
+                0x08004fdc                        . = ALIGN (0x4)
+                0x08004fdc                        _sidata = LOADADDR (.data)
 
-.rel.dyn        0x08004fbc        0x0
- .rel.iplt      0x08004fbc        0x0 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
+.rel.dyn        0x08004fdc        0x0
+ .rel.iplt      0x08004fdc        0x0 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
 
-.data           0x20000000       0x2c load address 0x08004fbc
+.data           0x20000000       0x2c load address 0x08004fdc
                 0x20000000                        . = ALIGN (0x4)
                 0x20000000                        _sdata = .
  *(.data)
@@ -1667,11 +1671,11 @@ LOAD /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.
                 0x2000002c                        . = ALIGN (0x4)
                 0x2000002c                        _edata = .
 
-.igot.plt       0x2000002c        0x0 load address 0x08004fe8
+.igot.plt       0x2000002c        0x0 load address 0x08005008
  .igot.plt      0x2000002c        0x0 /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.13.3.rel1.linux64_1.0.0.202410170706/tools/bin/../lib/gcc/arm-none-eabi/13.3.1/thumb/v8-m.main+fp/hard/crtbegin.o
                 0x2000002c                        . = ALIGN (0x4)
 
-.bss            0x20000030     0x6280 load address 0x08004fe8
+.bss            0x20000030     0x6280 load address 0x08005008
                 0x20000030                        _sbss = .
                 0x20000030                        __bss_start__ = _sbss
  *(.bss)
@@ -1699,63 +1703,63 @@ LOAD /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.
                 0x200001d8        0x2 ./IAP/src/iap.o
                 0x200001d8                g_expected_page_count
  *fill*         0x200001da        0x2 
- .bss.g_config  0x200001dc        0x8 ./IAP/src/iap.o
+ .bss.g_config  0x200001dc        0xc ./IAP/src/iap.o
  .bss.JumpAddress
-                0x200001e4        0x4 ./IAP/src/iap.o
-                0x200001e4                JumpAddress
- .bss.Jump_To_Application
                 0x200001e8        0x4 ./IAP/src/iap.o
-                0x200001e8                Jump_To_Application
+                0x200001e8                JumpAddress
+ .bss.Jump_To_Application
+                0x200001ec        0x4 ./IAP/src/iap.o
+                0x200001ec                Jump_To_Application
  .bss.escaped_buf
-                0x200001ec       0x28 ./IAP/src/protocol.o
-                0x200001ec                escaped_buf
+                0x200001f0       0x28 ./IAP/src/protocol.o
+                0x200001f0                escaped_buf
  .bss.raw_frame
-                0x20000214       0x15 ./IAP/src/protocol.o
-                0x20000214                raw_frame
+                0x20000218       0x15 ./IAP/src/protocol.o
+                0x20000218                raw_frame
  .bss.crc_input_send
-                0x20000229       0x13 ./IAP/src/protocol.o
-                0x20000229                crc_input_send
- .bss.body      0x2000023c        0xf ./IAP/src/protocol.o
-                0x2000023c                body
+                0x2000022d       0x13 ./IAP/src/protocol.o
+                0x2000022d                crc_input_send
+ .bss.body      0x20000240        0xf ./IAP/src/protocol.o
+                0x20000240                body
  .bss.boot_to_FPGA_UL1
-                0x2000024b        0x8 ./IAP/src/protocol.o
-                0x2000024b                boot_to_FPGA_UL1
+                0x2000024f        0x8 ./IAP/src/protocol.o
+                0x2000024f                boot_to_FPGA_UL1
  .bss.crc_bytes
-                0x20000253        0x4 ./IAP/src/protocol.o
- *fill*         0x20000257        0x1 
+                0x20000257        0x4 ./IAP/src/protocol.o
+ *fill*         0x2000025b        0x1 
  .bss.current_page_index
-                0x20000258        0x2 ./IAP/src/protocol.o
- *fill*         0x2000025a        0x2 
+                0x2000025c        0x2 ./IAP/src/protocol.o
+ *fill*         0x2000025e        0x2 
  .bss.iap_total_received
-                0x2000025c        0x4 ./IAP/src/protocol.o
+                0x20000260        0x4 ./IAP/src/protocol.o
  .bss.iap_buf_idx
-                0x20000260        0x2 ./IAP/src/protocol.o
- *fill*         0x20000262        0x2 
+                0x20000264        0x2 ./IAP/src/protocol.o
+ *fill*         0x20000266        0x2 
  .bss.iap_write_addr
-                0x20000264        0x4 ./IAP/src/protocol.o
- .bss.in_frame  0x20000268        0x1 ./IAP/src/protocol.o
- *fill*         0x20000269        0x3 
+                0x20000268        0x4 ./IAP/src/protocol.o
+ .bss.in_frame  0x2000026c        0x1 ./IAP/src/protocol.o
+ *fill*         0x2000026d        0x3 
  .bss.frame_pos
-                0x2000026c        0x4 ./IAP/src/protocol.o
+                0x20000270        0x4 ./IAP/src/protocol.o
  .bss.rx_buffer
-                0x20000270     0x2800 ./IAP/src/protocol.o
-                0x20000270                rx_buffer
+                0x20000274     0x2800 ./IAP/src/protocol.o
+                0x20000274                rx_buffer
  .bss.frame_buf
-                0x20002a70     0x2800 ./IAP/src/protocol.o
- .bss.recv_crc  0x20005270        0x4 ./IAP/src/protocol.o
+                0x20002a74     0x2800 ./IAP/src/protocol.o
+ .bss.recv_crc  0x20005274        0x4 ./IAP/src/protocol.o
  .bss.recv_count
-                0x20005274        0x4 ./IAP/src/protocol.o
- .bss.body_offset
                 0x20005278        0x4 ./IAP/src/protocol.o
- .bss.body_len  0x2000527c        0x4 ./IAP/src/protocol.o
- .bss.state     0x20005280        0x1 ./IAP/src/protocol.o
- *fill*         0x20005281        0x1 
+ .bss.body_offset
+                0x2000527c        0x4 ./IAP/src/protocol.o
+ .bss.body_len  0x20005280        0x4 ./IAP/src/protocol.o
+ .bss.state     0x20005284        0x1 ./IAP/src/protocol.o
+ *fill*         0x20005285        0x1 
  .bss.STMFLASH_BUF
-                0x20005282     0x1000 ./IAP/src/stmflash.o
-                0x20005282                STMFLASH_BUF
+                0x20005286     0x1000 ./IAP/src/stmflash.o
+                0x20005286                STMFLASH_BUF
  .bss.temp_static
-                0x20006282       0x10 ./IAP/src/stmflash.o
- *fill*         0x20006292        0xe 
+                0x20006286       0x10 ./IAP/src/stmflash.o
+ *fill*         0x20006296        0xa 
  .bss.qw_data_static
                 0x200062a0       0x10 ./IAP/src/stmflash.o
  *(COMMON)
@@ -1764,7 +1768,7 @@ LOAD /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.
                 0x200062b0                        __bss_end__ = _ebss
 
 ._user_heap_stack
-                0x200062b0      0x600 load address 0x08004fe8
+                0x200062b0      0x600 load address 0x08005008
                 0x200062b0                        . = ALIGN (0x8)
                 [!provide]                        PROVIDE (end = .)
                 0x200062b0                        PROVIDE (_end = .)

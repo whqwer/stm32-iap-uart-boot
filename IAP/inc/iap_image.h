@@ -32,4 +32,8 @@ void Confirm_Boot_Success(ImageConfig_t *config);
 /* Flash erase */
 uint8_t Erase_Image(uint8_t target_image);
 
+/* Version management */
+int8_t Config_Set_Version(uint32_t new_version);
+uint32_t Config_Get_Version(void);
+
 #endif /* __IAP_IMAGE_H__ */

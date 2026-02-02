@@ -115,8 +115,6 @@ int main(void)
   //  HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
   //  HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
   // Debug: Uncomment to force immediate jump to application
-  //  IAP_RunApp();
-  //  IAP_Update();
   /* USER CODE END 2 */
 
   /* Infinite loop */

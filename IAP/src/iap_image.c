@@ -36,6 +36,16 @@ int8_t Config_Write(const ImageConfig_t *config)
 {
     if (config == NULL) return -1;
     
+    /* Read existing config to preserve version */
+    ImageConfig_t temp_config;
+    memcpy(&temp_config, config, sizeof(ImageConfig_t));
+    
+    ImageConfig_t existing_config;
+    if (Config_Read(&existing_config) == 0) {
+        /* Preserve the existing version number */
+        temp_config.version = existing_config.version;
+    }
+    
     HAL_StatusTypeDef status;
     FLASH_EraseInitTypeDef EraseInitStruct;
     uint32_t SectorError = 0;
@@ -54,7 +64,7 @@ int8_t Config_Write(const ImageConfig_t *config)
         return -1;
     }
     
-    uint64_t *src = (uint64_t*)config;
+    uint64_t *src = (uint64_t*)&temp_config;
     uint32_t addr = CONFIG_BASE;
     
     for (int i = 0; i < 1; i++) {
@@ -283,4 +293,80 @@ uint8_t Erase_Image(uint8_t target_image)
     
     HAL_FLASH_Lock();
     return 1;
+}
+
+/*============================================================================
+ * Version Management Functions
+ *============================================================================*/
+
+/**
+ * @brief Set firmware version number
+ * @param new_version New version number to set
+ * @return 0=success, -1=failed
+ * @note This function directly modifies only the version field in flash
+ */
+int8_t Config_Set_Version(uint32_t new_version)
+{
+    ImageConfig_t config;
+    
+    /* Read current config */
+    if (Config_Read(&config) != 0) {
+        return -1;
+    }
+    
+    /* Update version */
+    config.version = new_version;
+    
+    /* Write back to flash */
+    HAL_StatusTypeDef status;
+    FLASH_EraseInitTypeDef EraseInitStruct;
+    uint32_t SectorError = 0;
+    uint32_t config_sector = (CONFIG_BASE - STM32_FLASH_BASE) / PAGE_SIZE;
+    
+    HAL_FLASH_Unlock();
+    
+    EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
+    EraseInitStruct.Banks = FLASH_BANK_1;
+    EraseInitStruct.Sector = config_sector;
+    EraseInitStruct.NbSectors = 1;
+    
+    status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
+    if (status != HAL_OK) {
+        HAL_FLASH_Lock();
+        return -1;
+    }
+    
+    uint64_t *src = (uint64_t*)&config;
+    uint32_t addr = CONFIG_BASE;
+    
+    for (int i = 0; i < 1; i++) {
+        __attribute__((aligned(16))) uint64_t qw_data[2];
+        qw_data[0] = src[i * 2];
+        qw_data[1] = src[i * 2 + 1];
+        
+        status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, addr, (uint32_t)qw_data);
+        if (status != HAL_OK) {
+            HAL_FLASH_Lock();
+            return -1;
+        }
+        addr += 16;
+    }
+    
+    HAL_FLASH_Lock();
+    return 0;
+}
+
+/**
+ * @brief Get current firmware version number
+ * @return Current version number, 0 if read failed
+ */
+uint32_t Config_Get_Version(void)
+{
+    ImageConfig_t config;
+    
+    if (Config_Read(&config) != 0) {
+        return 0;
+    }
+    
+    return config.version;
 }

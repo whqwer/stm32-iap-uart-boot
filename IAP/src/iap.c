@@ -92,17 +92,7 @@ extern UART_HandleTypeDef huart1;
 int8_t IAP_RunApp(void)
 {
     /* Select boot image using upgrade/runapp logic */
-//    uint32_t boot_address = Select_Boot_Image(&g_config);
-//
-//    /* Send boot_address to host PC via UART1 as string */
-//    const char *addr_str = (boot_address == 0x08008000) ? "0x08008000\r\n" :
-//                           (boot_address == 0x08014000) ? "0x08014000\r\n" : "0x00000000\r\n";
-//    HAL_UART_Transmit(&huart1, (uint8_t *)"program start at ", strlen("program start at "), 100);
-//    HAL_UART_Transmit(&huart1, (uint8_t*)addr_str, strlen(addr_str), 100);
-//
-//    if (boot_address == 0) {
-//        return -1;
-//    }
+
 	uint32_t boot_address = RUNAPP_REGION_BASE;
 
     /* Read application's initial stack pointer */
@@ -227,9 +217,6 @@ int8_t IAP_Update(void)
     /* Set flag: Enter Update mode */
     UART1_in_update_mode = 1;
     
-//    /* 1. Mark the start of the update */
-//    g_config.page_count = 1;
-//    Config_Write(&g_config);
     
     /* 2. Initialize protocol layer */
     Protocol_IAP_Init();
@@ -318,7 +305,7 @@ int8_t IAP_Update(void)
                     
                     /* Update the config */
                     g_config.firmware_CRC = run_crc;       // CRC of run region
-                    g_config.page_count = 0;          // Clear update flag
+//                    g_config.page_count = 0;          // Clear update flag
                     Config_Write(&g_config);
                     
                     HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", strlen("update success\r\n"), 100);
