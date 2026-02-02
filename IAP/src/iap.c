@@ -250,6 +250,8 @@ int8_t IAP_Update(void)
     /* 6. Main loop: wait and process data */
     while (1)
     {
+    	// Feed the watchdog to prevent reset
+    	IWDG->KR = 0xAAAA;
         /* Check total timeout (20 seconds) */
         if ((HAL_GetTick() - start_time) > 20000)
         {

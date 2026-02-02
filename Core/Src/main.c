@@ -16,7 +16,6 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "gpdma.h"
@@ -63,16 +62,8 @@ void SystemClock_Config(void);
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point for IAP Bootloader
-  * @details Bootloader Main Flow:
-  *          1. Initialize vector table and barriers
-  *          2. Initialize HAL and system clock
-  *          3. Initialize peripherals (GPIO, DMA, UART)
-  *          4. Initialize IAP module
-  *          5. Main loop: Check for firmware update request
-  *             - If update requested: receive and flash firmware
-  *             - If no update: jump to user application
-  * @retval int (should never return)
+  * @brief  The application entry point.
+  * @retval int
   */
 int main(void)
 {
@@ -128,6 +119,7 @@ int main(void)
      * 3. After upgrade, jump to the run region
      * 4. If no upgrade is needed, jump directly to the run region
      */
+	  IWDG->KR = 0xAAAA;
 
     // Read the flag area data to determine if an upgrade is needed
     ImageConfig_t config;
@@ -230,7 +222,7 @@ void Error_Handler(void)
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
   * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source
+  * @param  line: assert_param error line source number
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
