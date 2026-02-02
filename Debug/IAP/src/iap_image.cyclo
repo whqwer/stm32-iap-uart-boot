@@ -1,7 +1,5 @@
 ../IAP/src/iap_image.c:23:8:Config_Read	2
 ../IAP/src/iap_image.c:35:8:Config_Write	4
-../IAP/src/iap_image.c:132:8:Config_Init	5
-../IAP/src/iap_image.c:157:10:Calculate_Image_CRC	2
-../IAP/src/iap_image.c:252:9:Erase_Image	4
-../IAP/src/iap_image.c:308:8:Config_Set_Version	3
-../IAP/src/iap_image.c:363:10:Config_Get_Version	1
+../IAP/src/iap_image.c:136:8:Config_Init	5
+../IAP/src/iap_image.c:161:10:Calculate_Image_CRC	2
+../IAP/src/iap_image.c:256:9:Erase_Image	4

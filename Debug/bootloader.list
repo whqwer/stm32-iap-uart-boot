@@ -5,49 +5,49 @@ Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
   0 .isr_vector   00000258  08000000  08000000  00001000  2**0
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  1 .text         0000571c  08000258  08000258  00001258  2**3
+  1 .text         0000572c  08000258  08000258  00001258  2**3
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       000004dc  08005974  08005974  00006974  2**2
+  2 .rodata       000004dc  08005984  08005984  00006984  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  3 .ARM.extab    00000000  08005e50  08005e50  0000702c  2**0
+  3 .ARM.extab    00000000  08005e60  08005e60  0000702c  2**0
                   CONTENTS, READONLY
-  4 .ARM          00000008  08005e50  08005e50  00006e50  2**2
+  4 .ARM          00000008  08005e60  08005e60  00006e60  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  5 .preinit_array 00000000  08005e58  08005e58  0000702c  2**0
+  5 .preinit_array 00000000  08005e68  08005e68  0000702c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  6 .init_array   00000004  08005e58  08005e58  00006e58  2**2
+  6 .init_array   00000004  08005e68  08005e68  00006e68  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  7 .fini_array   00000004  08005e5c  08005e5c  00006e5c  2**2
+  7 .fini_array   00000004  08005e6c  08005e6c  00006e6c  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  8 .data         0000002c  20000000  08005e60  00007000  2**2
+  8 .data         0000002c  20000000  08005e70  00007000  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  9 .bss          00006280  20000030  08005e8c  00007030  2**4
+  9 .bss          00006280  20000030  08005e9c  00007030  2**4
                   ALLOC
- 10 ._user_heap_stack 00000600  200062b0  08005e8c  000072b0  2**0
+ 10 ._user_heap_stack 00000600  200062b0  08005e9c  000072b0  2**0
                   ALLOC
  11 .ARM.attributes 00000036  00000000  00000000  0000702c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001d6ef  00000000  00000000  00007062  2**0
+ 12 .debug_info   0001d57f  00000000  00000000  00007062  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00003ffb  00000000  00000000  00024751  2**0
+ 13 .debug_abbrev 00003f8a  00000000  00000000  000245e1  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000ce0  00000000  00000000  00028750  2**3
+ 14 .debug_aranges 00000cd0  00000000  00000000  00028570  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00001b21  00000000  00000000  00029430  2**0
+ 15 .debug_rnglists 00001af1  00000000  00000000  00029240  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00020c1b  00000000  00000000  0002af51  2**0
+ 16 .debug_macro  00020c1b  00000000  00000000  0002ad31  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0001f44d  00000000  00000000  0004bb6c  2**0
+ 17 .debug_line   0001f362  00000000  00000000  0004b94c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000c3725  00000000  00000000  0006afb9  2**0
+ 18 .debug_str    000c3708  00000000  00000000  0006acae  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  0012e6de  2**0
+ 19 .comment      00000043  00000000  00000000  0012e3b6  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  0000264c  00000000  00000000  0012e724  2**2
+ 20 .debug_frame  00002618  00000000  00000000  0012e3fc  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_loclists 0000e494  00000000  00000000  00130d70  2**0
+ 21 .debug_loclists 0000e40a  00000000  00000000  00130a14  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 22 .debug_line_str 0000005d  00000000  00000000  0013f204  2**0
+ 22 .debug_line_str 0000005d  00000000  00000000  0013ee1e  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -66,7 +66,7 @@ Disassembly of section .text:
  800026e:	bd10      	pop	{r4, pc}
  8000270:	20000030 	.word	0x20000030
  8000274:	00000000 	.word	0x00000000
- 8000278:	0800595c 	.word	0x0800595c
+ 8000278:	0800596c 	.word	0x0800596c
 
 0800027c <frame_dummy>:
  800027c:	b508      	push	{r3, lr}
@@ -78,7 +78,7 @@ Disassembly of section .text:
  800028a:	bd08      	pop	{r3, pc}
  800028c:	00000000 	.word	0x00000000
  8000290:	20000034 	.word	0x20000034
- 8000294:	0800595c 	.word	0x0800595c
+ 8000294:	0800596c 	.word	0x0800596c
 
 08000298 <__aeabi_uldivmod>:
  8000298:	b953      	cbnz	r3, 80002b0 <__aeabi_uldivmod+0x18>
@@ -495,7 +495,7 @@ void SystemClock_Config(void)
  800069c:	2220      	movs	r2, #32
  800069e:	2100      	movs	r1, #0
  80006a0:	a80a      	add	r0, sp, #40	@ 0x28
- 80006a2:	f005 f921 	bl	80058e8 <memset>
+ 80006a2:	f005 f929 	bl	80058f8 <memset>
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
  80006a6:	2300      	movs	r3, #0
  80006a8:	e9cd 3302 	strd	r3, r3, [sp, #8]
@@ -633,22 +633,22 @@ void Error_Handler(void)
  800075c:	b662      	cpsie	i
   SystemClock_Config();
  800075e:	f7ff ff9b 	bl	8000698 <SystemClock_Config>
-      HAL_UART_Transmit(&huart1, "run mode\n", 9, 100);
+      HAL_UART_Transmit(&huart1, (uint8_t *)"run mode\n", 9, 100);
  8000762:	4d14      	ldr	r5, [pc, #80]	@ (80007b4 <main+0x70>)
   MX_GPIO_Init();
  8000764:	f7ff ff7a 	bl	800065c <MX_GPIO_Init>
-      HAL_UART_Transmit(&huart1, "run mode\n", 9, 100);
+      HAL_UART_Transmit(&huart1, (uint8_t *)"run mode\n", 9, 100);
  8000768:	4c13      	ldr	r4, [pc, #76]	@ (80007b8 <main+0x74>)
   MX_GPDMA1_Init();
  800076a:	f7ff ff53 	bl	8000614 <MX_GPDMA1_Init>
-      HAL_UART_Transmit(&huart1, "update mode\n", 12, 100);
+      HAL_UART_Transmit(&huart1, (uint8_t *)"update mode\n", 12, 100);
  800076e:	4e13      	ldr	r6, [pc, #76]	@ (80007bc <main+0x78>)
   MX_USART1_UART_Init();
  8000770:	f000 f8e4 	bl	800093c <MX_USART1_UART_Init>
   IAP_Init();
  8000774:	f004 f96e 	bl	8004a54 <IAP_Init>
  8000778:	e00a      	b.n	8000790 <main+0x4c>
-      HAL_UART_Transmit(&huart1, "update mode\n", 12, 100);
+      HAL_UART_Transmit(&huart1, (uint8_t *)"update mode\n", 12, 100);
  800077a:	2364      	movs	r3, #100	@ 0x64
  800077c:	220c      	movs	r2, #12
  800077e:	4631      	mov	r1, r6
@@ -666,7 +666,7 @@ void Error_Handler(void)
  8000798:	f8bd 3004 	ldrh.w	r3, [sp, #4]
  800079c:	2b00      	cmp	r3, #0
  800079e:	d1ec      	bne.n	800077a <main+0x36>
-      HAL_UART_Transmit(&huart1, "run mode\n", 9, 100);
+      HAL_UART_Transmit(&huart1, (uint8_t *)"run mode\n", 9, 100);
  80007a0:	2364      	movs	r3, #100	@ 0x64
  80007a2:	2209      	movs	r2, #9
  80007a4:	4629      	mov	r1, r5
@@ -675,9 +675,9 @@ void Error_Handler(void)
  80007ac:	e7ee      	b.n	800078c <main+0x48>
  80007ae:	bf00      	nop
  80007b0:	e000ed00 	.word	0xe000ed00
- 80007b4:	08005984 	.word	0x08005984
+ 80007b4:	08005994 	.word	0x08005994
  80007b8:	20000140 	.word	0x20000140
- 80007bc:	08005974 	.word	0x08005974
+ 80007bc:	08005984 	.word	0x08005984
 
 080007c0 <Error_Handler>:
   __ASM volatile ("cpsid i" : : : "memory");
@@ -1181,7 +1181,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
  80009dc:	e9cd 1105 	strd	r1, r1, [sp, #20]
  80009e0:	9107      	str	r1, [sp, #28]
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
- 80009e2:	f004 ff81 	bl	80058e8 <memset>
+ 80009e2:	f004 ff89 	bl	80058f8 <memset>
   if(uartHandle->Instance==USART1)
  80009e6:	4b53      	ldr	r3, [pc, #332]	@ (8000b34 <HAL_UART_MspInit+0x168>)
  80009e8:	6822      	ldr	r2, [r4, #0]
@@ -1592,7 +1592,7 @@ LoopFillZerobss:
  8000c02:	f7ff fe51 	bl	80008a8 <SystemInit>
 /* Call static constructors */
     bl __libc_init_array
- 8000c06:	f004 fe77 	bl	80058f8 <__libc_init_array>
+ 8000c06:	f004 fe7f 	bl	8005908 <__libc_init_array>
 /* Call the application's entry point.*/
 	bl	main
  8000c0a:	f7ff fd9b 	bl	8000744 <main>
@@ -1605,7 +1605,7 @@ LoopForever:
   ldr   sp, =_estack    /* set stack pointer */
  8000c10:	20008000 	.word	0x20008000
 	ldr	r3, =_sidata
- 8000c14:	08005e60 	.word	0x08005e60
+ 8000c14:	08005e70 	.word	0x08005e70
 	ldr	r0, =_sdata
  8000c18:	20000000 	.word	0x20000000
 	ldr	r3, =_edata
@@ -1833,7 +1833,7 @@ __weak HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
  8000d60:	bd10      	pop	{r4, pc}
  8000d62:	bf00      	nop
  8000d64:	44020c00 	.word	0x44020c00
- 8000d68:	08005a18 	.word	0x08005a18
+ 8000d68:	08005a28 	.word	0x08005a28
  8000d6c:	20000000 	.word	0x20000000
 
 08000d70 <HAL_IncTick>:
@@ -5121,7 +5121,7 @@ uint32_t HAL_RCC_GetHCLKFreq(void)
  800214a:	bf00      	nop
  800214c:	44020c00 	.word	0x44020c00
  8002150:	03d09000 	.word	0x03d09000
- 8002154:	08005a18 	.word	0x08005a18
+ 8002154:	08005a28 	.word	0x08005a28
  8002158:	20000000 	.word	0x20000000
  800215c:	20000008 	.word	0x20000008
           if ((HAL_GetTick() - tickstart) > RCC_PLL_TIMEOUT_VALUE)
@@ -5623,7 +5623,7 @@ uint32_t HAL_RCC_GetHCLKFreq(void)
  800252c:	40022000 	.word	0x40022000
  8002530:	44020c00 	.word	0x44020c00
  8002534:	03d09000 	.word	0x03d09000
- 8002538:	08005a18 	.word	0x08005a18
+ 8002538:	08005a28 	.word	0x08005a28
  800253c:	20000008 	.word	0x20000008
  8002540:	20000000 	.word	0x20000000
  8002544:	003d0900 	.word	0x003d0900
@@ -5745,7 +5745,7 @@ uint32_t HAL_RCC_GetHCLKFreq(void)
  8002616:	e7e0      	b.n	80025da <HAL_RCC_GetHCLKFreq+0x26>
  8002618:	44020c00 	.word	0x44020c00
  800261c:	03d09000 	.word	0x03d09000
- 8002620:	08005a18 	.word	0x08005a18
+ 8002620:	08005a28 	.word	0x08005a28
  8002624:	20000000 	.word	0x20000000
  8002628:	003d0900 	.word	0x003d0900
  800262c:	016e3600 	.word	0x016e3600
@@ -5824,9 +5824,9 @@ uint32_t HAL_RCC_GetPCLK1Freq(void)
  80026a6:	e7d6      	b.n	8002656 <HAL_RCC_GetPCLK1Freq+0x26>
  80026a8:	44020c00 	.word	0x44020c00
  80026ac:	03d09000 	.word	0x03d09000
- 80026b0:	08005a18 	.word	0x08005a18
+ 80026b0:	08005a28 	.word	0x08005a28
  80026b4:	20000000 	.word	0x20000000
- 80026b8:	08005a10 	.word	0x08005a10
+ 80026b8:	08005a20 	.word	0x08005a20
  80026bc:	003d0900 	.word	0x003d0900
  80026c0:	016e3600 	.word	0x016e3600
 
@@ -5904,9 +5904,9 @@ uint32_t HAL_RCC_GetPCLK2Freq(void)
  800273a:	e7d6      	b.n	80026ea <HAL_RCC_GetPCLK2Freq+0x26>
  800273c:	44020c00 	.word	0x44020c00
  8002740:	03d09000 	.word	0x03d09000
- 8002744:	08005a18 	.word	0x08005a18
+ 8002744:	08005a28 	.word	0x08005a28
  8002748:	20000000 	.word	0x20000000
- 800274c:	08005a10 	.word	0x08005a10
+ 800274c:	08005a20 	.word	0x08005a20
  8002750:	003d0900 	.word	0x003d0900
  8002754:	016e3600 	.word	0x016e3600
 
@@ -5984,9 +5984,9 @@ uint32_t HAL_RCC_GetPCLK3Freq(void)
  80027ce:	e7d6      	b.n	800277e <HAL_RCC_GetPCLK3Freq+0x26>
  80027d0:	44020c00 	.word	0x44020c00
  80027d4:	03d09000 	.word	0x03d09000
- 80027d8:	08005a18 	.word	0x08005a18
+ 80027d8:	08005a28 	.word	0x08005a28
  80027dc:	20000000 	.word	0x20000000
- 80027e0:	08005a10 	.word	0x08005a10
+ 80027e0:	08005a20 	.word	0x08005a20
  80027e4:	003d0900 	.word	0x003d0900
  80027e8:	016e3600 	.word	0x016e3600
 
@@ -10324,7 +10324,7 @@ static void UART_EndTransmit_IT(UART_HandleTypeDef *huart)
  8004788:	40013800 	.word	0x40013800
  800478c:	40004400 	.word	0x40004400
  8004790:	40004800 	.word	0x40004800
- 8004794:	08005a28 	.word	0x08005a28
+ 8004794:	08005a38 	.word	0x08005a38
  8004798:	000ffcff 	.word	0x000ffcff
 
 0800479c <UART_Start_Receive_DMA>:
@@ -10592,8 +10592,8 @@ __weak void HAL_UARTEx_TxFifoEmptyCallback(UART_HandleTypeDef *huart)
 }
  80048f8:	4770      	bx	lr
  80048fa:	bf00      	nop
- 80048fc:	08005a48 	.word	0x08005a48
- 8004900:	08005a40 	.word	0x08005a40
+ 80048fc:	08005a58 	.word	0x08005a58
+ 8004900:	08005a50 	.word	0x08005a50
 
 08004904 <HAL_UARTEx_SetTxFifoThreshold>:
   __HAL_LOCK(huart);
@@ -10678,8 +10678,8 @@ __weak void HAL_UARTEx_TxFifoEmptyCallback(UART_HandleTypeDef *huart)
  800497c:	2002      	movs	r0, #2
 }
  800497e:	4770      	bx	lr
- 8004980:	08005a48 	.word	0x08005a48
- 8004984:	08005a40 	.word	0x08005a40
+ 8004980:	08005a58 	.word	0x08005a58
+ 8004984:	08005a50 	.word	0x08005a50
 
 08004988 <HAL_UARTEx_SetRxFifoThreshold>:
   __HAL_LOCK(huart);
@@ -10764,8 +10764,8 @@ __weak void HAL_UARTEx_TxFifoEmptyCallback(UART_HandleTypeDef *huart)
  8004a00:	2002      	movs	r0, #2
 }
  8004a02:	4770      	bx	lr
- 8004a04:	08005a48 	.word	0x08005a48
- 8004a08:	08005a40 	.word	0x08005a40
+ 8004a04:	08005a58 	.word	0x08005a58
+ 8004a08:	08005a50 	.word	0x08005a50
 
 08004a0c <HAL_UARTEx_ReceiveToIdle_DMA>:
 {
@@ -10842,7 +10842,7 @@ void IAP_Init(void)
 }
  8004a5e:	bd08      	pop	{r3, pc}
         Config_Init();
- 8004a60:	f000 f9d6 	bl	8004e10 <Config_Init>
+ 8004a60:	f000 f9de 	bl	8004e20 <Config_Init>
 }
  8004a64:	e8bd 4008 	ldmia.w	sp!, {r3, lr}
         Config_Read(&g_config);
@@ -11034,7 +11034,7 @@ int8_t IAP_RunApp(void)
  8004b46:	4a7a      	ldr	r2, [pc, #488]	@ (8004d30 <IAP_Update+0x208>)
  8004b48:	7013      	strb	r3, [r2, #0]
     Protocol_IAP_Init();
- 8004b4a:	f000 f9f9 	bl	8004f40 <Protocol_IAP_Init>
+ 8004b4a:	f000 fa01 	bl	8004f50 <Protocol_IAP_Init>
     HAL_UART_Transmit(&huart1, (uint8_t *)"fireware update start at:", strlen("fireware update start at:"), 100);
  8004b4e:	2364      	movs	r3, #100	@ 0x64
  8004b50:	2219      	movs	r2, #25
@@ -11052,7 +11052,7 @@ int8_t IAP_RunApp(void)
     uint8_t target_image = 0; // 0=update region
     if (!Erase_Image(target_image))
  8004b66:	2000      	movs	r0, #0
- 8004b68:	f000 f99c 	bl	8004ea4 <Erase_Image>
+ 8004b68:	f000 f9a4 	bl	8004eb4 <Erase_Image>
  8004b6c:	2800      	cmp	r0, #0
  8004b6e:	f000 80a9 	beq.w	8004cc4 <IAP_Update+0x19c>
         Config_Write(&g_config);
@@ -11107,14 +11107,14 @@ int8_t IAP_RunApp(void)
  8004b98:	e026      	b.n	8004be8 <IAP_Update+0xc0>
                 Protocol_Receive(rx_buffer, rx_len);
  8004b9a:	4638      	mov	r0, r7
- 8004b9c:	f000 fcd4 	bl	8005548 <Protocol_Receive>
+ 8004b9c:	f000 fcdc 	bl	8005558 <Protocol_Receive>
                 memset(rx_buffer, 0, MAX_FRAME_SIZE);
  8004ba0:	f44f 5220 	mov.w	r2, #10240	@ 0x2800
  8004ba4:	4659      	mov	r1, fp
  8004ba6:	4638      	mov	r0, r7
- 8004ba8:	f000 fe9e 	bl	80058e8 <memset>
+ 8004ba8:	f000 fea6 	bl	80058f8 <memset>
                 volatile uint16_t current_page_index = Protocol_IAP_GetCurrentPageIndex();
- 8004bac:	f000 fa06 	bl	8004fbc <Protocol_IAP_GetCurrentPageIndex>
+ 8004bac:	f000 fa0e 	bl	8004fcc <Protocol_IAP_GetCurrentPageIndex>
  8004bb0:	4603      	mov	r3, r0
                 if (g_expected_page_count > 0 && current_page_index >= g_expected_page_count - 1)
  8004bb2:	f8ba 2000 	ldrh.w	r2, [sl]
@@ -11207,12 +11207,12 @@ int8_t IAP_RunApp(void)
  8004c3e:	b003      	add	sp, #12
  8004c40:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
                     uint32_t total_received = Protocol_IAP_GetProgress();
- 8004c44:	f000 f9b4 	bl	8004fb0 <Protocol_IAP_GetProgress>
+ 8004c44:	f000 f9bc 	bl	8004fc0 <Protocol_IAP_GetProgress>
  8004c48:	4607      	mov	r7, r0
                     uint32_t update_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
  8004c4a:	4836      	ldr	r0, [pc, #216]	@ (8004d24 <IAP_Update+0x1fc>)
  8004c4c:	4639      	mov	r1, r7
- 8004c4e:	f000 f921 	bl	8004e94 <Calculate_Image_CRC>
+ 8004c4e:	f000 f929 	bl	8004ea4 <Calculate_Image_CRC>
                     HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
  8004c52:	2364      	movs	r3, #100	@ 0x64
  8004c54:	221a      	movs	r2, #26
@@ -11227,7 +11227,7 @@ int8_t IAP_RunApp(void)
                     if (Copy_Update_To_Runapp(g_expected_page_count) != 0) {
  8004c62:	f8ba 4000 	ldrh.w	r4, [sl]
        if (!Erase_Image(target_image))
- 8004c66:	f000 f91d 	bl	8004ea4 <Erase_Image>
+ 8004c66:	f000 f925 	bl	8004eb4 <Erase_Image>
  8004c6a:	4605      	mov	r5, r0
  8004c6c:	2800      	cmp	r0, #0
  8004c6e:	d043      	beq.n	8004cf8 <IAP_Update+0x1d0>
@@ -11246,14 +11246,14 @@ int8_t IAP_RunApp(void)
         runapp_addr += PAGE_SIZE;
  8004c8a:	f504 5400 	add.w	r4, r4, #8192	@ 0x2000
         STMFLASH_Write(runapp_addr, (uint16_t*)update_addr, num_halfwords);
- 8004c8e:	f000 fd6b 	bl	8005768 <STMFLASH_Write>
+ 8004c8e:	f000 fd73 	bl	8005778 <STMFLASH_Write>
     while (remaining_pages > 0)
  8004c92:	42ac      	cmp	r4, r5
  8004c94:	d1f4      	bne.n	8004c80 <IAP_Update+0x158>
                     uint32_t run_crc = Calculate_Image_CRC(RUNAPP_REGION_BASE, total_received);
  8004c96:	4639      	mov	r1, r7
  8004c98:	482c      	ldr	r0, [pc, #176]	@ (8004d4c <IAP_Update+0x224>)
- 8004c9a:	f000 f8fb 	bl	8004e94 <Calculate_Image_CRC>
+ 8004c9a:	f000 f903 	bl	8004ea4 <Calculate_Image_CRC>
                     if (run_crc != update_crc) {
  8004c9e:	4286      	cmp	r6, r0
  8004ca0:	d11a      	bne.n	8004cd8 <IAP_Update+0x1b0>
@@ -11351,16 +11351,16 @@ int8_t IAP_RunApp(void)
  8004d28:	20000028 	.word	0x20000028
  8004d2c:	200001dc 	.word	0x200001dc
  8004d30:	2000004f 	.word	0x2000004f
- 8004d34:	08005990 	.word	0x08005990
- 8004d38:	080059ac 	.word	0x080059ac
+ 8004d34:	080059a0 	.word	0x080059a0
+ 8004d38:	080059bc 	.word	0x080059bc
  8004d3c:	20000278 	.word	0x20000278
  8004d40:	2000004e 	.word	0x2000004e
  8004d44:	20000140 	.word	0x20000140
- 8004d48:	080059bc 	.word	0x080059bc
+ 8004d48:	080059cc 	.word	0x080059cc
  8004d4c:	08014000 	.word	0x08014000
- 8004d50:	080059fc 	.word	0x080059fc
- 8004d54:	080059e8 	.word	0x080059e8
- 8004d58:	080059d8 	.word	0x080059d8
+ 8004d50:	08005a0c 	.word	0x08005a0c
+ 8004d54:	080059f8 	.word	0x080059f8
+ 8004d58:	080059e8 	.word	0x080059e8
  8004d5c:	200001d8 	.word	0x200001d8
  8004d60:	2000004c 	.word	0x2000004c
 
@@ -11403,1849 +11403,1861 @@ int8_t Config_Write(const ImageConfig_t *config)
 {
     if (config == NULL) return -1;
  8004d8c:	2800      	cmp	r0, #0
- 8004d8e:	d039      	beq.n	8004e04 <Config_Write+0x78>
+ 8004d8e:	d042      	beq.n	8004e16 <Config_Write+0x8a>
+{
+ 8004d90:	b5f0      	push	{r4, r5, r6, r7, lr}
+ 8004d92:	4603      	mov	r3, r0
+ 8004d94:	b093      	sub	sp, #76	@ 0x4c
     
     /* Read existing config to preserve version */
-    ImageConfig_t temp_config;
+     ImageConfig_t temp_config;
     memcpy(&temp_config, config, sizeof(ImageConfig_t));
- 8004d90:	4603      	mov	r3, r0
-{
- 8004d92:	b530      	push	{r4, r5, lr}
- 8004d94:	b091      	sub	sp, #68	@ 0x44
-    memcpy(&temp_config, config, sizeof(ImageConfig_t));
- 8004d96:	6859      	ldr	r1, [r3, #4]
- 8004d98:	689a      	ldr	r2, [r3, #8]
- 8004d9a:	6800      	ldr	r0, [r0, #0]
- 8004d9c:	ab02      	add	r3, sp, #8
- 8004d9e:	c307      	stmia	r3!, {r0, r1, r2}
+ 8004d96:	ad01      	add	r5, sp, #4
+ 8004d98:	46ac      	mov	ip, r5
         temp_config.version = existing_config.version;
     }
     
     HAL_StatusTypeDef status;
     FLASH_EraseInitTypeDef EraseInitStruct;
     uint32_t SectorError = 0;
- 8004da0:	2300      	movs	r3, #0
+ 8004d9a:	2700      	movs	r7, #0
+    memcpy(&temp_config, config, sizeof(ImageConfig_t));
+ 8004d9c:	6859      	ldr	r1, [r3, #4]
+ 8004d9e:	689a      	ldr	r2, [r3, #8]
+ 8004da0:	6800      	ldr	r0, [r0, #0]
     memcpy(config, (void*)CONFIG_BASE, sizeof(ImageConfig_t));
- 8004da2:	4d1a      	ldr	r5, [pc, #104]	@ (8004e0c <Config_Write+0x80>)
- 8004da4:	68aa      	ldr	r2, [r5, #8]
+ 8004da2:	4e1e      	ldr	r6, [pc, #120]	@ (8004e1c <Config_Write+0x90>)
+    memcpy(&temp_config, config, sizeof(ImageConfig_t));
+ 8004da4:	e8ac 0007 	stmia.w	ip!, {r0, r1, r2}
+    memcpy(config, (void*)CONFIG_BASE, sizeof(ImageConfig_t));
+ 8004da8:	68b3      	ldr	r3, [r6, #8]
     uint32_t SectorError = 0;
- 8004da6:	9301      	str	r3, [sp, #4]
+ 8004daa:	9700      	str	r7, [sp, #0]
         temp_config.version = existing_config.version;
- 8004da8:	9204      	str	r2, [sp, #16]
+ 8004dac:	9303      	str	r3, [sp, #12]
     uint32_t config_sector = (CONFIG_BASE - STM32_FLASH_BASE) / PAGE_SIZE;
     
     HAL_FLASH_Unlock();
- 8004daa:	f7fc fc77 	bl	800169c <HAL_FLASH_Unlock>
+ 8004dae:	f7fc fc75 	bl	800169c <HAL_FLASH_Unlock>
     
     EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
- 8004dae:	2003      	movs	r0, #3
- 8004db0:	2101      	movs	r1, #1
  8004db2:	2204      	movs	r2, #4
  8004db4:	2301      	movs	r3, #1
- 8004db6:	e9cd 0108 	strd	r0, r1, [sp, #32]
+ 8004db6:	e9cd 2304 	strd	r2, r3, [sp, #16]
+ 8004dba:	2203      	movs	r2, #3
+ 8004dbc:	2301      	movs	r3, #1
     EraseInitStruct.Banks = FLASH_BANK_1;
     EraseInitStruct.Sector = config_sector;
     EraseInitStruct.NbSectors = 1;
     
     status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
- 8004dba:	a901      	add	r1, sp, #4
- 8004dbc:	a806      	add	r0, sp, #24
+ 8004dbe:	4669      	mov	r1, sp
+ 8004dc0:	a804      	add	r0, sp, #16
     EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
- 8004dbe:	e9cd 2306 	strd	r2, r3, [sp, #24]
+ 8004dc2:	e9cd 2306 	strd	r2, r3, [sp, #24]
     status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
- 8004dc2:	f7fc fcbd 	bl	8001740 <HAL_FLASHEx_Erase>
+ 8004dc6:	f7fc fcbb 	bl	8001740 <HAL_FLASHEx_Erase>
     if (status != HAL_OK) {
- 8004dc6:	b990      	cbnz	r0, 8004dee <Config_Write+0x62>
-    uint64_t *src = (uint64_t*)&temp_config;
-    uint32_t addr = CONFIG_BASE;
+ 8004dca:	b9c8      	cbnz	r0, 8004e00 <Config_Write+0x74>
+        HAL_FLASH_Lock();
+        return -1;
+    }
     
+    /* Create 16-byte aligned buffer to avoid array bounds warning */
+    __attribute__((aligned(16))) uint8_t write_buffer[16] = {0};
+ 8004dcc:	f10d 042f 	add.w	r4, sp, #47	@ 0x2f
+ 8004dd0:	f024 040f 	bic.w	r4, r4, #15
+ 8004dd4:	f104 0310 	add.w	r3, r4, #16
+ 8004dd8:	61e0      	str	r0, [r4, #28]
+    memcpy(write_buffer, &temp_config, sizeof(ImageConfig_t));
+ 8004dda:	e895 0007 	ldmia.w	r5, {r0, r1, r2}
+ 8004dde:	e883 0007 	stmia.w	r3, {r0, r1, r2}
     for (int i = 0; i < 1; i++) {
         __attribute__((aligned(16))) uint64_t qw_data[2];
         qw_data[0] = src[i * 2];
- 8004dc8:	e9dd 2304 	ldrd	r2, r3, [sp, #16]
- 8004dcc:	ed9d 7b02 	vldr	d7, [sp, #8]
- 8004dd0:	f10d 0437 	add.w	r4, sp, #55	@ 0x37
- 8004dd4:	f024 040f 	bic.w	r4, r4, #15
- 8004dd8:	e9c4 2302 	strd	r2, r3, [r4, #8]
         qw_data[1] = src[i * 2 + 1];
         
         status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, addr, (uint32_t)qw_data);
- 8004ddc:	4629      	mov	r1, r5
- 8004dde:	4622      	mov	r2, r4
- 8004de0:	2002      	movs	r0, #2
+ 8004de2:	4631      	mov	r1, r6
         qw_data[0] = src[i * 2];
- 8004de2:	ed84 7b00 	vstr	d7, [r4]
+ 8004de4:	e9d4 2306 	ldrd	r2, r3, [r4, #24]
+ 8004de8:	e9d4 6704 	ldrd	r6, r7, [r4, #16]
+ 8004dec:	e9c4 2302 	strd	r2, r3, [r4, #8]
         status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, addr, (uint32_t)qw_data);
- 8004de6:	f7fc fbd7 	bl	8001598 <HAL_FLASH_Program>
+ 8004df0:	2002      	movs	r0, #2
+ 8004df2:	4622      	mov	r2, r4
+        qw_data[0] = src[i * 2];
+ 8004df4:	e9c4 6700 	strd	r6, r7, [r4]
+        status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, addr, (uint32_t)qw_data);
+ 8004df8:	f7fc fbce 	bl	8001598 <HAL_FLASH_Program>
         if (status != HAL_OK) {
- 8004dea:	4604      	mov	r4, r0
- 8004dec:	b128      	cbz	r0, 8004dfa <Config_Write+0x6e>
+ 8004dfc:	4604      	mov	r4, r0
+ 8004dfe:	b128      	cbz	r0, 8004e0c <Config_Write+0x80>
         HAL_FLASH_Lock();
- 8004dee:	f7fc fc69 	bl	80016c4 <HAL_FLASH_Lock>
+ 8004e00:	f7fc fc60 	bl	80016c4 <HAL_FLASH_Lock>
     if (config == NULL) return -1;
- 8004df2:	f04f 30ff 	mov.w	r0, #4294967295	@ 0xffffffff
+ 8004e04:	f04f 30ff 	mov.w	r0, #4294967295	@ 0xffffffff
         addr += 16;
     }
     
     HAL_FLASH_Lock();
     return 0;
 }
- 8004df6:	b011      	add	sp, #68	@ 0x44
- 8004df8:	bd30      	pop	{r4, r5, pc}
+ 8004e08:	b013      	add	sp, #76	@ 0x4c
+ 8004e0a:	bdf0      	pop	{r4, r5, r6, r7, pc}
     HAL_FLASH_Lock();
- 8004dfa:	f7fc fc63 	bl	80016c4 <HAL_FLASH_Lock>
+ 8004e0c:	f7fc fc5a 	bl	80016c4 <HAL_FLASH_Lock>
     return 0;
- 8004dfe:	4620      	mov	r0, r4
+ 8004e10:	4620      	mov	r0, r4
 }
- 8004e00:	b011      	add	sp, #68	@ 0x44
- 8004e02:	bd30      	pop	{r4, r5, pc}
+ 8004e12:	b013      	add	sp, #76	@ 0x4c
+ 8004e14:	bdf0      	pop	{r4, r5, r6, r7, pc}
     if (config == NULL) return -1;
- 8004e04:	f04f 30ff 	mov.w	r0, #4294967295	@ 0xffffffff
+ 8004e16:	f04f 30ff 	mov.w	r0, #4294967295	@ 0xffffffff
 }
- 8004e08:	4770      	bx	lr
- 8004e0a:	bf00      	nop
- 8004e0c:	08006000 	.word	0x08006000
+ 8004e1a:	4770      	bx	lr
+ 8004e1c:	08006000 	.word	0x08006000
 
-08004e10 <Config_Init>:
+08004e20 <Config_Init>:
  * @details If valid firmware is detected at 运行区, auto-record CRC
  * @return 0=success, -1=failed
  */
 int8_t Config_Init(void)
 {
     ImageConfig_t default_config = IMAGE_CONFIG_DEFAULT;
- 8004e10:	2200      	movs	r2, #0
+ 8004e20:	2200      	movs	r2, #0
 {
- 8004e12:	b510      	push	{r4, lr}
- 8004e14:	b084      	sub	sp, #16
+ 8004e22:	b510      	push	{r4, lr}
+ 8004e24:	b084      	sub	sp, #16
     ImageConfig_t default_config = IMAGE_CONFIG_DEFAULT;
- 8004e16:	e9cd 2201 	strd	r2, r2, [sp, #4]
+ 8004e26:	e9cd 2201 	strd	r2, r2, [sp, #4]
     uint32_t sp = *(__IO uint32_t*)image_base;
- 8004e1a:	491d      	ldr	r1, [pc, #116]	@ (8004e90 <Config_Init+0x80>)
- 8004e1c:	680b      	ldr	r3, [r1, #0]
+ 8004e2a:	491d      	ldr	r1, [pc, #116]	@ (8004ea0 <Config_Init+0x80>)
+ 8004e2c:	680b      	ldr	r3, [r1, #0]
     ImageConfig_t default_config = IMAGE_CONFIG_DEFAULT;
- 8004e1e:	f8ad 2000 	strh.w	r2, [sp]
+ 8004e2e:	f8ad 2000 	strh.w	r2, [sp]
     if (sp < 0x20000000 || sp > 0x20008000) {
- 8004e22:	f103 4360 	add.w	r3, r3, #3758096384	@ 0xe0000000
- 8004e26:	f5b3 4f00 	cmp.w	r3, #32768	@ 0x8000
- 8004e2a:	d827      	bhi.n	8004e7c <Config_Init+0x6c>
+ 8004e32:	f103 4360 	add.w	r3, r3, #3758096384	@ 0xe0000000
+ 8004e36:	f5b3 4f00 	cmp.w	r3, #32768	@ 0x8000
+ 8004e3a:	d827      	bhi.n	8004e8c <Config_Init+0x6c>
     uint32_t reset_vector = *(__IO uint32_t*)(image_base + 4);
- 8004e2c:	684b      	ldr	r3, [r1, #4]
+ 8004e3c:	684b      	ldr	r3, [r1, #4]
     if (reset_vector < image_base || reset_vector > (image_base + RUNAPP_REGION_SIZE)) {
- 8004e2e:	f103 4378 	add.w	r3, r3, #4160749568	@ 0xf8000000
- 8004e32:	f5a3 33a0 	sub.w	r3, r3, #81920	@ 0x14000
- 8004e36:	f5b3 4f40 	cmp.w	r3, #49152	@ 0xc000
- 8004e3a:	d81f      	bhi.n	8004e7c <Config_Init+0x6c>
+ 8004e3e:	f103 4378 	add.w	r3, r3, #4160749568	@ 0xf8000000
+ 8004e42:	f5a3 33a0 	sub.w	r3, r3, #81920	@ 0x14000
+ 8004e46:	f5b3 4f40 	cmp.w	r3, #49152	@ 0xc000
+ 8004e4a:	d81f      	bhi.n	8004e8c <Config_Init+0x6c>
     uint32_t size = RUNAPP_REGION_SIZE;
- 8004e3c:	f44f 4340 	mov.w	r3, #49152	@ 0xc000
- 8004e40:	e001      	b.n	8004e46 <Config_Init+0x36>
+ 8004e4c:	f44f 4340 	mov.w	r3, #49152	@ 0xc000
+ 8004e50:	e001      	b.n	8004e56 <Config_Init+0x36>
     while (size > 0 && *end_ptr == 0xFF) {
- 8004e42:	3b01      	subs	r3, #1
- 8004e44:	d01f      	beq.n	8004e86 <Config_Init+0x76>
- 8004e46:	f103 6200 	add.w	r2, r3, #134217728	@ 0x8000000
- 8004e4a:	f502 3298 	add.w	r2, r2, #77824	@ 0x13000
- 8004e4e:	f892 2fff 	ldrb.w	r2, [r2, #4095]	@ 0xfff
- 8004e52:	2aff      	cmp	r2, #255	@ 0xff
- 8004e54:	d0f5      	beq.n	8004e42 <Config_Init+0x32>
+ 8004e52:	3b01      	subs	r3, #1
+ 8004e54:	d01f      	beq.n	8004e96 <Config_Init+0x76>
+ 8004e56:	f103 6200 	add.w	r2, r3, #134217728	@ 0x8000000
+ 8004e5a:	f502 3298 	add.w	r2, r2, #77824	@ 0x13000
+ 8004e5e:	f892 2fff 	ldrb.w	r2, [r2, #4095]	@ 0xfff
+ 8004e62:	2aff      	cmp	r2, #255	@ 0xff
+ 8004e64:	d0f5      	beq.n	8004e52 <Config_Init+0x32>
     size = (size + 15) & ~15;
- 8004e56:	330f      	adds	r3, #15
- 8004e58:	f023 010f 	bic.w	r1, r3, #15
+ 8004e66:	330f      	adds	r3, #15
+ 8004e68:	f023 010f 	bic.w	r1, r3, #15
     if (size < 256) {
- 8004e5c:	f5b1 7f80 	cmp.w	r1, #256	@ 0x100
- 8004e60:	bf38      	it	cc
- 8004e62:	f44f 7180 	movcc.w	r1, #256	@ 0x100
+ 8004e6c:	f5b1 7f80 	cmp.w	r1, #256	@ 0x100
+ 8004e70:	bf38      	it	cc
+ 8004e72:	f44f 7180 	movcc.w	r1, #256	@ 0x100
     /* Auto-detect existing firmware at run region */
     uint32_t size_b = Detect_Firmware_Size(RUNAPP_REGION_BASE);
     if (size_b > 0) {
         default_config.firmware_CRC = crc32_c((uint8_t*)RUNAPP_REGION_BASE, size_b);
         /* Calculate page count */
         default_config.page_count = (size_b + PAGE_SIZE - 1) / PAGE_SIZE;
- 8004e66:	f501 53ff 	add.w	r3, r1, #8160	@ 0x1fe0
- 8004e6a:	331f      	adds	r3, #31
- 8004e6c:	f3c3 344f 	ubfx	r4, r3, #13, #16
+ 8004e76:	f501 53ff 	add.w	r3, r1, #8160	@ 0x1fe0
+ 8004e7a:	331f      	adds	r3, #31
+ 8004e7c:	f3c3 344f 	ubfx	r4, r3, #13, #16
         default_config.firmware_CRC = crc32_c((uint8_t*)RUNAPP_REGION_BASE, size_b);
- 8004e70:	4807      	ldr	r0, [pc, #28]	@ (8004e90 <Config_Init+0x80>)
- 8004e72:	f000 f84b 	bl	8004f0c <crc32_c>
+ 8004e80:	4807      	ldr	r0, [pc, #28]	@ (8004ea0 <Config_Init+0x80>)
+ 8004e82:	f000 f84b 	bl	8004f1c <crc32_c>
         default_config.page_count = (size_b + PAGE_SIZE - 1) / PAGE_SIZE;
- 8004e76:	f8ad 4000 	strh.w	r4, [sp]
+ 8004e86:	f8ad 4000 	strh.w	r4, [sp]
         default_config.firmware_CRC = crc32_c((uint8_t*)RUNAPP_REGION_BASE, size_b);
- 8004e7a:	9001      	str	r0, [sp, #4]
+ 8004e8a:	9001      	str	r0, [sp, #4]
     }
 
     return Config_Write(&default_config);
- 8004e7c:	4668      	mov	r0, sp
- 8004e7e:	f7ff ff85 	bl	8004d8c <Config_Write>
+ 8004e8c:	4668      	mov	r0, sp
+ 8004e8e:	f7ff ff7d 	bl	8004d8c <Config_Write>
 }
- 8004e82:	b004      	add	sp, #16
- 8004e84:	bd10      	pop	{r4, pc}
- 8004e86:	2401      	movs	r4, #1
- 8004e88:	f44f 7180 	mov.w	r1, #256	@ 0x100
- 8004e8c:	e7f0      	b.n	8004e70 <Config_Init+0x60>
- 8004e8e:	bf00      	nop
- 8004e90:	08014000 	.word	0x08014000
+ 8004e92:	b004      	add	sp, #16
+ 8004e94:	bd10      	pop	{r4, pc}
+ 8004e96:	2401      	movs	r4, #1
+ 8004e98:	f44f 7180 	mov.w	r1, #256	@ 0x100
+ 8004e9c:	e7f0      	b.n	8004e80 <Config_Init+0x60>
+ 8004e9e:	bf00      	nop
+ 8004ea0:	08014000 	.word	0x08014000
 
-08004e94 <Calculate_Image_CRC>:
+08004ea4 <Calculate_Image_CRC>:
  * @param size Image length in bytes
  * @return CRC32 value
  */
 uint32_t Calculate_Image_CRC(uint32_t image_base, uint32_t size)
 {
     if (size == 0 || size > UPDATE_REGION_SIZE) return 0;
- 8004e94:	1e4b      	subs	r3, r1, #1
- 8004e96:	f5b3 4f40 	cmp.w	r3, #49152	@ 0xc000
- 8004e9a:	d301      	bcc.n	8004ea0 <Calculate_Image_CRC+0xc>
+ 8004ea4:	1e4b      	subs	r3, r1, #1
+ 8004ea6:	f5b3 4f40 	cmp.w	r3, #49152	@ 0xc000
+ 8004eaa:	d301      	bcc.n	8004eb0 <Calculate_Image_CRC+0xc>
     return crc32_c((uint8_t*)image_base, size);
 }
- 8004e9c:	2000      	movs	r0, #0
- 8004e9e:	4770      	bx	lr
+ 8004eac:	2000      	movs	r0, #0
+ 8004eae:	4770      	bx	lr
     return crc32_c((uint8_t*)image_base, size);
- 8004ea0:	f000 b834 	b.w	8004f0c <crc32_c>
+ 8004eb0:	f000 b834 	b.w	8004f1c <crc32_c>
 
-08004ea4 <Erase_Image>:
+08004eb4 <Erase_Image>:
  */
 uint8_t Erase_Image(uint8_t target_image)
 {
     HAL_StatusTypeDef status;
     FLASH_EraseInitTypeDef EraseInitStruct;
     uint32_t SectorError = 0;
- 8004ea4:	2300      	movs	r3, #0
+ 8004eb4:	2300      	movs	r3, #0
 {
- 8004ea6:	b530      	push	{r4, r5, lr}
- 8004ea8:	b087      	sub	sp, #28
+ 8004eb6:	b530      	push	{r4, r5, lr}
+ 8004eb8:	b087      	sub	sp, #28
     uint32_t SectorError = 0;
- 8004eaa:	9301      	str	r3, [sp, #4]
+ 8004eba:	9301      	str	r3, [sp, #4]
     
     uint32_t image_base = (target_image == 0) ? UPDATE_REGION_BASE : RUNAPP_REGION_BASE;
- 8004eac:	b990      	cbnz	r0, 8004ed4 <Erase_Image+0x30>
+ 8004ebc:	b990      	cbnz	r0, 8004ee4 <Erase_Image+0x30>
     uint32_t image_size = (target_image == 0) ? UPDATE_REGION_SIZE : RUNAPP_REGION_SIZE;
     uint32_t start_sector = (image_base - STM32_FLASH_BASE) / PAGE_SIZE;
     uint32_t num_sectors = image_size / PAGE_SIZE;
     uint32_t sectors_per_bank = 8;
     
     HAL_FLASH_Unlock();
- 8004eae:	f7fc fbf5 	bl	800169c <HAL_FLASH_Unlock>
+ 8004ebe:	f7fc fbed 	bl	800169c <HAL_FLASH_Unlock>
     
     if (start_sector < sectors_per_bank) {
         uint32_t bank1_sectors = (start_sector + num_sectors <= sectors_per_bank) 
                                  ? num_sectors : (sectors_per_bank - start_sector);
         
         EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
- 8004eb2:	2304      	movs	r3, #4
+ 8004ec2:	2304      	movs	r3, #4
         EraseInitStruct.Banks = FLASH_BANK_1;
- 8004eb4:	2201      	movs	r2, #1
+ 8004ec4:	2201      	movs	r2, #1
         EraseInitStruct.Sector = start_sector;
         EraseInitStruct.NbSectors = bank1_sectors;
         
         status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
- 8004eb6:	eb0d 0503 	add.w	r5, sp, r3
- 8004eba:	ac02      	add	r4, sp, #8
- 8004ebc:	4629      	mov	r1, r5
- 8004ebe:	4620      	mov	r0, r4
+ 8004ec6:	eb0d 0503 	add.w	r5, sp, r3
+ 8004eca:	ac02      	add	r4, sp, #8
+ 8004ecc:	4629      	mov	r1, r5
+ 8004ece:	4620      	mov	r0, r4
         EraseInitStruct.Banks = FLASH_BANK_1;
- 8004ec0:	e9cd 3202 	strd	r3, r2, [sp, #8]
+ 8004ed0:	e9cd 3202 	strd	r3, r2, [sp, #8]
         EraseInitStruct.NbSectors = bank1_sectors;
- 8004ec4:	e9cd 3304 	strd	r3, r3, [sp, #16]
+ 8004ed4:	e9cd 3304 	strd	r3, r3, [sp, #16]
         status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
- 8004ec8:	f7fc fc3a 	bl	8001740 <HAL_FLASHEx_Erase>
+ 8004ed8:	f7fc fc32 	bl	8001740 <HAL_FLASHEx_Erase>
         if (status != HAL_OK) { HAL_FLASH_Lock(); return 0; }
- 8004ecc:	b9c0      	cbnz	r0, 8004f00 <Erase_Image+0x5c>
- 8004ece:	2200      	movs	r2, #0
- 8004ed0:	2302      	movs	r3, #2
- 8004ed2:	e005      	b.n	8004ee0 <Erase_Image+0x3c>
+ 8004edc:	b9c0      	cbnz	r0, 8004f10 <Erase_Image+0x5c>
+ 8004ede:	2200      	movs	r2, #0
+ 8004ee0:	2302      	movs	r3, #2
+ 8004ee2:	e005      	b.n	8004ef0 <Erase_Image+0x3c>
     HAL_FLASH_Unlock();
- 8004ed4:	f7fc fbe2 	bl	800169c <HAL_FLASH_Unlock>
- 8004ed8:	2202      	movs	r2, #2
- 8004eda:	2306      	movs	r3, #6
- 8004edc:	ad01      	add	r5, sp, #4
- 8004ede:	ac02      	add	r4, sp, #8
+ 8004ee4:	f7fc fbda 	bl	800169c <HAL_FLASH_Unlock>
+ 8004ee8:	2202      	movs	r2, #2
+ 8004eea:	2306      	movs	r3, #6
+ 8004eec:	ad01      	add	r5, sp, #4
+ 8004eee:	ac02      	add	r4, sp, #8
     }
     
     if (num_sectors > 0) {
         EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
         EraseInitStruct.Banks = FLASH_BANK_2;
         EraseInitStruct.Sector = start_sector;
- 8004ee0:	e9cd 2304 	strd	r2, r3, [sp, #16]
+ 8004ef0:	e9cd 2304 	strd	r2, r3, [sp, #16]
         EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
- 8004ee4:	2204      	movs	r2, #4
- 8004ee6:	2302      	movs	r3, #2
+ 8004ef4:	2204      	movs	r2, #4
+ 8004ef6:	2302      	movs	r3, #2
         EraseInitStruct.NbSectors = num_sectors;
         
         status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
- 8004ee8:	4629      	mov	r1, r5
- 8004eea:	4620      	mov	r0, r4
+ 8004ef8:	4629      	mov	r1, r5
+ 8004efa:	4620      	mov	r0, r4
         EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
- 8004eec:	e9cd 2302 	strd	r2, r3, [sp, #8]
+ 8004efc:	e9cd 2302 	strd	r2, r3, [sp, #8]
         status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
- 8004ef0:	f7fc fc26 	bl	8001740 <HAL_FLASHEx_Erase>
+ 8004f00:	f7fc fc1e 	bl	8001740 <HAL_FLASHEx_Erase>
         if (status != HAL_OK) { HAL_FLASH_Lock(); return 0; }
- 8004ef4:	b920      	cbnz	r0, 8004f00 <Erase_Image+0x5c>
+ 8004f04:	b920      	cbnz	r0, 8004f10 <Erase_Image+0x5c>
     }
     
     HAL_FLASH_Lock();
- 8004ef6:	f7fc fbe5 	bl	80016c4 <HAL_FLASH_Lock>
+ 8004f06:	f7fc fbdd 	bl	80016c4 <HAL_FLASH_Lock>
     return 1;
- 8004efa:	2001      	movs	r0, #1
+ 8004f0a:	2001      	movs	r0, #1
 }
- 8004efc:	b007      	add	sp, #28
- 8004efe:	bd30      	pop	{r4, r5, pc}
+ 8004f0c:	b007      	add	sp, #28
+ 8004f0e:	bd30      	pop	{r4, r5, pc}
         if (status != HAL_OK) { HAL_FLASH_Lock(); return 0; }
- 8004f00:	f7fc fbe0 	bl	80016c4 <HAL_FLASH_Lock>
- 8004f04:	2000      	movs	r0, #0
+ 8004f10:	f7fc fbd8 	bl	80016c4 <HAL_FLASH_Lock>
+ 8004f14:	2000      	movs	r0, #0
 }
- 8004f06:	b007      	add	sp, #28
- 8004f08:	bd30      	pop	{r4, r5, pc}
- 8004f0a:	bf00      	nop
+ 8004f16:	b007      	add	sp, #28
+ 8004f18:	bd30      	pop	{r4, r5, pc}
+ 8004f1a:	bf00      	nop
 
-08004f0c <crc32_c>:
+08004f1c <crc32_c>:
  * @param init_crc Initial CRC value (typically 0xFFFFFFFF)
  * @return Calculated CRC32 value (need final XOR for standard output)
  */
 uint32_t crc32_calc(const uint8_t *data, uint32_t len, uint32_t init_crc) {
     uint32_t crc = init_crc;
     while (len--) {
- 8004f0c:	b199      	cbz	r1, 8004f36 <crc32_c+0x2a>
+ 8004f1c:	b199      	cbz	r1, 8004f46 <crc32_c+0x2a>
     uint32_t crc = init_crc;
- 8004f0e:	f04f 32ff 	mov.w	r2, #4294967295	@ 0xffffffff
+ 8004f1e:	f04f 32ff 	mov.w	r2, #4294967295	@ 0xffffffff
  *          Equivalent to: crc32_calc(data, len, 0xFFFFFFFF) ^ 0xFFFFFFFF
  * @param data Pointer to data buffer
  * @param len Length of data in bytes  
  * @return Standard CRC32 checksum
  */
 uint32_t crc32_c(const uint8_t *data, uint32_t len) {
- 8004f12:	b410      	push	{r4}
- 8004f14:	4c09      	ldr	r4, [pc, #36]	@ (8004f3c <crc32_c+0x30>)
- 8004f16:	4401      	add	r1, r0
+ 8004f22:	b410      	push	{r4}
+ 8004f24:	4c09      	ldr	r4, [pc, #36]	@ (8004f4c <crc32_c+0x30>)
+ 8004f26:	4401      	add	r1, r0
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 8004f18:	f810 cb01 	ldrb.w	ip, [r0], #1
- 8004f1c:	b2d3      	uxtb	r3, r2
- 8004f1e:	ea83 030c 	eor.w	r3, r3, ip
- 8004f22:	f854 3023 	ldr.w	r3, [r4, r3, lsl #2]
+ 8004f28:	f810 cb01 	ldrb.w	ip, [r0], #1
+ 8004f2c:	b2d3      	uxtb	r3, r2
+ 8004f2e:	ea83 030c 	eor.w	r3, r3, ip
+ 8004f32:	f854 3023 	ldr.w	r3, [r4, r3, lsl #2]
     while (len--) {
- 8004f26:	4288      	cmp	r0, r1
+ 8004f36:	4288      	cmp	r0, r1
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 8004f28:	ea83 2212 	eor.w	r2, r3, r2, lsr #8
+ 8004f38:	ea83 2212 	eor.w	r2, r3, r2, lsr #8
     while (len--) {
- 8004f2c:	d1f4      	bne.n	8004f18 <crc32_c+0xc>
+ 8004f3c:	d1f4      	bne.n	8004f28 <crc32_c+0xc>
     return crc32_calc(data, len, 0xFFFFFFFF) ^ 0xFFFFFFFF;
- 8004f2e:	43d0      	mvns	r0, r2
+ 8004f3e:	43d0      	mvns	r0, r2
 }
- 8004f30:	f85d 4b04 	ldr.w	r4, [sp], #4
- 8004f34:	4770      	bx	lr
+ 8004f40:	f85d 4b04 	ldr.w	r4, [sp], #4
+ 8004f44:	4770      	bx	lr
     while (len--) {
- 8004f36:	4608      	mov	r0, r1
+ 8004f46:	4608      	mov	r0, r1
 }
- 8004f38:	4770      	bx	lr
- 8004f3a:	bf00      	nop
- 8004f3c:	08005a50 	.word	0x08005a50
+ 8004f48:	4770      	bx	lr
+ 8004f4a:	bf00      	nop
+ 8004f4c:	08005a60 	.word	0x08005a60
 
-08004f40 <Protocol_IAP_Init>:
+08004f50 <Protocol_IAP_Init>:
  * 
  * @note Must be called before starting firmware update
  * @note Ensures clean state for reliable protocol communication
  */
 void Protocol_IAP_Init(void)
 {
- 8004f40:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 8004f50:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
     /* Use dynamic target address from iap.c for dual-image support */
     iap_write_addr = g_update_target_addr;
     iap_buf_idx = 0;
- 8004f42:	2300      	movs	r3, #0
+ 8004f52:	2300      	movs	r3, #0
     iap_write_addr = g_update_target_addr;
- 8004f44:	4915      	ldr	r1, [pc, #84]	@ (8004f9c <Protocol_IAP_Init+0x5c>)
- 8004f46:	4a16      	ldr	r2, [pc, #88]	@ (8004fa0 <Protocol_IAP_Init+0x60>)
- 8004f48:	6808      	ldr	r0, [r1, #0]
+ 8004f54:	4915      	ldr	r1, [pc, #84]	@ (8004fac <Protocol_IAP_Init+0x5c>)
+ 8004f56:	4a16      	ldr	r2, [pc, #88]	@ (8004fb0 <Protocol_IAP_Init+0x60>)
+ 8004f58:	6808      	ldr	r0, [r1, #0]
     iap_total_received = 0;
 
 	// 1. Terminate all ongoing UART operations
 	HAL_UART_AbortReceive_IT(&huart1);
- 8004f4a:	4c16      	ldr	r4, [pc, #88]	@ (8004fa4 <Protocol_IAP_Init+0x64>)
+ 8004f5a:	4c16      	ldr	r4, [pc, #88]	@ (8004fb4 <Protocol_IAP_Init+0x64>)
     iap_buf_idx = 0;
- 8004f4c:	4916      	ldr	r1, [pc, #88]	@ (8004fa8 <Protocol_IAP_Init+0x68>)
+ 8004f5c:	4916      	ldr	r1, [pc, #88]	@ (8004fb8 <Protocol_IAP_Init+0x68>)
     iap_write_addr = g_update_target_addr;
- 8004f4e:	6010      	str	r0, [r2, #0]
+ 8004f5e:	6010      	str	r0, [r2, #0]
     iap_total_received = 0;
- 8004f50:	4a16      	ldr	r2, [pc, #88]	@ (8004fac <Protocol_IAP_Init+0x6c>)
+ 8004f60:	4a16      	ldr	r2, [pc, #88]	@ (8004fbc <Protocol_IAP_Init+0x6c>)
 	HAL_UART_AbortReceive_IT(&huart1);
- 8004f52:	4620      	mov	r0, r4
+ 8004f62:	4620      	mov	r0, r4
     iap_buf_idx = 0;
- 8004f54:	800b      	strh	r3, [r1, #0]
+ 8004f64:	800b      	strh	r3, [r1, #0]
     iap_total_received = 0;
- 8004f56:	6013      	str	r3, [r2, #0]
+ 8004f66:	6013      	str	r3, [r2, #0]
 	HAL_UART_AbortReceive_IT(&huart1);
- 8004f58:	f7fe fee4 	bl	8003d24 <HAL_UART_AbortReceive_IT>
+ 8004f68:	f7fe fedc 	bl	8003d24 <HAL_UART_AbortReceive_IT>
 	HAL_UART_Abort(&huart1);
- 8004f5c:	4620      	mov	r0, r4
- 8004f5e:	f7fe fd9d 	bl	8003a9c <HAL_UART_Abort>
+ 8004f6c:	4620      	mov	r0, r4
+ 8004f6e:	f7fe fd95 	bl	8003a9c <HAL_UART_Abort>
 	
 	// 2. Clear all UART error flags
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_PEF);   // Parity Error
- 8004f62:	2701      	movs	r7, #1
+ 8004f72:	2701      	movs	r7, #1
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_FEF);   // Frame Error
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_NEF);   // Noise Error
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);  // Overrun Error
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_IDLEF); // Idle Line
- 8004f64:	2110      	movs	r1, #16
+ 8004f74:	2110      	movs	r1, #16
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_RTOF);  // Receiver Timeout
- 8004f66:	f44f 6200 	mov.w	r2, #2048	@ 0x800
+ 8004f76:	f44f 6200 	mov.w	r2, #2048	@ 0x800
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_FEF);   // Frame Error
- 8004f6a:	2602      	movs	r6, #2
+ 8004f7a:	2602      	movs	r6, #2
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_NEF);   // Noise Error
- 8004f6c:	2504      	movs	r5, #4
+ 8004f7c:	2504      	movs	r5, #4
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);  // Overrun Error
- 8004f6e:	2008      	movs	r0, #8
+ 8004f7e:	2008      	movs	r0, #8
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_PEF);   // Parity Error
- 8004f70:	6823      	ldr	r3, [r4, #0]
- 8004f72:	621f      	str	r7, [r3, #32]
+ 8004f80:	6823      	ldr	r3, [r4, #0]
+ 8004f82:	621f      	str	r7, [r3, #32]
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_FEF);   // Frame Error
- 8004f74:	621e      	str	r6, [r3, #32]
+ 8004f84:	621e      	str	r6, [r3, #32]
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_NEF);   // Noise Error
- 8004f76:	621d      	str	r5, [r3, #32]
+ 8004f86:	621d      	str	r5, [r3, #32]
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);  // Overrun Error
- 8004f78:	6218      	str	r0, [r3, #32]
+ 8004f88:	6218      	str	r0, [r3, #32]
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_IDLEF); // Idle Line
- 8004f7a:	6219      	str	r1, [r3, #32]
+ 8004f8a:	6219      	str	r1, [r3, #32]
 	__HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_RTOF);  // Receiver Timeout
- 8004f7c:	621a      	str	r2, [r3, #32]
+ 8004f8c:	621a      	str	r2, [r3, #32]
 	
 	// 3. Clear receive FIFO (read all data)
 	while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))
- 8004f7e:	69da      	ldr	r2, [r3, #28]
- 8004f80:	0691      	lsls	r1, r2, #26
- 8004f82:	d503      	bpl.n	8004f8c <Protocol_IAP_Init+0x4c>
+ 8004f8e:	69da      	ldr	r2, [r3, #28]
+ 8004f90:	0691      	lsls	r1, r2, #26
+ 8004f92:	d503      	bpl.n	8004f9c <Protocol_IAP_Init+0x4c>
 	{
 		(void)huart1.Instance->RDR;  // Read and discard
- 8004f84:	6a5a      	ldr	r2, [r3, #36]	@ 0x24
+ 8004f94:	6a5a      	ldr	r2, [r3, #36]	@ 0x24
 	while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE))
- 8004f86:	69da      	ldr	r2, [r3, #28]
- 8004f88:	0692      	lsls	r2, r2, #26
- 8004f8a:	d4fb      	bmi.n	8004f84 <Protocol_IAP_Init+0x44>
+ 8004f96:	69da      	ldr	r2, [r3, #28]
+ 8004f98:	0692      	lsls	r2, r2, #26
+ 8004f9a:	d4fb      	bmi.n	8004f94 <Protocol_IAP_Init+0x44>
 	}
 	
 	// 4. Reset UART error code
 	huart1.ErrorCode = HAL_UART_ERROR_NONE;
- 8004f8c:	2300      	movs	r3, #0
+ 8004f9c:	2300      	movs	r3, #0
 	
 	// 5. Wait for state to fully recover
 	HAL_Delay(10);
- 8004f8e:	200a      	movs	r0, #10
+ 8004f9e:	200a      	movs	r0, #10
 	huart1.ErrorCode = HAL_UART_ERROR_NONE;
- 8004f90:	f8c4 3090 	str.w	r3, [r4, #144]	@ 0x90
+ 8004fa0:	f8c4 3090 	str.w	r3, [r4, #144]	@ 0x90
 }
- 8004f94:	e8bd 40f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, lr}
+ 8004fa4:	e8bd 40f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, lr}
 	HAL_Delay(10);
- 8004f98:	f7fb befc 	b.w	8000d94 <HAL_Delay>
- 8004f9c:	20000028 	.word	0x20000028
- 8004fa0:	2000026c 	.word	0x2000026c
- 8004fa4:	20000140 	.word	0x20000140
- 8004fa8:	20000268 	.word	0x20000268
- 8004fac:	20000264 	.word	0x20000264
+ 8004fa8:	f7fb bef4 	b.w	8000d94 <HAL_Delay>
+ 8004fac:	20000028 	.word	0x20000028
+ 8004fb0:	2000026c 	.word	0x2000026c
+ 8004fb4:	20000140 	.word	0x20000140
+ 8004fb8:	20000268 	.word	0x20000268
+ 8004fbc:	20000264 	.word	0x20000264
 
-08004fb0 <Protocol_IAP_GetProgress>:
+08004fc0 <Protocol_IAP_GetProgress>:
 
 uint32_t Protocol_IAP_GetProgress(void)
 {
     return iap_total_received;
- 8004fb0:	4b01      	ldr	r3, [pc, #4]	@ (8004fb8 <Protocol_IAP_GetProgress+0x8>)
+ 8004fc0:	4b01      	ldr	r3, [pc, #4]	@ (8004fc8 <Protocol_IAP_GetProgress+0x8>)
 }
- 8004fb2:	6818      	ldr	r0, [r3, #0]
- 8004fb4:	4770      	bx	lr
- 8004fb6:	bf00      	nop
- 8004fb8:	20000264 	.word	0x20000264
+ 8004fc2:	6818      	ldr	r0, [r3, #0]
+ 8004fc4:	4770      	bx	lr
+ 8004fc6:	bf00      	nop
+ 8004fc8:	20000264 	.word	0x20000264
 
-08004fbc <Protocol_IAP_GetCurrentPageIndex>:
+08004fcc <Protocol_IAP_GetCurrentPageIndex>:
 
 uint16_t Protocol_IAP_GetCurrentPageIndex(void)
 {
     return current_page_index;
- 8004fbc:	4b01      	ldr	r3, [pc, #4]	@ (8004fc4 <Protocol_IAP_GetCurrentPageIndex+0x8>)
+ 8004fcc:	4b01      	ldr	r3, [pc, #4]	@ (8004fd4 <Protocol_IAP_GetCurrentPageIndex+0x8>)
 }
- 8004fbe:	8818      	ldrh	r0, [r3, #0]
- 8004fc0:	4770      	bx	lr
- 8004fc2:	bf00      	nop
- 8004fc4:	20000260 	.word	0x20000260
+ 8004fce:	8818      	ldrh	r0, [r3, #0]
+ 8004fd0:	4770      	bx	lr
+ 8004fd2:	bf00      	nop
+ 8004fd4:	20000260 	.word	0x20000260
 
-08004fc8 <parse_byte>:
+08004fd8 <parse_byte>:
 // Frame format:
 // [0x7E] [len(4, LSB)] [version] [receiver] [sender] [data...] [crc(4, LSB)] [0x7E]
 static uint8_t crc_bytes[4];
 uint8_t boot_to_FPGA_UL1[8];
 void parse_byte(uint8_t byte)
 {
- 8004fc8:	e92d 4ff8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 8004fd8:	e92d 4ff8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, lr}
     switch (state) {
- 8004fcc:	4c93      	ldr	r4, [pc, #588]	@ (800521c <parse_byte+0x254>)
- 8004fce:	7823      	ldrb	r3, [r4, #0]
- 8004fd0:	2b04      	cmp	r3, #4
- 8004fd2:	d808      	bhi.n	8004fe6 <parse_byte+0x1e>
- 8004fd4:	e8df f003 	tbb	[pc, r3]
- 8004fd8:	3f281509 	.word	0x3f281509
- 8004fdc:	03          	.byte	0x03
- 8004fdd:	00          	.byte	0x00
+ 8004fdc:	4c93      	ldr	r4, [pc, #588]	@ (800522c <parse_byte+0x254>)
+ 8004fde:	7823      	ldrb	r3, [r4, #0]
+ 8004fe0:	2b04      	cmp	r3, #4
+ 8004fe2:	d808      	bhi.n	8004ff6 <parse_byte+0x1e>
+ 8004fe4:	e8df f003 	tbb	[pc, r3]
+ 8004fe8:	3f281509 	.word	0x3f281509
+ 8004fec:	03          	.byte	0x03
+ 8004fed:	00          	.byte	0x00
                            ((uint32_t)crc_bytes[3] << 24);
                 state = STATE_WAIT_END_FLAG;
             }
             break;
         case STATE_WAIT_END_FLAG:
             if (byte == START_END_FLAG) {
- 8004fde:	287e      	cmp	r0, #126	@ 0x7e
- 8004fe0:	d046      	beq.n	8005070 <parse_byte+0xa8>
+ 8004fee:	287e      	cmp	r0, #126	@ 0x7e
+ 8004ff0:	d046      	beq.n	8005080 <parse_byte+0xa8>
                     state = STATE_WAIT_START;
- 8004fe2:	2300      	movs	r3, #0
- 8004fe4:	7023      	strb	r3, [r4, #0]
+ 8004ff2:	2300      	movs	r3, #0
+ 8004ff4:	7023      	strb	r3, [r4, #0]
 				}
             }
             state = STATE_WAIT_START;
             break;
     }
 }
- 8004fe6:	e8bd 8ff8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 8004ff6:	e8bd 8ff8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, pc}
             if (byte == START_END_FLAG) {
- 8004fea:	287e      	cmp	r0, #126	@ 0x7e
- 8004fec:	d1fb      	bne.n	8004fe6 <parse_byte+0x1e>
+ 8004ffa:	287e      	cmp	r0, #126	@ 0x7e
+ 8004ffc:	d1fb      	bne.n	8004ff6 <parse_byte+0x1e>
                 recv_count = 0;
- 8004fee:	2300      	movs	r3, #0
+ 8004ffe:	2300      	movs	r3, #0
                 state = STATE_READ_LEN;
- 8004ff0:	2001      	movs	r0, #1
+ 8005000:	2001      	movs	r0, #1
                 recv_count = 0;
- 8004ff2:	498b      	ldr	r1, [pc, #556]	@ (8005220 <parse_byte+0x258>)
+ 8005002:	498b      	ldr	r1, [pc, #556]	@ (8005230 <parse_byte+0x258>)
                 body_offset = 0;
- 8004ff4:	4a8b      	ldr	r2, [pc, #556]	@ (8005224 <parse_byte+0x25c>)
+ 8005004:	4a8b      	ldr	r2, [pc, #556]	@ (8005234 <parse_byte+0x25c>)
                 body_len = 0;
- 8004ff6:	4d8c      	ldr	r5, [pc, #560]	@ (8005228 <parse_byte+0x260>)
+ 8005006:	4d8c      	ldr	r5, [pc, #560]	@ (8005238 <parse_byte+0x260>)
                 state = STATE_READ_LEN;
- 8004ff8:	7020      	strb	r0, [r4, #0]
+ 8005008:	7020      	strb	r0, [r4, #0]
                 body_len = 0;
- 8004ffa:	602b      	str	r3, [r5, #0]
+ 800500a:	602b      	str	r3, [r5, #0]
                 recv_count = 0;
- 8004ffc:	600b      	str	r3, [r1, #0]
+ 800500c:	600b      	str	r3, [r1, #0]
                 body_offset = 0;
- 8004ffe:	6013      	str	r3, [r2, #0]
-                body_len = 0;
- 8005000:	e7f1      	b.n	8004fe6 <parse_byte+0x1e>
-            ((uint8_t*)&body_len)[recv_count] = byte;
- 8005002:	4a87      	ldr	r2, [pc, #540]	@ (8005220 <parse_byte+0x258>)
- 8005004:	4988      	ldr	r1, [pc, #544]	@ (8005228 <parse_byte+0x260>)
- 8005006:	6813      	ldr	r3, [r2, #0]
- 8005008:	54c8      	strb	r0, [r1, r3]
-            recv_count++;
- 800500a:	3301      	adds	r3, #1
-            if (recv_count == 4) {
- 800500c:	2b04      	cmp	r3, #4
-            recv_count++;
  800500e:	6013      	str	r3, [r2, #0]
+                body_len = 0;
+ 8005010:	e7f1      	b.n	8004ff6 <parse_byte+0x1e>
+            ((uint8_t*)&body_len)[recv_count] = byte;
+ 8005012:	4a87      	ldr	r2, [pc, #540]	@ (8005230 <parse_byte+0x258>)
+ 8005014:	4988      	ldr	r1, [pc, #544]	@ (8005238 <parse_byte+0x260>)
+ 8005016:	6813      	ldr	r3, [r2, #0]
+ 8005018:	54c8      	strb	r0, [r1, r3]
+            recv_count++;
+ 800501a:	3301      	adds	r3, #1
             if (recv_count == 4) {
- 8005010:	d1e9      	bne.n	8004fe6 <parse_byte+0x1e>
+ 800501c:	2b04      	cmp	r3, #4
+            recv_count++;
+ 800501e:	6013      	str	r3, [r2, #0]
+            if (recv_count == 4) {
+ 8005020:	d1e9      	bne.n	8004ff6 <parse_byte+0x1e>
                 if (body_len < 3 || body_len > MAX_FRAME_SIZE - 10) {
- 8005012:	f242 70f3 	movw	r0, #10227	@ 0x27f3
- 8005016:	680b      	ldr	r3, [r1, #0]
- 8005018:	3b03      	subs	r3, #3
- 800501a:	4283      	cmp	r3, r0
- 800501c:	d8e1      	bhi.n	8004fe2 <parse_byte+0x1a>
+ 8005022:	f242 70f3 	movw	r0, #10227	@ 0x27f3
+ 8005026:	680b      	ldr	r3, [r1, #0]
+ 8005028:	3b03      	subs	r3, #3
+ 800502a:	4283      	cmp	r3, r0
+ 800502c:	d8e1      	bhi.n	8004ff2 <parse_byte+0x1a>
                 state = STATE_READ_BODY;
- 800501e:	2102      	movs	r1, #2
+ 800502e:	2102      	movs	r1, #2
                 recv_count = 0;
- 8005020:	2300      	movs	r3, #0
+ 8005030:	2300      	movs	r3, #0
                 state = STATE_READ_BODY;
- 8005022:	7021      	strb	r1, [r4, #0]
+ 8005032:	7021      	strb	r1, [r4, #0]
                 recv_count = 0;
- 8005024:	6013      	str	r3, [r2, #0]
- 8005026:	e7de      	b.n	8004fe6 <parse_byte+0x1e>
+ 8005034:	6013      	str	r3, [r2, #0]
+ 8005036:	e7de      	b.n	8004ff6 <parse_byte+0x1e>
 			if (body_offset < body_len && body_offset < MAX_FRAME_SIZE) {
- 8005028:	497e      	ldr	r1, [pc, #504]	@ (8005224 <parse_byte+0x25c>)
- 800502a:	4a7f      	ldr	r2, [pc, #508]	@ (8005228 <parse_byte+0x260>)
- 800502c:	680b      	ldr	r3, [r1, #0]
- 800502e:	6812      	ldr	r2, [r2, #0]
- 8005030:	4293      	cmp	r3, r2
- 8005032:	d206      	bcs.n	8005042 <parse_byte+0x7a>
- 8005034:	f5b3 5f20 	cmp.w	r3, #10240	@ 0x2800
- 8005038:	d2d5      	bcs.n	8004fe6 <parse_byte+0x1e>
+ 8005038:	497e      	ldr	r1, [pc, #504]	@ (8005234 <parse_byte+0x25c>)
+ 800503a:	4a7f      	ldr	r2, [pc, #508]	@ (8005238 <parse_byte+0x260>)
+ 800503c:	680b      	ldr	r3, [r1, #0]
+ 800503e:	6812      	ldr	r2, [r2, #0]
+ 8005040:	4293      	cmp	r3, r2
+ 8005042:	d206      	bcs.n	8005052 <parse_byte+0x7a>
+ 8005044:	f5b3 5f20 	cmp.w	r3, #10240	@ 0x2800
+ 8005048:	d2d5      	bcs.n	8004ff6 <parse_byte+0x1e>
 				frame_buf[body_offset++] = byte;
- 800503a:	4d7c      	ldr	r5, [pc, #496]	@ (800522c <parse_byte+0x264>)
- 800503c:	54e8      	strb	r0, [r5, r3]
- 800503e:	3301      	adds	r3, #1
- 8005040:	600b      	str	r3, [r1, #0]
+ 800504a:	4d7c      	ldr	r5, [pc, #496]	@ (800523c <parse_byte+0x264>)
+ 800504c:	54e8      	strb	r0, [r5, r3]
+ 800504e:	3301      	adds	r3, #1
+ 8005050:	600b      	str	r3, [r1, #0]
 			if (body_offset == body_len) {
- 8005042:	429a      	cmp	r2, r3
- 8005044:	d1cf      	bne.n	8004fe6 <parse_byte+0x1e>
+ 8005052:	429a      	cmp	r2, r3
+ 8005054:	d1cf      	bne.n	8004ff6 <parse_byte+0x1e>
 				recv_count = 0;
- 8005046:	2300      	movs	r3, #0
+ 8005056:	2300      	movs	r3, #0
 				state = STATE_READ_CRC;
- 8005048:	2103      	movs	r1, #3
+ 8005058:	2103      	movs	r1, #3
 				recv_count = 0;
- 800504a:	4875      	ldr	r0, [pc, #468]	@ (8005220 <parse_byte+0x258>)
+ 800505a:	4875      	ldr	r0, [pc, #468]	@ (8005230 <parse_byte+0x258>)
 				memset(crc_bytes, 0, 4);  // Clear CRC buffer
- 800504c:	4a78      	ldr	r2, [pc, #480]	@ (8005230 <parse_byte+0x268>)
+ 800505c:	4a78      	ldr	r2, [pc, #480]	@ (8005240 <parse_byte+0x268>)
 				recv_count = 0;
- 800504e:	6003      	str	r3, [r0, #0]
+ 800505e:	6003      	str	r3, [r0, #0]
 				state = STATE_READ_CRC;
- 8005050:	7021      	strb	r1, [r4, #0]
+ 8005060:	7021      	strb	r1, [r4, #0]
 				memset(crc_bytes, 0, 4);  // Clear CRC buffer
- 8005052:	6013      	str	r3, [r2, #0]
- 8005054:	e7c7      	b.n	8004fe6 <parse_byte+0x1e>
-            crc_bytes[recv_count] = byte;
- 8005056:	4a72      	ldr	r2, [pc, #456]	@ (8005220 <parse_byte+0x258>)
- 8005058:	4975      	ldr	r1, [pc, #468]	@ (8005230 <parse_byte+0x268>)
- 800505a:	6813      	ldr	r3, [r2, #0]
- 800505c:	54c8      	strb	r0, [r1, r3]
-            recv_count++;
- 800505e:	3301      	adds	r3, #1
-            if (recv_count == 4) {
- 8005060:	2b04      	cmp	r3, #4
-            recv_count++;
  8005062:	6013      	str	r3, [r2, #0]
+ 8005064:	e7c7      	b.n	8004ff6 <parse_byte+0x1e>
+            crc_bytes[recv_count] = byte;
+ 8005066:	4a72      	ldr	r2, [pc, #456]	@ (8005230 <parse_byte+0x258>)
+ 8005068:	4975      	ldr	r1, [pc, #468]	@ (8005240 <parse_byte+0x268>)
+ 800506a:	6813      	ldr	r3, [r2, #0]
+ 800506c:	54c8      	strb	r0, [r1, r3]
+            recv_count++;
+ 800506e:	3301      	adds	r3, #1
             if (recv_count == 4) {
- 8005064:	d1bf      	bne.n	8004fe6 <parse_byte+0x1e>
+ 8005070:	2b04      	cmp	r3, #4
+            recv_count++;
+ 8005072:	6013      	str	r3, [r2, #0]
+            if (recv_count == 4) {
+ 8005074:	d1bf      	bne.n	8004ff6 <parse_byte+0x1e>
                 recv_crc = (uint32_t)crc_bytes[0] |
- 8005066:	4a73      	ldr	r2, [pc, #460]	@ (8005234 <parse_byte+0x26c>)
- 8005068:	6809      	ldr	r1, [r1, #0]
+ 8005076:	4a73      	ldr	r2, [pc, #460]	@ (8005244 <parse_byte+0x26c>)
+ 8005078:	6809      	ldr	r1, [r1, #0]
                 state = STATE_WAIT_END_FLAG;
- 800506a:	7023      	strb	r3, [r4, #0]
+ 800507a:	7023      	strb	r3, [r4, #0]
                 recv_crc = (uint32_t)crc_bytes[0] |
- 800506c:	6011      	str	r1, [r2, #0]
+ 800507c:	6011      	str	r1, [r2, #0]
                 state = STATE_WAIT_END_FLAG;
- 800506e:	e7ba      	b.n	8004fe6 <parse_byte+0x1e>
+ 800507e:	e7ba      	b.n	8004ff6 <parse_byte+0x1e>
 				crc_input[0] = (uint8_t)(body_len >> 0);
- 8005070:	4d71      	ldr	r5, [pc, #452]	@ (8005238 <parse_byte+0x270>)
- 8005072:	4b6d      	ldr	r3, [pc, #436]	@ (8005228 <parse_byte+0x260>)
- 8005074:	4628      	mov	r0, r5
- 8005076:	681f      	ldr	r7, [r3, #0]
+ 8005080:	4d71      	ldr	r5, [pc, #452]	@ (8005248 <parse_byte+0x270>)
+ 8005082:	4b6d      	ldr	r3, [pc, #436]	@ (8005238 <parse_byte+0x260>)
+ 8005084:	4628      	mov	r0, r5
+ 8005086:	681f      	ldr	r7, [r3, #0]
 				memcpy(&crc_input[4], frame_buf, body_len);
- 8005078:	4e6c      	ldr	r6, [pc, #432]	@ (800522c <parse_byte+0x264>)
- 800507a:	463a      	mov	r2, r7
- 800507c:	4631      	mov	r1, r6
+ 8005088:	4e6c      	ldr	r6, [pc, #432]	@ (800523c <parse_byte+0x264>)
+ 800508a:	463a      	mov	r2, r7
+ 800508c:	4631      	mov	r1, r6
 				crc_input[0] = (uint8_t)(body_len >> 0);
- 800507e:	f840 7b04 	str.w	r7, [r0], #4
+ 800508e:	f840 7b04 	str.w	r7, [r0], #4
 				memcpy(&crc_input[4], frame_buf, body_len);
- 8005082:	f000 fc5d 	bl	8005940 <memcpy>
+ 8005092:	f000 fc5d 	bl	8005950 <memcpy>
 				if (calc_crc == recv_crc) {
- 8005086:	4b6b      	ldr	r3, [pc, #428]	@ (8005234 <parse_byte+0x26c>)
- 8005088:	f8d3 e000 	ldr.w	lr, [r3]
+ 8005096:	4b6b      	ldr	r3, [pc, #428]	@ (8005244 <parse_byte+0x26c>)
+ 8005098:	f8d3 e000 	ldr.w	lr, [r3]
     while (len--) {
- 800508c:	1d3b      	adds	r3, r7, #4
- 800508e:	f000 80eb 	beq.w	8005268 <parse_byte+0x2a0>
+ 800509c:	1d3b      	adds	r3, r7, #4
+ 800509e:	f000 80eb 	beq.w	8005278 <parse_byte+0x2a0>
     uint32_t crc = init_crc;
- 8005092:	f04f 31ff 	mov.w	r1, #4294967295	@ 0xffffffff
- 8005096:	1d3b      	adds	r3, r7, #4
+ 80050a2:	f04f 31ff 	mov.w	r1, #4294967295	@ 0xffffffff
+ 80050a6:	1d3b      	adds	r3, r7, #4
     while (len--) {
- 8005098:	4628      	mov	r0, r5
- 800509a:	eb05 0c03 	add.w	ip, r5, r3
- 800509e:	4d67      	ldr	r5, [pc, #412]	@ (800523c <parse_byte+0x274>)
+ 80050a8:	4628      	mov	r0, r5
+ 80050aa:	eb05 0c03 	add.w	ip, r5, r3
+ 80050ae:	4d67      	ldr	r5, [pc, #412]	@ (800524c <parse_byte+0x274>)
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 80050a0:	f810 2b01 	ldrb.w	r2, [r0], #1
- 80050a4:	b2cb      	uxtb	r3, r1
- 80050a6:	4053      	eors	r3, r2
- 80050a8:	f855 3023 	ldr.w	r3, [r5, r3, lsl #2]
+ 80050b0:	f810 2b01 	ldrb.w	r2, [r0], #1
+ 80050b4:	b2cb      	uxtb	r3, r1
+ 80050b6:	4053      	eors	r3, r2
+ 80050b8:	f855 3023 	ldr.w	r3, [r5, r3, lsl #2]
     while (len--) {
- 80050ac:	4560      	cmp	r0, ip
+ 80050bc:	4560      	cmp	r0, ip
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 80050ae:	ea83 2111 	eor.w	r1, r3, r1, lsr #8
+ 80050be:	ea83 2111 	eor.w	r1, r3, r1, lsr #8
     while (len--) {
- 80050b2:	d1f5      	bne.n	80050a0 <parse_byte+0xd8>
+ 80050c2:	d1f5      	bne.n	80050b0 <parse_byte+0xd8>
     return crc32_calc(data, len, 0xFFFFFFFF) ^ 0xFFFFFFFF;
- 80050b4:	43c9      	mvns	r1, r1
+ 80050c4:	43c9      	mvns	r1, r1
 				if (calc_crc == recv_crc) {
- 80050b6:	4571      	cmp	r1, lr
- 80050b8:	f040 80db 	bne.w	8005272 <parse_byte+0x2aa>
+ 80050c6:	4571      	cmp	r1, lr
+ 80050c8:	f040 80db 	bne.w	8005282 <parse_byte+0x2aa>
 					current_page_index = (uint16_t)frame_buf[5] | ((uint16_t)frame_buf[6] << 8);
- 80050bc:	4b60      	ldr	r3, [pc, #384]	@ (8005240 <parse_byte+0x278>)
- 80050be:	f8b6 2005 	ldrh.w	r2, [r6, #5]
+ 80050cc:	4b60      	ldr	r3, [pc, #384]	@ (8005250 <parse_byte+0x278>)
+ 80050ce:	f8b6 2005 	ldrh.w	r2, [r6, #5]
 					memcpy(boot_to_FPGA_UL1,&frame_buf[3],4);
- 80050c2:	f8df 8188 	ldr.w	r8, [pc, #392]	@ 800524c <parse_byte+0x284>
+ 80050d2:	f8df 8188 	ldr.w	r8, [pc, #392]	@ 800525c <parse_byte+0x284>
 					current_page_index = (uint16_t)frame_buf[5] | ((uint16_t)frame_buf[6] << 8);
- 80050c6:	801a      	strh	r2, [r3, #0]
+ 80050d6:	801a      	strh	r2, [r3, #0]
 					memcpy(boot_to_FPGA_UL1,&frame_buf[3],4);
- 80050c8:	f8d6 3003 	ldr.w	r3, [r6, #3]
+ 80050d8:	f8d6 3003 	ldr.w	r3, [r6, #3]
 					if ( data_len > 0)
- 80050cc:	1ffa      	subs	r2, r7, #7
+ 80050dc:	1ffa      	subs	r2, r7, #7
 					memcpy(boot_to_FPGA_UL1,&frame_buf[3],4);
- 80050ce:	f8c8 3000 	str.w	r3, [r8]
+ 80050de:	f8c8 3000 	str.w	r3, [r8]
 					if ( data_len > 0)
- 80050d2:	d086      	beq.n	8004fe2 <parse_byte+0x1a>
+ 80050e2:	d086      	beq.n	8004ff2 <parse_byte+0x1a>
 						if (iap_buf_idx + data_len <= sizeof(iap_buffer))
- 80050d4:	f8df 9184 	ldr.w	r9, [pc, #388]	@ 800525c <parse_byte+0x294>
- 80050d8:	f8b9 0000 	ldrh.w	r0, [r9]
- 80050dc:	1887      	adds	r7, r0, r2
- 80050de:	f5b7 5f20 	cmp.w	r7, #10240	@ 0x2800
- 80050e2:	f200 8153 	bhi.w	800538c <parse_byte+0x3c4>
+ 80050e4:	f8df 9184 	ldr.w	r9, [pc, #388]	@ 800526c <parse_byte+0x294>
+ 80050e8:	f8b9 0000 	ldrh.w	r0, [r9]
+ 80050ec:	1887      	adds	r7, r0, r2
+ 80050ee:	f5b7 5f20 	cmp.w	r7, #10240	@ 0x2800
+ 80050f2:	f200 8153 	bhi.w	800539c <parse_byte+0x3c4>
 							iap_buf_idx += data_len;
- 80050e6:	b2bf      	uxth	r7, r7
+ 80050f6:	b2bf      	uxth	r7, r7
 							memcpy(&iap_buffer[iap_buf_idx], firmware_data, data_len);
- 80050e8:	4956      	ldr	r1, [pc, #344]	@ (8005244 <parse_byte+0x27c>)
- 80050ea:	4430      	add	r0, r6
- 80050ec:	f000 fc28 	bl	8005940 <memcpy>
+ 80050f8:	4956      	ldr	r1, [pc, #344]	@ (8005254 <parse_byte+0x27c>)
+ 80050fa:	4430      	add	r0, r6
+ 80050fc:	f000 fc28 	bl	8005950 <memcpy>
 							if (iap_buf_idx >= 2)
- 80050f0:	2f01      	cmp	r7, #1
+ 8005100:	2f01      	cmp	r7, #1
 							iap_buf_idx += data_len;
- 80050f2:	f8a9 7000 	strh.w	r7, [r9]
+ 8005102:	f8a9 7000 	strh.w	r7, [r9]
 							if (iap_buf_idx >= 2)
- 80050f6:	f200 81ec 	bhi.w	80054d2 <parse_byte+0x50a>
+ 8005106:	f200 81ec 	bhi.w	80054e2 <parse_byte+0x50a>
 void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, uint32_t data_len)
 {
     // Frame body = version(1) + receiver(1) + sender(1) + data(data_len)
     uint32_t body_len = 3 + data_len;
 
     body[0] = 0x01;           // version
- 80050fa:	f240 1101 	movw	r1, #257	@ 0x101
- 80050fe:	4a52      	ldr	r2, [pc, #328]	@ (8005248 <parse_byte+0x280>)
+ 800510a:	f240 1101 	movw	r1, #257	@ 0x101
+ 800510e:	4a52      	ldr	r2, [pc, #328]	@ (8005258 <parse_byte+0x280>)
     body[1] = receiver;
     body[2] = sender;
     memcpy(&body[3], data, data_len);
 
     // Calculate CRC input: [body_len(little-endian 4 bytes)] + body
     crc_input_send[0] = (uint8_t)(body_len >> 0);
- 8005100:	f8df 915c 	ldr.w	r9, [pc, #348]	@ 8005260 <parse_byte+0x298>
+ 8005110:	f8df 915c 	ldr.w	r9, [pc, #348]	@ 8005270 <parse_byte+0x298>
 							boot_to_FPGA_UL1[4] = (uint8_t)(0x00 >> 0);
- 8005104:	2300      	movs	r3, #0
+ 8005114:	2300      	movs	r3, #0
     body[0] = 0x01;           // version
- 8005106:	8011      	strh	r1, [r2, #0]
+ 8005116:	8011      	strh	r1, [r2, #0]
     crc_input_send[0] = (uint8_t)(body_len >> 0);
- 8005108:	46ce      	mov	lr, r9
- 800510a:	210b      	movs	r1, #11
+ 8005118:	46ce      	mov	lr, r9
+ 800511a:	210b      	movs	r1, #11
     memcpy(&body[3], data, data_len);
- 800510c:	4e4f      	ldr	r6, [pc, #316]	@ (800524c <parse_byte+0x284>)
+ 800511c:	4e4f      	ldr	r6, [pc, #316]	@ (800525c <parse_byte+0x284>)
 							boot_to_FPGA_UL1[4] = (uint8_t)(0x00 >> 0);
- 800510e:	f8c8 3004 	str.w	r3, [r8, #4]
+ 800511e:	f8c8 3004 	str.w	r3, [r8, #4]
     crc_input_send[0] = (uint8_t)(body_len >> 0);
- 8005112:	f84e 1b04 	str.w	r1, [lr], #4
+ 8005122:	f84e 1b04 	str.w	r1, [lr], #4
     memcpy(&body[3], data, data_len);
- 8005116:	ce03      	ldmia	r6!, {r0, r1}
- 8005118:	f8c2 1007 	str.w	r1, [r2, #7]
+ 8005126:	ce03      	ldmia	r6!, {r0, r1}
+ 8005128:	f8c2 1007 	str.w	r1, [r2, #7]
     uint32_t calc_crc = crc32_c(crc_input_send, 4 + body_len);
 
     // Construct unescaped raw frame
     int pos = 0;
 
     raw_frame[pos++] = 0x7E;  // start flag
- 800511c:	f640 317e 	movw	r1, #2942	@ 0xb7e
- 8005120:	4f4b      	ldr	r7, [pc, #300]	@ (8005250 <parse_byte+0x288>)
+ 800512c:	f640 317e 	movw	r1, #2942	@ 0xb7e
+ 8005130:	4f4b      	ldr	r7, [pc, #300]	@ (8005260 <parse_byte+0x288>)
     body[2] = sender;
- 8005122:	7093      	strb	r3, [r2, #2]
+ 8005132:	7093      	strb	r3, [r2, #2]
     memcpy(&body[3], data, data_len);
- 8005124:	f8c2 0003 	str.w	r0, [r2, #3]
+ 8005134:	f8c2 0003 	str.w	r0, [r2, #3]
     raw_frame[pos++] = (uint8_t)(body_len >> 8);
     raw_frame[pos++] = (uint8_t)(body_len >> 16);
     raw_frame[pos++] = (uint8_t)(body_len >> 24);
 
     // Write body
     memcpy(&raw_frame[pos], body, body_len);
- 8005128:	4690      	mov	r8, r2
+ 8005138:	4690      	mov	r8, r2
     raw_frame[pos++] = 0x7E;  // start flag
- 800512a:	6039      	str	r1, [r7, #0]
+ 800513a:	6039      	str	r1, [r7, #0]
     memcpy(&crc_input_send[4], body, body_len);
- 800512c:	ca07      	ldmia	r2, {r0, r1, r2}
- 800512e:	e8ae 0003 	stmia.w	lr!, {r0, r1}
- 8005132:	f82e 2b02 	strh.w	r2, [lr], #2
- 8005136:	0c12      	lsrs	r2, r2, #16
- 8005138:	f88e 2000 	strb.w	r2, [lr]
+ 800513c:	ca07      	ldmia	r2, {r0, r1, r2}
+ 800513e:	e8ae 0003 	stmia.w	lr!, {r0, r1}
+ 8005142:	f82e 2b02 	strh.w	r2, [lr], #2
+ 8005146:	0c12      	lsrs	r2, r2, #16
+ 8005148:	f88e 2000 	strb.w	r2, [lr]
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 800513c:	f899 2007 	ldrb.w	r2, [r9, #7]
- 8005140:	f8df a120 	ldr.w	sl, [pc, #288]	@ 8005264 <parse_byte+0x29c>
- 8005144:	f082 020d 	eor.w	r2, r2, #13
- 8005148:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 800514c:	f899 000a 	ldrb.w	r0, [r9, #10]
- 8005150:	ea82 0a0a 	eor.w	sl, r2, sl
- 8005154:	f899 2008 	ldrb.w	r2, [r9, #8]
- 8005158:	fa5f f18a 	uxtb.w	r1, sl
- 800515c:	404a      	eors	r2, r1
- 800515e:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 8005162:	f899 1009 	ldrb.w	r1, [r9, #9]
- 8005166:	ea82 221a 	eor.w	r2, r2, sl, lsr #8
- 800516a:	fa5f fe82 	uxtb.w	lr, r2
- 800516e:	ea81 010e 	eor.w	r1, r1, lr
- 8005172:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
+ 800514c:	f899 2007 	ldrb.w	r2, [r9, #7]
+ 8005150:	f8df a120 	ldr.w	sl, [pc, #288]	@ 8005274 <parse_byte+0x29c>
+ 8005154:	f082 020d 	eor.w	r2, r2, #13
+ 8005158:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 800515c:	f899 000a 	ldrb.w	r0, [r9, #10]
+ 8005160:	ea82 0a0a 	eor.w	sl, r2, sl
+ 8005164:	f899 2008 	ldrb.w	r2, [r9, #8]
+ 8005168:	fa5f f18a 	uxtb.w	r1, sl
+ 800516c:	404a      	eors	r2, r1
+ 800516e:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 8005172:	f899 1009 	ldrb.w	r1, [r9, #9]
+ 8005176:	ea82 221a 	eor.w	r2, r2, sl, lsr #8
+ 800517a:	fa5f fe82 	uxtb.w	lr, r2
+ 800517e:	ea81 010e 	eor.w	r1, r1, lr
+ 8005182:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
     raw_frame[pos++] = (uint8_t)(calc_crc >> 0);
     raw_frame[pos++] = (uint8_t)(calc_crc >> 8);
     raw_frame[pos++] = (uint8_t)(calc_crc >> 16);
     raw_frame[pos++] = (uint8_t)(calc_crc >> 24);
 
     raw_frame[pos++] = 0x7E;  // end flag
- 8005176:	f04f 0b7e 	mov.w	fp, #126	@ 0x7e
+ 8005186:	f04f 0b7e 	mov.w	fp, #126	@ 0x7e
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 800517a:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
- 800517e:	b2ca      	uxtb	r2, r1
- 8005180:	4042      	eors	r2, r0
- 8005182:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 800518a:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
+ 800518e:	b2ca      	uxtb	r2, r1
+ 8005190:	4042      	eors	r2, r0
+ 8005192:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
     		dst[dst_idx++] = src[i];
- 8005186:	2601      	movs	r6, #1
+ 8005196:	2601      	movs	r6, #1
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 8005188:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
- 800518c:	b2d1      	uxtb	r1, r2
- 800518e:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
+ 8005198:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
+ 800519c:	b2d1      	uxtb	r1, r2
+ 800519e:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
     raw_frame[pos++] = (uint8_t)(body_len >> 24);
- 8005192:	713b      	strb	r3, [r7, #4]
+ 80051a2:	713b      	strb	r3, [r7, #4]
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 8005194:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
- 8005198:	b2ca      	uxtb	r2, r1
- 800519a:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 80051a4:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
+ 80051a8:	b2ca      	uxtb	r2, r1
+ 80051aa:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
     		dst[dst_idx++] = src[i];
- 800519e:	f8df c0b4 	ldr.w	ip, [pc, #180]	@ 8005254 <parse_byte+0x28c>
+ 80051ae:	f8df c0b4 	ldr.w	ip, [pc, #180]	@ 8005264 <parse_byte+0x28c>
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 80051a2:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
- 80051a6:	b2d1      	uxtb	r1, r2
- 80051a8:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
- 80051ac:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
- 80051b0:	b2ca      	uxtb	r2, r1
- 80051b2:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 80051b6:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
+ 80051b2:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
+ 80051b6:	b2d1      	uxtb	r1, r2
+ 80051b8:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
+ 80051bc:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
+ 80051c0:	b2ca      	uxtb	r2, r1
+ 80051c2:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 80051c6:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
     return crc32_calc(data, len, 0xFFFFFFFF) ^ 0xFFFFFFFF;
- 80051ba:	43d2      	mvns	r2, r2
+ 80051ca:	43d2      	mvns	r2, r2
     memcpy(&raw_frame[pos], body, body_len);
- 80051bc:	e8b8 0003 	ldmia.w	r8!, {r0, r1}
- 80051c0:	f8c7 0005 	str.w	r0, [r7, #5]
- 80051c4:	f8c7 1009 	str.w	r1, [r7, #9]
+ 80051cc:	e8b8 0003 	ldmia.w	r8!, {r0, r1}
+ 80051d0:	f8c7 0005 	str.w	r0, [r7, #5]
+ 80051d4:	f8c7 1009 	str.w	r1, [r7, #9]
     raw_frame[pos++] = (uint8_t)(calc_crc >> 0);
- 80051c8:	613a      	str	r2, [r7, #16]
+ 80051d8:	613a      	str	r2, [r7, #16]
     memcpy(&raw_frame[pos], body, body_len);
- 80051ca:	f8b8 2000 	ldrh.w	r2, [r8]
+ 80051da:	f8b8 2000 	ldrh.w	r2, [r8]
     raw_frame[pos++] = 0x7E;  // end flag
- 80051ce:	f887 b014 	strb.w	fp, [r7, #20]
+ 80051de:	f887 b014 	strb.w	fp, [r7, #20]
     memcpy(&raw_frame[pos], body, body_len);
- 80051d2:	f8a7 200d 	strh.w	r2, [r7, #13]
- 80051d6:	f898 2002 	ldrb.w	r2, [r8, #2]
+ 80051e2:	f8a7 200d 	strh.w	r2, [r7, #13]
+ 80051e6:	f898 2002 	ldrb.w	r2, [r8, #2]
     		dst[dst_idx++] = src[i];
- 80051da:	f88c b000 	strb.w	fp, [ip]
+ 80051ea:	f88c b000 	strb.w	fp, [ip]
     memcpy(&raw_frame[pos], body, body_len);
- 80051de:	73fa      	strb	r2, [r7, #15]
+ 80051ee:	73fa      	strb	r2, [r7, #15]
     for (uint32_t i = 0; i < src_len; i++) {
- 80051e0:	3301      	adds	r3, #1
+ 80051f0:	3301      	adds	r3, #1
     	if( i<1 || i>=src_len-1 )
- 80051e2:	2b14      	cmp	r3, #20
+ 80051f2:	2b14      	cmp	r3, #20
     		dst[dst_idx++] = src[i];
- 80051e4:	f106 0201 	add.w	r2, r6, #1
- 80051e8:	eb0c 0106 	add.w	r1, ip, r6
+ 80051f4:	f106 0201 	add.w	r2, r6, #1
+ 80051f8:	eb0c 0106 	add.w	r1, ip, r6
     	if( i<1 || i>=src_len-1 )
- 80051ec:	d00b      	beq.n	8005206 <parse_byte+0x23e>
+ 80051fc:	d00b      	beq.n	8005216 <parse_byte+0x23e>
 			switch (src[i]) {
- 80051ee:	5cf8      	ldrb	r0, [r7, r3]
- 80051f0:	287a      	cmp	r0, #122	@ 0x7a
- 80051f2:	f000 815b 	beq.w	80054ac <parse_byte+0x4e4>
- 80051f6:	287e      	cmp	r0, #126	@ 0x7e
- 80051f8:	f040 8155 	bne.w	80054a6 <parse_byte+0x4de>
+ 80051fe:	5cf8      	ldrb	r0, [r7, r3]
+ 8005200:	287a      	cmp	r0, #122	@ 0x7a
+ 8005202:	f000 815b 	beq.w	80054bc <parse_byte+0x4e4>
+ 8005206:	287e      	cmp	r0, #126	@ 0x7e
+ 8005208:	f040 8155 	bne.w	80054b6 <parse_byte+0x4de>
 					break;
- 80051fc:	f245 527a 	movw	r2, #21882	@ 0x557a
+ 800520c:	f245 527a 	movw	r2, #21882	@ 0x557a
 					dst[dst_idx++] = ESCAPE_7E;       // 0x55
- 8005200:	3602      	adds	r6, #2
+ 8005210:	3602      	adds	r6, #2
 					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
- 8005202:	800a      	strh	r2, [r1, #0]
- 8005204:	e7ec      	b.n	80051e0 <parse_byte+0x218>
+ 8005212:	800a      	strh	r2, [r1, #0]
+ 8005214:	e7ec      	b.n	80051f0 <parse_byte+0x218>
     		dst[dst_idx++] = src[i];
- 8005206:	257e      	movs	r5, #126	@ 0x7e
+ 8005216:	257e      	movs	r5, #126	@ 0x7e
 
     // Escape encoding
     uint32_t escaped_len = encode_escape(escaped_buf, raw_frame, pos);
     HAL_UART_Transmit(&huart1, escaped_buf, escaped_len,1000);
- 8005208:	f44f 737a 	mov.w	r3, #1000	@ 0x3e8
- 800520c:	4911      	ldr	r1, [pc, #68]	@ (8005254 <parse_byte+0x28c>)
- 800520e:	b292      	uxth	r2, r2
+ 8005218:	f44f 737a 	mov.w	r3, #1000	@ 0x3e8
+ 800521c:	4911      	ldr	r1, [pc, #68]	@ (8005264 <parse_byte+0x28c>)
+ 800521e:	b292      	uxth	r2, r2
     		dst[dst_idx++] = src[i];
- 8005210:	f80c 5006 	strb.w	r5, [ip, r6]
+ 8005220:	f80c 5006 	strb.w	r5, [ip, r6]
     HAL_UART_Transmit(&huart1, escaped_buf, escaped_len,1000);
- 8005214:	4810      	ldr	r0, [pc, #64]	@ (8005258 <parse_byte+0x290>)
- 8005216:	f7fe fba9 	bl	800396c <HAL_UART_Transmit>
+ 8005224:	4810      	ldr	r0, [pc, #64]	@ (8005268 <parse_byte+0x290>)
+ 8005226:	f7fe fba1 	bl	800396c <HAL_UART_Transmit>
 
 }
- 800521a:	e6e2      	b.n	8004fe2 <parse_byte+0x1a>
- 800521c:	20005288 	.word	0x20005288
- 8005220:	2000527c 	.word	0x2000527c
- 8005224:	20005280 	.word	0x20005280
- 8005228:	20005284 	.word	0x20005284
- 800522c:	20002a78 	.word	0x20002a78
- 8005230:	2000025c 	.word	0x2000025c
- 8005234:	20005278 	.word	0x20005278
- 8005238:	20000278 	.word	0x20000278
- 800523c:	08005a50 	.word	0x08005a50
- 8005240:	20000260 	.word	0x20000260
- 8005244:	20002a7f 	.word	0x20002a7f
- 8005248:	20000244 	.word	0x20000244
- 800524c:	20000254 	.word	0x20000254
- 8005250:	20000218 	.word	0x20000218
- 8005254:	200001f0 	.word	0x200001f0
- 8005258:	20000140 	.word	0x20000140
- 800525c:	20000268 	.word	0x20000268
- 8005260:	20000230 	.word	0x20000230
- 8005264:	00784d2f 	.word	0x00784d2f
+ 800522a:	e6e2      	b.n	8004ff2 <parse_byte+0x1a>
+ 800522c:	20005288 	.word	0x20005288
+ 8005230:	2000527c 	.word	0x2000527c
+ 8005234:	20005280 	.word	0x20005280
+ 8005238:	20005284 	.word	0x20005284
+ 800523c:	20002a78 	.word	0x20002a78
+ 8005240:	2000025c 	.word	0x2000025c
+ 8005244:	20005278 	.word	0x20005278
+ 8005248:	20000278 	.word	0x20000278
+ 800524c:	08005a60 	.word	0x08005a60
+ 8005250:	20000260 	.word	0x20000260
+ 8005254:	20002a7f 	.word	0x20002a7f
+ 8005258:	20000244 	.word	0x20000244
+ 800525c:	20000254 	.word	0x20000254
+ 8005260:	20000218 	.word	0x20000218
+ 8005264:	200001f0 	.word	0x200001f0
+ 8005268:	20000140 	.word	0x20000140
+ 800526c:	20000268 	.word	0x20000268
+ 8005270:	20000230 	.word	0x20000230
+ 8005274:	00784d2f 	.word	0x00784d2f
 				if (calc_crc == recv_crc) {
- 8005268:	f1be 0f00 	cmp.w	lr, #0
- 800526c:	f000 8123 	beq.w	80054b6 <parse_byte+0x4ee>
- 8005270:	4daa      	ldr	r5, [pc, #680]	@ (800551c <parse_byte+0x554>)
+ 8005278:	f1be 0f00 	cmp.w	lr, #0
+ 800527c:	f000 8123 	beq.w	80054c6 <parse_byte+0x4ee>
+ 8005280:	4daa      	ldr	r5, [pc, #680]	@ (800552c <parse_byte+0x554>)
     body[0] = 0x01;           // version
- 8005272:	f240 1101 	movw	r1, #257	@ 0x101
- 8005276:	4aaa      	ldr	r2, [pc, #680]	@ (8005520 <parse_byte+0x558>)
+ 8005282:	f240 1101 	movw	r1, #257	@ 0x101
+ 8005286:	4aaa      	ldr	r2, [pc, #680]	@ (8005530 <parse_byte+0x558>)
     crc_input_send[0] = (uint8_t)(body_len >> 0);
- 8005278:	f8df 92bc 	ldr.w	r9, [pc, #700]	@ 8005538 <parse_byte+0x570>
+ 8005288:	f8df 92bc 	ldr.w	r9, [pc, #700]	@ 8005548 <parse_byte+0x570>
 					boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
- 800527c:	2601      	movs	r6, #1
+ 800528c:	2601      	movs	r6, #1
     body[0] = 0x01;           // version
- 800527e:	8011      	strh	r1, [r2, #0]
+ 800528e:	8011      	strh	r1, [r2, #0]
     crc_input_send[0] = (uint8_t)(body_len >> 0);
- 8005280:	46ce      	mov	lr, r9
- 8005282:	210b      	movs	r1, #11
+ 8005290:	46ce      	mov	lr, r9
+ 8005292:	210b      	movs	r1, #11
 					boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
- 8005284:	4fa7      	ldr	r7, [pc, #668]	@ (8005524 <parse_byte+0x55c>)
+ 8005294:	4fa7      	ldr	r7, [pc, #668]	@ (8005534 <parse_byte+0x55c>)
     body[2] = sender;
- 8005286:	2300      	movs	r3, #0
+ 8005296:	2300      	movs	r3, #0
 					boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
- 8005288:	607e      	str	r6, [r7, #4]
+ 8005298:	607e      	str	r6, [r7, #4]
     crc_input_send[0] = (uint8_t)(body_len >> 0);
- 800528a:	f84e 1b04 	str.w	r1, [lr], #4
+ 800529a:	f84e 1b04 	str.w	r1, [lr], #4
     memcpy(&body[3], data, data_len);
- 800528e:	cf03      	ldmia	r7!, {r0, r1}
- 8005290:	f8c2 1007 	str.w	r1, [r2, #7]
+ 800529e:	cf03      	ldmia	r7!, {r0, r1}
+ 80052a0:	f8c2 1007 	str.w	r1, [r2, #7]
     raw_frame[pos++] = 0x7E;  // start flag
- 8005294:	f640 317e 	movw	r1, #2942	@ 0xb7e
- 8005298:	4fa3      	ldr	r7, [pc, #652]	@ (8005528 <parse_byte+0x560>)
+ 80052a4:	f640 317e 	movw	r1, #2942	@ 0xb7e
+ 80052a8:	4fa3      	ldr	r7, [pc, #652]	@ (8005538 <parse_byte+0x560>)
     body[2] = sender;
- 800529a:	7093      	strb	r3, [r2, #2]
+ 80052aa:	7093      	strb	r3, [r2, #2]
     memcpy(&body[3], data, data_len);
- 800529c:	f8c2 0003 	str.w	r0, [r2, #3]
+ 80052ac:	f8c2 0003 	str.w	r0, [r2, #3]
     memcpy(&raw_frame[pos], body, body_len);
- 80052a0:	4690      	mov	r8, r2
+ 80052b0:	4690      	mov	r8, r2
     raw_frame[pos++] = 0x7E;  // start flag
- 80052a2:	6039      	str	r1, [r7, #0]
+ 80052b2:	6039      	str	r1, [r7, #0]
     memcpy(&crc_input_send[4], body, body_len);
- 80052a4:	ca07      	ldmia	r2, {r0, r1, r2}
- 80052a6:	e8ae 0003 	stmia.w	lr!, {r0, r1}
- 80052aa:	f82e 2b02 	strh.w	r2, [lr], #2
- 80052ae:	0c12      	lsrs	r2, r2, #16
- 80052b0:	f88e 2000 	strb.w	r2, [lr]
+ 80052b4:	ca07      	ldmia	r2, {r0, r1, r2}
+ 80052b6:	e8ae 0003 	stmia.w	lr!, {r0, r1}
+ 80052ba:	f82e 2b02 	strh.w	r2, [lr], #2
+ 80052be:	0c12      	lsrs	r2, r2, #16
+ 80052c0:	f88e 2000 	strb.w	r2, [lr]
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 80052b4:	f899 2007 	ldrb.w	r2, [r9, #7]
- 80052b8:	f8df a280 	ldr.w	sl, [pc, #640]	@ 800553c <parse_byte+0x574>
- 80052bc:	f082 020d 	eor.w	r2, r2, #13
- 80052c0:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 80052c4:	f899 000a 	ldrb.w	r0, [r9, #10]
- 80052c8:	ea82 0a0a 	eor.w	sl, r2, sl
- 80052cc:	f899 2008 	ldrb.w	r2, [r9, #8]
- 80052d0:	fa5f f18a 	uxtb.w	r1, sl
- 80052d4:	404a      	eors	r2, r1
- 80052d6:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 80052da:	f899 1009 	ldrb.w	r1, [r9, #9]
- 80052de:	ea82 221a 	eor.w	r2, r2, sl, lsr #8
- 80052e2:	fa5f fe82 	uxtb.w	lr, r2
- 80052e6:	ea81 010e 	eor.w	r1, r1, lr
- 80052ea:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
+ 80052c4:	f899 2007 	ldrb.w	r2, [r9, #7]
+ 80052c8:	f8df a280 	ldr.w	sl, [pc, #640]	@ 800554c <parse_byte+0x574>
+ 80052cc:	f082 020d 	eor.w	r2, r2, #13
+ 80052d0:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 80052d4:	f899 000a 	ldrb.w	r0, [r9, #10]
+ 80052d8:	ea82 0a0a 	eor.w	sl, r2, sl
+ 80052dc:	f899 2008 	ldrb.w	r2, [r9, #8]
+ 80052e0:	fa5f f18a 	uxtb.w	r1, sl
+ 80052e4:	404a      	eors	r2, r1
+ 80052e6:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 80052ea:	f899 1009 	ldrb.w	r1, [r9, #9]
+ 80052ee:	ea82 221a 	eor.w	r2, r2, sl, lsr #8
+ 80052f2:	fa5f fe82 	uxtb.w	lr, r2
+ 80052f6:	ea81 010e 	eor.w	r1, r1, lr
+ 80052fa:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
     raw_frame[pos++] = 0x7E;  // end flag
- 80052ee:	f04f 0b7e 	mov.w	fp, #126	@ 0x7e
+ 80052fe:	f04f 0b7e 	mov.w	fp, #126	@ 0x7e
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 80052f2:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
- 80052f6:	b2ca      	uxtb	r2, r1
- 80052f8:	4042      	eors	r2, r0
- 80052fa:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 8005302:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
+ 8005306:	b2ca      	uxtb	r2, r1
+ 8005308:	4042      	eors	r2, r0
+ 800530a:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
     raw_frame[pos++] = (uint8_t)(body_len >> 24);
- 80052fe:	713b      	strb	r3, [r7, #4]
+ 800530e:	713b      	strb	r3, [r7, #4]
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 8005300:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
- 8005304:	b2d1      	uxtb	r1, r2
- 8005306:	4071      	eors	r1, r6
- 8005308:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
+ 8005310:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
+ 8005314:	b2d1      	uxtb	r1, r2
+ 8005316:	4071      	eors	r1, r6
+ 8005318:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
     		dst[dst_idx++] = src[i];
- 800530c:	f8df c230 	ldr.w	ip, [pc, #560]	@ 8005540 <parse_byte+0x578>
+ 800531c:	f8df c230 	ldr.w	ip, [pc, #560]	@ 8005550 <parse_byte+0x578>
         crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 8005310:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
- 8005314:	b2ca      	uxtb	r2, r1
- 8005316:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 800531a:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
- 800531e:	b2d1      	uxtb	r1, r2
- 8005320:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
- 8005324:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
- 8005328:	b2ca      	uxtb	r2, r1
- 800532a:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 800532e:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
+ 8005320:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
+ 8005324:	b2ca      	uxtb	r2, r1
+ 8005326:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 800532a:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
+ 800532e:	b2d1      	uxtb	r1, r2
+ 8005330:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
+ 8005334:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
+ 8005338:	b2ca      	uxtb	r2, r1
+ 800533a:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 800533e:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
     return crc32_calc(data, len, 0xFFFFFFFF) ^ 0xFFFFFFFF;
- 8005332:	43d2      	mvns	r2, r2
+ 8005342:	43d2      	mvns	r2, r2
     memcpy(&raw_frame[pos], body, body_len);
- 8005334:	e8b8 0003 	ldmia.w	r8!, {r0, r1}
- 8005338:	f8c7 0005 	str.w	r0, [r7, #5]
- 800533c:	f8c7 1009 	str.w	r1, [r7, #9]
+ 8005344:	e8b8 0003 	ldmia.w	r8!, {r0, r1}
+ 8005348:	f8c7 0005 	str.w	r0, [r7, #5]
+ 800534c:	f8c7 1009 	str.w	r1, [r7, #9]
     raw_frame[pos++] = (uint8_t)(calc_crc >> 0);
- 8005340:	613a      	str	r2, [r7, #16]
+ 8005350:	613a      	str	r2, [r7, #16]
     memcpy(&raw_frame[pos], body, body_len);
- 8005342:	f8b8 2000 	ldrh.w	r2, [r8]
+ 8005352:	f8b8 2000 	ldrh.w	r2, [r8]
     raw_frame[pos++] = 0x7E;  // end flag
- 8005346:	f887 b014 	strb.w	fp, [r7, #20]
+ 8005356:	f887 b014 	strb.w	fp, [r7, #20]
     memcpy(&raw_frame[pos], body, body_len);
- 800534a:	f8a7 200d 	strh.w	r2, [r7, #13]
- 800534e:	f898 2002 	ldrb.w	r2, [r8, #2]
+ 800535a:	f8a7 200d 	strh.w	r2, [r7, #13]
+ 800535e:	f898 2002 	ldrb.w	r2, [r8, #2]
     		dst[dst_idx++] = src[i];
- 8005352:	f88c b000 	strb.w	fp, [ip]
+ 8005362:	f88c b000 	strb.w	fp, [ip]
     memcpy(&raw_frame[pos], body, body_len);
- 8005356:	73fa      	strb	r2, [r7, #15]
+ 8005366:	73fa      	strb	r2, [r7, #15]
     for (uint32_t i = 0; i < src_len; i++) {
- 8005358:	3301      	adds	r3, #1
+ 8005368:	3301      	adds	r3, #1
     	if( i<1 || i>=src_len-1 )
- 800535a:	2b14      	cmp	r3, #20
+ 800536a:	2b14      	cmp	r3, #20
     		dst[dst_idx++] = src[i];
- 800535c:	f106 0201 	add.w	r2, r6, #1
- 8005360:	eb0c 0106 	add.w	r1, ip, r6
+ 800536c:	f106 0201 	add.w	r2, r6, #1
+ 8005370:	eb0c 0106 	add.w	r1, ip, r6
     	if( i<1 || i>=src_len-1 )
- 8005364:	f43f af4f 	beq.w	8005206 <parse_byte+0x23e>
+ 8005374:	f43f af4f 	beq.w	8005216 <parse_byte+0x23e>
 			switch (src[i]) {
- 8005368:	5cf8      	ldrb	r0, [r7, r3]
- 800536a:	287a      	cmp	r0, #122	@ 0x7a
- 800536c:	d009      	beq.n	8005382 <parse_byte+0x3ba>
- 800536e:	287e      	cmp	r0, #126	@ 0x7e
- 8005370:	d104      	bne.n	800537c <parse_byte+0x3b4>
+ 8005378:	5cf8      	ldrb	r0, [r7, r3]
+ 800537a:	287a      	cmp	r0, #122	@ 0x7a
+ 800537c:	d009      	beq.n	8005392 <parse_byte+0x3ba>
+ 800537e:	287e      	cmp	r0, #126	@ 0x7e
+ 8005380:	d104      	bne.n	800538c <parse_byte+0x3b4>
 					break;
- 8005372:	f245 527a 	movw	r2, #21882	@ 0x557a
+ 8005382:	f245 527a 	movw	r2, #21882	@ 0x557a
 					dst[dst_idx++] = ESCAPE_7E;       // 0x55
- 8005376:	3602      	adds	r6, #2
-					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
- 8005378:	800a      	strh	r2, [r1, #0]
- 800537a:	e7ed      	b.n	8005358 <parse_byte+0x390>
-					break;
- 800537c:	4616      	mov	r6, r2
-					dst[dst_idx++] = src[i];
- 800537e:	7008      	strb	r0, [r1, #0]
-					break;
- 8005380:	e7ea      	b.n	8005358 <parse_byte+0x390>
-					break;
- 8005382:	f64a 227a 	movw	r2, #43642	@ 0xaa7a
-					dst[dst_idx++] = ESCAPE_7A;       // 0xAA
  8005386:	3602      	adds	r6, #2
 					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
  8005388:	800a      	strh	r2, [r1, #0]
- 800538a:	e7e5      	b.n	8005358 <parse_byte+0x390>
-    crc_input_send[0] = (uint8_t)(body_len >> 0);
- 800538c:	f8df 91a8 	ldr.w	r9, [pc, #424]	@ 8005538 <parse_byte+0x570>
-							boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
- 8005390:	2601      	movs	r6, #1
-    body[0] = 0x01;           // version
- 8005392:	f240 1301 	movw	r3, #257	@ 0x101
-    crc_input_send[0] = (uint8_t)(body_len >> 0);
- 8005396:	46ce      	mov	lr, r9
- 8005398:	210b      	movs	r1, #11
-    body[0] = 0x01;           // version
- 800539a:	4a61      	ldr	r2, [pc, #388]	@ (8005520 <parse_byte+0x558>)
-    memcpy(&body[3], data, data_len);
- 800539c:	4f61      	ldr	r7, [pc, #388]	@ (8005524 <parse_byte+0x55c>)
-    body[0] = 0x01;           // version
- 800539e:	8013      	strh	r3, [r2, #0]
-							boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
- 80053a0:	f8c8 6004 	str.w	r6, [r8, #4]
-    body[2] = sender;
- 80053a4:	2300      	movs	r3, #0
-    crc_input_send[0] = (uint8_t)(body_len >> 0);
- 80053a6:	f84e 1b04 	str.w	r1, [lr], #4
-    memcpy(&body[3], data, data_len);
- 80053aa:	cf03      	ldmia	r7!, {r0, r1}
- 80053ac:	f8c2 1007 	str.w	r1, [r2, #7]
-    raw_frame[pos++] = 0x7E;  // start flag
- 80053b0:	f640 317e 	movw	r1, #2942	@ 0xb7e
- 80053b4:	4f5c      	ldr	r7, [pc, #368]	@ (8005528 <parse_byte+0x560>)
-    body[2] = sender;
- 80053b6:	7093      	strb	r3, [r2, #2]
-    memcpy(&body[3], data, data_len);
- 80053b8:	f8c2 0003 	str.w	r0, [r2, #3]
-    memcpy(&raw_frame[pos], body, body_len);
- 80053bc:	4690      	mov	r8, r2
-    raw_frame[pos++] = 0x7E;  // start flag
- 80053be:	6039      	str	r1, [r7, #0]
-    memcpy(&crc_input_send[4], body, body_len);
- 80053c0:	ca07      	ldmia	r2, {r0, r1, r2}
- 80053c2:	e8ae 0003 	stmia.w	lr!, {r0, r1}
- 80053c6:	f82e 2b02 	strh.w	r2, [lr], #2
- 80053ca:	0c12      	lsrs	r2, r2, #16
- 80053cc:	f88e 2000 	strb.w	r2, [lr]
-        crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 80053d0:	f899 2007 	ldrb.w	r2, [r9, #7]
- 80053d4:	f8df a164 	ldr.w	sl, [pc, #356]	@ 800553c <parse_byte+0x574>
- 80053d8:	f082 020d 	eor.w	r2, r2, #13
- 80053dc:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 80053e0:	f899 1008 	ldrb.w	r1, [r9, #8]
- 80053e4:	ea82 0a0a 	eor.w	sl, r2, sl
- 80053e8:	fa5f f28a 	uxtb.w	r2, sl
- 80053ec:	404a      	eors	r2, r1
- 80053ee:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 80053f2:	f899 e009 	ldrb.w	lr, [r9, #9]
- 80053f6:	ea82 221a 	eor.w	r2, r2, sl, lsr #8
- 80053fa:	b2d1      	uxtb	r1, r2
- 80053fc:	ea81 010e 	eor.w	r1, r1, lr
- 8005400:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
- 8005404:	f899 000a 	ldrb.w	r0, [r9, #10]
- 8005408:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
- 800540c:	b2ca      	uxtb	r2, r1
- 800540e:	4042      	eors	r2, r0
- 8005410:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
-    raw_frame[pos++] = 0x7E;  // end flag
- 8005414:	f04f 0b7e 	mov.w	fp, #126	@ 0x7e
-        crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 8005418:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
- 800541c:	b2d1      	uxtb	r1, r2
- 800541e:	4071      	eors	r1, r6
- 8005420:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
-    raw_frame[pos++] = (uint8_t)(body_len >> 24);
- 8005424:	713b      	strb	r3, [r7, #4]
-        crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 8005426:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
- 800542a:	b2ca      	uxtb	r2, r1
- 800542c:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
-    		dst[dst_idx++] = src[i];
- 8005430:	f8df c10c 	ldr.w	ip, [pc, #268]	@ 8005540 <parse_byte+0x578>
-        crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
- 8005434:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
- 8005438:	b2d1      	uxtb	r1, r2
- 800543a:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
- 800543e:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
- 8005442:	b2ca      	uxtb	r2, r1
- 8005444:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
- 8005448:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
-    return crc32_calc(data, len, 0xFFFFFFFF) ^ 0xFFFFFFFF;
- 800544c:	43d2      	mvns	r2, r2
-    memcpy(&raw_frame[pos], body, body_len);
- 800544e:	e8b8 0003 	ldmia.w	r8!, {r0, r1}
- 8005452:	f8c7 0005 	str.w	r0, [r7, #5]
- 8005456:	f8c7 1009 	str.w	r1, [r7, #9]
-    raw_frame[pos++] = (uint8_t)(calc_crc >> 0);
- 800545a:	613a      	str	r2, [r7, #16]
-    memcpy(&raw_frame[pos], body, body_len);
- 800545c:	f8b8 2000 	ldrh.w	r2, [r8]
-    raw_frame[pos++] = 0x7E;  // end flag
- 8005460:	f887 b014 	strb.w	fp, [r7, #20]
-    memcpy(&raw_frame[pos], body, body_len);
- 8005464:	f8a7 200d 	strh.w	r2, [r7, #13]
- 8005468:	f898 2002 	ldrb.w	r2, [r8, #2]
-    		dst[dst_idx++] = src[i];
- 800546c:	f88c b000 	strb.w	fp, [ip]
-    memcpy(&raw_frame[pos], body, body_len);
- 8005470:	73fa      	strb	r2, [r7, #15]
-    for (uint32_t i = 0; i < src_len; i++) {
- 8005472:	3301      	adds	r3, #1
-    	if( i<1 || i>=src_len-1 )
- 8005474:	2b14      	cmp	r3, #20
-    		dst[dst_idx++] = src[i];
- 8005476:	f106 0201 	add.w	r2, r6, #1
- 800547a:	eb0c 0106 	add.w	r1, ip, r6
-    	if( i<1 || i>=src_len-1 )
- 800547e:	f43f aec2 	beq.w	8005206 <parse_byte+0x23e>
-			switch (src[i]) {
- 8005482:	5cf8      	ldrb	r0, [r7, r3]
- 8005484:	287a      	cmp	r0, #122	@ 0x7a
- 8005486:	d009      	beq.n	800549c <parse_byte+0x4d4>
- 8005488:	287e      	cmp	r0, #126	@ 0x7e
- 800548a:	d104      	bne.n	8005496 <parse_byte+0x4ce>
+ 800538a:	e7ed      	b.n	8005368 <parse_byte+0x390>
 					break;
- 800548c:	f245 527a 	movw	r2, #21882	@ 0x557a
-					dst[dst_idx++] = ESCAPE_7E;       // 0x55
- 8005490:	3602      	adds	r6, #2
-					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
- 8005492:	800a      	strh	r2, [r1, #0]
- 8005494:	e7ed      	b.n	8005472 <parse_byte+0x4aa>
-					break;
- 8005496:	4616      	mov	r6, r2
+ 800538c:	4616      	mov	r6, r2
 					dst[dst_idx++] = src[i];
- 8005498:	7008      	strb	r0, [r1, #0]
+ 800538e:	7008      	strb	r0, [r1, #0]
 					break;
- 800549a:	e7ea      	b.n	8005472 <parse_byte+0x4aa>
+ 8005390:	e7ea      	b.n	8005368 <parse_byte+0x390>
 					break;
- 800549c:	f64a 227a 	movw	r2, #43642	@ 0xaa7a
+ 8005392:	f64a 227a 	movw	r2, #43642	@ 0xaa7a
 					dst[dst_idx++] = ESCAPE_7A;       // 0xAA
+ 8005396:	3602      	adds	r6, #2
+					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
+ 8005398:	800a      	strh	r2, [r1, #0]
+ 800539a:	e7e5      	b.n	8005368 <parse_byte+0x390>
+    crc_input_send[0] = (uint8_t)(body_len >> 0);
+ 800539c:	f8df 91a8 	ldr.w	r9, [pc, #424]	@ 8005548 <parse_byte+0x570>
+							boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
+ 80053a0:	2601      	movs	r6, #1
+    body[0] = 0x01;           // version
+ 80053a2:	f240 1301 	movw	r3, #257	@ 0x101
+    crc_input_send[0] = (uint8_t)(body_len >> 0);
+ 80053a6:	46ce      	mov	lr, r9
+ 80053a8:	210b      	movs	r1, #11
+    body[0] = 0x01;           // version
+ 80053aa:	4a61      	ldr	r2, [pc, #388]	@ (8005530 <parse_byte+0x558>)
+    memcpy(&body[3], data, data_len);
+ 80053ac:	4f61      	ldr	r7, [pc, #388]	@ (8005534 <parse_byte+0x55c>)
+    body[0] = 0x01;           // version
+ 80053ae:	8013      	strh	r3, [r2, #0]
+							boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
+ 80053b0:	f8c8 6004 	str.w	r6, [r8, #4]
+    body[2] = sender;
+ 80053b4:	2300      	movs	r3, #0
+    crc_input_send[0] = (uint8_t)(body_len >> 0);
+ 80053b6:	f84e 1b04 	str.w	r1, [lr], #4
+    memcpy(&body[3], data, data_len);
+ 80053ba:	cf03      	ldmia	r7!, {r0, r1}
+ 80053bc:	f8c2 1007 	str.w	r1, [r2, #7]
+    raw_frame[pos++] = 0x7E;  // start flag
+ 80053c0:	f640 317e 	movw	r1, #2942	@ 0xb7e
+ 80053c4:	4f5c      	ldr	r7, [pc, #368]	@ (8005538 <parse_byte+0x560>)
+    body[2] = sender;
+ 80053c6:	7093      	strb	r3, [r2, #2]
+    memcpy(&body[3], data, data_len);
+ 80053c8:	f8c2 0003 	str.w	r0, [r2, #3]
+    memcpy(&raw_frame[pos], body, body_len);
+ 80053cc:	4690      	mov	r8, r2
+    raw_frame[pos++] = 0x7E;  // start flag
+ 80053ce:	6039      	str	r1, [r7, #0]
+    memcpy(&crc_input_send[4], body, body_len);
+ 80053d0:	ca07      	ldmia	r2, {r0, r1, r2}
+ 80053d2:	e8ae 0003 	stmia.w	lr!, {r0, r1}
+ 80053d6:	f82e 2b02 	strh.w	r2, [lr], #2
+ 80053da:	0c12      	lsrs	r2, r2, #16
+ 80053dc:	f88e 2000 	strb.w	r2, [lr]
+        crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
+ 80053e0:	f899 2007 	ldrb.w	r2, [r9, #7]
+ 80053e4:	f8df a164 	ldr.w	sl, [pc, #356]	@ 800554c <parse_byte+0x574>
+ 80053e8:	f082 020d 	eor.w	r2, r2, #13
+ 80053ec:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 80053f0:	f899 1008 	ldrb.w	r1, [r9, #8]
+ 80053f4:	ea82 0a0a 	eor.w	sl, r2, sl
+ 80053f8:	fa5f f28a 	uxtb.w	r2, sl
+ 80053fc:	404a      	eors	r2, r1
+ 80053fe:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 8005402:	f899 e009 	ldrb.w	lr, [r9, #9]
+ 8005406:	ea82 221a 	eor.w	r2, r2, sl, lsr #8
+ 800540a:	b2d1      	uxtb	r1, r2
+ 800540c:	ea81 010e 	eor.w	r1, r1, lr
+ 8005410:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
+ 8005414:	f899 000a 	ldrb.w	r0, [r9, #10]
+ 8005418:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
+ 800541c:	b2ca      	uxtb	r2, r1
+ 800541e:	4042      	eors	r2, r0
+ 8005420:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+    raw_frame[pos++] = 0x7E;  // end flag
+ 8005424:	f04f 0b7e 	mov.w	fp, #126	@ 0x7e
+        crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
+ 8005428:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
+ 800542c:	b2d1      	uxtb	r1, r2
+ 800542e:	4071      	eors	r1, r6
+ 8005430:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
+    raw_frame[pos++] = (uint8_t)(body_len >> 24);
+ 8005434:	713b      	strb	r3, [r7, #4]
+        crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
+ 8005436:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
+ 800543a:	b2ca      	uxtb	r2, r1
+ 800543c:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+    		dst[dst_idx++] = src[i];
+ 8005440:	f8df c10c 	ldr.w	ip, [pc, #268]	@ 8005550 <parse_byte+0x578>
+        crc = (crc >> 8) ^ crc32_table[(crc & 0xFF) ^ *data++];
+ 8005444:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
+ 8005448:	b2d1      	uxtb	r1, r2
+ 800544a:	f855 1021 	ldr.w	r1, [r5, r1, lsl #2]
+ 800544e:	ea81 2112 	eor.w	r1, r1, r2, lsr #8
+ 8005452:	b2ca      	uxtb	r2, r1
+ 8005454:	f855 2022 	ldr.w	r2, [r5, r2, lsl #2]
+ 8005458:	ea82 2211 	eor.w	r2, r2, r1, lsr #8
+    return crc32_calc(data, len, 0xFFFFFFFF) ^ 0xFFFFFFFF;
+ 800545c:	43d2      	mvns	r2, r2
+    memcpy(&raw_frame[pos], body, body_len);
+ 800545e:	e8b8 0003 	ldmia.w	r8!, {r0, r1}
+ 8005462:	f8c7 0005 	str.w	r0, [r7, #5]
+ 8005466:	f8c7 1009 	str.w	r1, [r7, #9]
+    raw_frame[pos++] = (uint8_t)(calc_crc >> 0);
+ 800546a:	613a      	str	r2, [r7, #16]
+    memcpy(&raw_frame[pos], body, body_len);
+ 800546c:	f8b8 2000 	ldrh.w	r2, [r8]
+    raw_frame[pos++] = 0x7E;  // end flag
+ 8005470:	f887 b014 	strb.w	fp, [r7, #20]
+    memcpy(&raw_frame[pos], body, body_len);
+ 8005474:	f8a7 200d 	strh.w	r2, [r7, #13]
+ 8005478:	f898 2002 	ldrb.w	r2, [r8, #2]
+    		dst[dst_idx++] = src[i];
+ 800547c:	f88c b000 	strb.w	fp, [ip]
+    memcpy(&raw_frame[pos], body, body_len);
+ 8005480:	73fa      	strb	r2, [r7, #15]
+    for (uint32_t i = 0; i < src_len; i++) {
+ 8005482:	3301      	adds	r3, #1
+    	if( i<1 || i>=src_len-1 )
+ 8005484:	2b14      	cmp	r3, #20
+    		dst[dst_idx++] = src[i];
+ 8005486:	f106 0201 	add.w	r2, r6, #1
+ 800548a:	eb0c 0106 	add.w	r1, ip, r6
+    	if( i<1 || i>=src_len-1 )
+ 800548e:	f43f aec2 	beq.w	8005216 <parse_byte+0x23e>
+			switch (src[i]) {
+ 8005492:	5cf8      	ldrb	r0, [r7, r3]
+ 8005494:	287a      	cmp	r0, #122	@ 0x7a
+ 8005496:	d009      	beq.n	80054ac <parse_byte+0x4d4>
+ 8005498:	287e      	cmp	r0, #126	@ 0x7e
+ 800549a:	d104      	bne.n	80054a6 <parse_byte+0x4ce>
+					break;
+ 800549c:	f245 527a 	movw	r2, #21882	@ 0x557a
+					dst[dst_idx++] = ESCAPE_7E;       // 0x55
  80054a0:	3602      	adds	r6, #2
 					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
  80054a2:	800a      	strh	r2, [r1, #0]
- 80054a4:	e7e5      	b.n	8005472 <parse_byte+0x4aa>
+ 80054a4:	e7ed      	b.n	8005482 <parse_byte+0x4aa>
 					break;
  80054a6:	4616      	mov	r6, r2
 					dst[dst_idx++] = src[i];
  80054a8:	7008      	strb	r0, [r1, #0]
 					break;
- 80054aa:	e699      	b.n	80051e0 <parse_byte+0x218>
+ 80054aa:	e7ea      	b.n	8005482 <parse_byte+0x4aa>
 					break;
  80054ac:	f64a 227a 	movw	r2, #43642	@ 0xaa7a
 					dst[dst_idx++] = ESCAPE_7A;       // 0xAA
  80054b0:	3602      	adds	r6, #2
 					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
  80054b2:	800a      	strh	r2, [r1, #0]
- 80054b4:	e694      	b.n	80051e0 <parse_byte+0x218>
+ 80054b4:	e7e5      	b.n	8005482 <parse_byte+0x4aa>
+					break;
+ 80054b6:	4616      	mov	r6, r2
+					dst[dst_idx++] = src[i];
+ 80054b8:	7008      	strb	r0, [r1, #0]
+					break;
+ 80054ba:	e699      	b.n	80051f0 <parse_byte+0x218>
+					break;
+ 80054bc:	f64a 227a 	movw	r2, #43642	@ 0xaa7a
+					dst[dst_idx++] = ESCAPE_7A;       // 0xAA
+ 80054c0:	3602      	adds	r6, #2
+					dst[dst_idx++] = ESCAPE_FLAG;     // 0x7A
+ 80054c2:	800a      	strh	r2, [r1, #0]
+ 80054c4:	e694      	b.n	80051f0 <parse_byte+0x218>
 					current_page_index = (uint16_t)frame_buf[5] | ((uint16_t)frame_buf[6] << 8);
- 80054b6:	4b1d      	ldr	r3, [pc, #116]	@ (800552c <parse_byte+0x564>)
- 80054b8:	f8b6 2005 	ldrh.w	r2, [r6, #5]
+ 80054c6:	4b1d      	ldr	r3, [pc, #116]	@ (800553c <parse_byte+0x564>)
+ 80054c8:	f8b6 2005 	ldrh.w	r2, [r6, #5]
 					memcpy(boot_to_FPGA_UL1,&frame_buf[3],4);
- 80054bc:	f8df 8064 	ldr.w	r8, [pc, #100]	@ 8005524 <parse_byte+0x55c>
+ 80054cc:	f8df 8064 	ldr.w	r8, [pc, #100]	@ 8005534 <parse_byte+0x55c>
 					current_page_index = (uint16_t)frame_buf[5] | ((uint16_t)frame_buf[6] << 8);
- 80054c0:	801a      	strh	r2, [r3, #0]
+ 80054d0:	801a      	strh	r2, [r3, #0]
 					memcpy(boot_to_FPGA_UL1,&frame_buf[3],4);
- 80054c2:	f8d6 3003 	ldr.w	r3, [r6, #3]
+ 80054d2:	f8d6 3003 	ldr.w	r3, [r6, #3]
 					uint32_t data_len = body_len - 7;
- 80054c6:	f06f 020a 	mvn.w	r2, #10
- 80054ca:	4d14      	ldr	r5, [pc, #80]	@ (800551c <parse_byte+0x554>)
+ 80054d6:	f06f 020a 	mvn.w	r2, #10
+ 80054da:	4d14      	ldr	r5, [pc, #80]	@ (800552c <parse_byte+0x554>)
 					memcpy(boot_to_FPGA_UL1,&frame_buf[3],4);
- 80054cc:	f8c8 3000 	str.w	r3, [r8]
+ 80054dc:	f8c8 3000 	str.w	r3, [r8]
 					if ( data_len > 0)
- 80054d0:	e600      	b.n	80050d4 <parse_byte+0x10c>
+ 80054e0:	e600      	b.n	80050e4 <parse_byte+0x10c>
 								STMFLASH_Write(iap_write_addr, (uint16_t*)iap_buffer, write_count);
- 80054d2:	f8df a070 	ldr.w	sl, [pc, #112]	@ 8005544 <parse_byte+0x57c>
+ 80054e2:	f8df a070 	ldr.w	sl, [pc, #112]	@ 8005554 <parse_byte+0x57c>
 								uint16_t write_count = iap_buf_idx / 2;
- 80054d6:	087f      	lsrs	r7, r7, #1
+ 80054e6:	087f      	lsrs	r7, r7, #1
 								STMFLASH_Write(iap_write_addr, (uint16_t*)iap_buffer, write_count);
- 80054d8:	463a      	mov	r2, r7
- 80054da:	4915      	ldr	r1, [pc, #84]	@ (8005530 <parse_byte+0x568>)
- 80054dc:	f8da 0000 	ldr.w	r0, [sl]
- 80054e0:	f000 f942 	bl	8005768 <STMFLASH_Write>
+ 80054e8:	463a      	mov	r2, r7
+ 80054ea:	4915      	ldr	r1, [pc, #84]	@ (8005540 <parse_byte+0x568>)
+ 80054ec:	f8da 0000 	ldr.w	r0, [sl]
+ 80054f0:	f000 f942 	bl	8005778 <STMFLASH_Write>
 								iap_total_received += write_count * 2;
- 80054e4:	4a13      	ldr	r2, [pc, #76]	@ (8005534 <parse_byte+0x56c>)
- 80054e6:	6813      	ldr	r3, [r2, #0]
- 80054e8:	eb03 0347 	add.w	r3, r3, r7, lsl #1
- 80054ec:	6013      	str	r3, [r2, #0]
+ 80054f4:	4a13      	ldr	r2, [pc, #76]	@ (8005544 <parse_byte+0x56c>)
+ 80054f6:	6813      	ldr	r3, [r2, #0]
+ 80054f8:	eb03 0347 	add.w	r3, r3, r7, lsl #1
+ 80054fc:	6013      	str	r3, [r2, #0]
 								iap_write_addr += write_count * 2;
- 80054ee:	f8da 3000 	ldr.w	r3, [sl]
- 80054f2:	eb03 0347 	add.w	r3, r3, r7, lsl #1
- 80054f6:	f8ca 3000 	str.w	r3, [sl]
+ 80054fe:	f8da 3000 	ldr.w	r3, [sl]
+ 8005502:	eb03 0347 	add.w	r3, r3, r7, lsl #1
+ 8005506:	f8ca 3000 	str.w	r3, [sl]
 								if (iap_buf_idx % 2)
- 80054fa:	f8b9 3000 	ldrh.w	r3, [r9]
- 80054fe:	f013 0201 	ands.w	r2, r3, #1
- 8005502:	d007      	beq.n	8005514 <parse_byte+0x54c>
+ 800550a:	f8b9 3000 	ldrh.w	r3, [r9]
+ 800550e:	f013 0201 	ands.w	r2, r3, #1
+ 8005512:	d007      	beq.n	8005524 <parse_byte+0x54c>
 									iap_buffer[0] = iap_buffer[iap_buf_idx - 1];
- 8005504:	4433      	add	r3, r6
- 8005506:	f813 3c01 	ldrb.w	r3, [r3, #-1]
- 800550a:	7033      	strb	r3, [r6, #0]
+ 8005514:	4433      	add	r3, r6
+ 8005516:	f813 3c01 	ldrb.w	r3, [r3, #-1]
+ 800551a:	7033      	strb	r3, [r6, #0]
 									iap_buf_idx = 1;
- 800550c:	2301      	movs	r3, #1
- 800550e:	f8a9 3000 	strh.w	r3, [r9]
- 8005512:	e5f2      	b.n	80050fa <parse_byte+0x132>
+ 800551c:	2301      	movs	r3, #1
+ 800551e:	f8a9 3000 	strh.w	r3, [r9]
+ 8005522:	e5f2      	b.n	800510a <parse_byte+0x132>
 									iap_buf_idx = 0;
- 8005514:	f8a9 2000 	strh.w	r2, [r9]
- 8005518:	e5ef      	b.n	80050fa <parse_byte+0x132>
- 800551a:	bf00      	nop
- 800551c:	08005a50 	.word	0x08005a50
- 8005520:	20000244 	.word	0x20000244
- 8005524:	20000254 	.word	0x20000254
- 8005528:	20000218 	.word	0x20000218
- 800552c:	20000260 	.word	0x20000260
- 8005530:	20002a78 	.word	0x20002a78
- 8005534:	20000264 	.word	0x20000264
- 8005538:	20000230 	.word	0x20000230
- 800553c:	00784d2f 	.word	0x00784d2f
- 8005540:	200001f0 	.word	0x200001f0
- 8005544:	2000026c 	.word	0x2000026c
+ 8005524:	f8a9 2000 	strh.w	r2, [r9]
+ 8005528:	e5ef      	b.n	800510a <parse_byte+0x132>
+ 800552a:	bf00      	nop
+ 800552c:	08005a60 	.word	0x08005a60
+ 8005530:	20000244 	.word	0x20000244
+ 8005534:	20000254 	.word	0x20000254
+ 8005538:	20000218 	.word	0x20000218
+ 800553c:	20000260 	.word	0x20000260
+ 8005540:	20002a78 	.word	0x20002a78
+ 8005544:	20000264 	.word	0x20000264
+ 8005548:	20000230 	.word	0x20000230
+ 800554c:	00784d2f 	.word	0x00784d2f
+ 8005550:	200001f0 	.word	0x200001f0
+ 8005554:	2000026c 	.word	0x2000026c
 
-08005548 <Protocol_Receive>:
+08005558 <Protocol_Receive>:
 	for (uint32_t i = 0; i < len; i++)
- 8005548:	2900      	cmp	r1, #0
- 800554a:	f000 808b 	beq.w	8005664 <Protocol_Receive+0x11c>
+ 8005558:	2900      	cmp	r1, #0
+ 800555a:	f000 808b 	beq.w	8005674 <Protocol_Receive+0x11c>
 {
- 800554e:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
+ 800555e:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
 		uint8_t byte = buf[i];
- 8005552:	4604      	mov	r4, r0
+ 8005562:	4604      	mov	r4, r0
 		if (!in_frame)
- 8005554:	4e44      	ldr	r6, [pc, #272]	@ (8005668 <Protocol_Receive+0x120>)
- 8005556:	4408      	add	r0, r1
- 8005558:	7832      	ldrb	r2, [r6, #0]
+ 8005564:	4e44      	ldr	r6, [pc, #272]	@ (8005678 <Protocol_Receive+0x120>)
+ 8005566:	4408      	add	r0, r1
+ 8005568:	7832      	ldrb	r2, [r6, #0]
 		uint8_t byte = buf[i];
- 800555a:	7823      	ldrb	r3, [r4, #0]
- 800555c:	1e45      	subs	r5, r0, #1
+ 800556a:	7823      	ldrb	r3, [r4, #0]
+ 800556c:	1e45      	subs	r5, r0, #1
 		if (!in_frame)
- 800555e:	2a00      	cmp	r2, #0
- 8005560:	d165      	bne.n	800562e <Protocol_Receive+0xe6>
+ 800556e:	2a00      	cmp	r2, #0
+ 8005570:	d165      	bne.n	800563e <Protocol_Receive+0xe6>
 			if (byte == 0x7E)
- 8005562:	2b7e      	cmp	r3, #126	@ 0x7e
- 8005564:	d005      	beq.n	8005572 <Protocol_Receive+0x2a>
+ 8005572:	2b7e      	cmp	r3, #126	@ 0x7e
+ 8005574:	d005      	beq.n	8005582 <Protocol_Receive+0x2a>
 	for (uint32_t i = 0; i < len; i++)
- 8005566:	42a5      	cmp	r5, r4
- 8005568:	d054      	beq.n	8005614 <Protocol_Receive+0xcc>
+ 8005576:	42a5      	cmp	r5, r4
+ 8005578:	d054      	beq.n	8005624 <Protocol_Receive+0xcc>
 		uint8_t byte = buf[i];
- 800556a:	f814 3f01 	ldrb.w	r3, [r4, #1]!
+ 800557a:	f814 3f01 	ldrb.w	r3, [r4, #1]!
 			if (byte == 0x7E)
- 800556e:	2b7e      	cmp	r3, #126	@ 0x7e
- 8005570:	d1f9      	bne.n	8005566 <Protocol_Receive+0x1e>
+ 800557e:	2b7e      	cmp	r3, #126	@ 0x7e
+ 8005580:	d1f9      	bne.n	8005576 <Protocol_Receive+0x1e>
 				in_frame = 1;
- 8005572:	2201      	movs	r2, #1
+ 8005582:	2201      	movs	r2, #1
 				state=STATE_WAIT_START;
- 8005574:	2700      	movs	r7, #0
+ 8005584:	2700      	movs	r7, #0
 				frame_buffer[frame_pos++] = byte;
- 8005576:	f8df 8100 	ldr.w	r8, [pc, #256]	@ 8005678 <Protocol_Receive+0x130>
- 800557a:	493c      	ldr	r1, [pc, #240]	@ (800566c <Protocol_Receive+0x124>)
+ 8005586:	f8df 8100 	ldr.w	r8, [pc, #256]	@ 8005688 <Protocol_Receive+0x130>
+ 800558a:	493c      	ldr	r1, [pc, #240]	@ (800567c <Protocol_Receive+0x124>)
 				state=STATE_WAIT_START;
- 800557c:	483c      	ldr	r0, [pc, #240]	@ (8005670 <Protocol_Receive+0x128>)
+ 800558c:	483c      	ldr	r0, [pc, #240]	@ (8005680 <Protocol_Receive+0x128>)
 	for (uint32_t i = 0; i < len; i++)
- 800557e:	42a5      	cmp	r5, r4
+ 800558e:	42a5      	cmp	r5, r4
 				frame_buffer[frame_pos++] = byte;
- 8005580:	700b      	strb	r3, [r1, #0]
+ 8005590:	700b      	strb	r3, [r1, #0]
 				in_frame = 1;
- 8005582:	7032      	strb	r2, [r6, #0]
+ 8005592:	7032      	strb	r2, [r6, #0]
 				frame_buffer[frame_pos++] = byte;
- 8005584:	f8c8 2000 	str.w	r2, [r8]
+ 8005594:	f8c8 2000 	str.w	r2, [r8]
 				state=STATE_WAIT_START;
- 8005588:	7007      	strb	r7, [r0, #0]
+ 8005598:	7007      	strb	r7, [r0, #0]
 	for (uint32_t i = 0; i < len; i++)
- 800558a:	d043      	beq.n	8005614 <Protocol_Receive+0xcc>
+ 800559a:	d043      	beq.n	8005624 <Protocol_Receive+0xcc>
 		uint8_t byte = buf[i];
- 800558c:	f814 3f01 	ldrb.w	r3, [r4, #1]!
+ 800559c:	f814 3f01 	ldrb.w	r3, [r4, #1]!
 				frame_buffer[frame_pos++] = byte;
- 8005590:	1c50      	adds	r0, r2, #1
+ 80055a0:	1c50      	adds	r0, r2, #1
 				if (byte == 0x7E && frame_pos >= 13)
- 8005592:	2b7e      	cmp	r3, #126	@ 0x7e
+ 80055a2:	2b7e      	cmp	r3, #126	@ 0x7e
 				frame_buffer[frame_pos++] = byte;
- 8005594:	f8c8 0000 	str.w	r0, [r8]
- 8005598:	548b      	strb	r3, [r1, r2]
+ 80055a4:	f8c8 0000 	str.w	r0, [r8]
+ 80055a8:	548b      	strb	r3, [r1, r2]
 				if (byte == 0x7E && frame_pos >= 13)
- 800559a:	d00e      	beq.n	80055ba <Protocol_Receive+0x72>
+ 80055aa:	d00e      	beq.n	80055ca <Protocol_Receive+0x72>
 	for (uint32_t i = 0; i < len; i++)
- 800559c:	42a5      	cmp	r5, r4
- 800559e:	d039      	beq.n	8005614 <Protocol_Receive+0xcc>
+ 80055ac:	42a5      	cmp	r5, r4
+ 80055ae:	d039      	beq.n	8005624 <Protocol_Receive+0xcc>
 		uint8_t byte = buf[i];
- 80055a0:	4602      	mov	r2, r0
- 80055a2:	f814 3f01 	ldrb.w	r3, [r4, #1]!
+ 80055b0:	4602      	mov	r2, r0
+ 80055b2:	f814 3f01 	ldrb.w	r3, [r4, #1]!
 			if (frame_pos < MAX_FRAME_SIZE)
- 80055a6:	f5b2 5f20 	cmp.w	r2, #10240	@ 0x2800
- 80055aa:	d238      	bcs.n	800561e <Protocol_Receive+0xd6>
- 80055ac:	492f      	ldr	r1, [pc, #188]	@ (800566c <Protocol_Receive+0x124>)
+ 80055b6:	f5b2 5f20 	cmp.w	r2, #10240	@ 0x2800
+ 80055ba:	d238      	bcs.n	800562e <Protocol_Receive+0xd6>
+ 80055bc:	492f      	ldr	r1, [pc, #188]	@ (800567c <Protocol_Receive+0x124>)
 				frame_buffer[frame_pos++] = byte;
- 80055ae:	1c50      	adds	r0, r2, #1
+ 80055be:	1c50      	adds	r0, r2, #1
 				if (byte == 0x7E && frame_pos >= 13)
- 80055b0:	2b7e      	cmp	r3, #126	@ 0x7e
+ 80055c0:	2b7e      	cmp	r3, #126	@ 0x7e
 				frame_buffer[frame_pos++] = byte;
- 80055b2:	f8c8 0000 	str.w	r0, [r8]
- 80055b6:	548b      	strb	r3, [r1, r2]
+ 80055c2:	f8c8 0000 	str.w	r0, [r8]
+ 80055c6:	548b      	strb	r3, [r1, r2]
 				if (byte == 0x7E && frame_pos >= 13)
- 80055b8:	d1f0      	bne.n	800559c <Protocol_Receive+0x54>
- 80055ba:	280c      	cmp	r0, #12
- 80055bc:	d9ee      	bls.n	800559c <Protocol_Receive+0x54>
+ 80055c8:	d1f0      	bne.n	80055ac <Protocol_Receive+0x54>
+ 80055ca:	280c      	cmp	r0, #12
+ 80055cc:	d9ee      	bls.n	80055ac <Protocol_Receive+0x54>
     	if( i>=1 && i < src_len-1 )
- 80055be:	2301      	movs	r3, #1
- 80055c0:	f04f 0c00 	mov.w	ip, #0
+ 80055ce:	2301      	movs	r3, #1
+ 80055d0:	f04f 0c00 	mov.w	ip, #0
 			if (src[i] == ESCAPE_FLAG)
- 80055c4:	780f      	ldrb	r7, [r1, #0]
- 80055c6:	f8df 90ac 	ldr.w	r9, [pc, #172]	@ 8005674 <Protocol_Receive+0x12c>
+ 80055d4:	780f      	ldrb	r7, [r1, #0]
+ 80055d6:	f8df 90ac 	ldr.w	r9, [pc, #172]	@ 8005684 <Protocol_Receive+0x12c>
     for (uint32_t i = 0; i < src_len; i++)
- 80055ca:	4298      	cmp	r0, r3
+ 80055da:	4298      	cmp	r0, r3
 			dst[dst_idx++] = src[i];
- 80055cc:	f809 700c 	strb.w	r7, [r9, ip]
- 80055d0:	f10c 0c01 	add.w	ip, ip, #1
+ 80055dc:	f809 700c 	strb.w	r7, [r9, ip]
+ 80055e0:	f10c 0c01 	add.w	ip, ip, #1
     for (uint32_t i = 0; i < src_len; i++)
- 80055d4:	d90d      	bls.n	80055f2 <Protocol_Receive+0xaa>
+ 80055e4:	d90d      	bls.n	8005602 <Protocol_Receive+0xaa>
 			if (src[i] == ESCAPE_FLAG)
- 80055d6:	5ccf      	ldrb	r7, [r1, r3]
+ 80055e6:	5ccf      	ldrb	r7, [r1, r3]
 				if (src[i+1] == ESCAPE_7E)
- 80055d8:	f103 0e01 	add.w	lr, r3, #1
+ 80055e8:	f103 0e01 	add.w	lr, r3, #1
     	if( i>=1 && i < src_len-1 )
- 80055dc:	429a      	cmp	r2, r3
- 80055de:	d91c      	bls.n	800561a <Protocol_Receive+0xd2>
+ 80055ec:	429a      	cmp	r2, r3
+ 80055ee:	d91c      	bls.n	800562a <Protocol_Receive+0xd2>
 			if (src[i] == ESCAPE_FLAG)
- 80055e0:	2f7a      	cmp	r7, #122	@ 0x7a
- 80055e2:	d029      	beq.n	8005638 <Protocol_Receive+0xf0>
+ 80055f0:	2f7a      	cmp	r7, #122	@ 0x7a
+ 80055f2:	d029      	beq.n	8005648 <Protocol_Receive+0xf0>
 				dst[dst_idx++] = src[i];
- 80055e4:	f809 700c 	strb.w	r7, [r9, ip]
- 80055e8:	f10c 0c01 	add.w	ip, ip, #1
- 80055ec:	4673      	mov	r3, lr
+ 80055f4:	f809 700c 	strb.w	r7, [r9, ip]
+ 80055f8:	f10c 0c01 	add.w	ip, ip, #1
+ 80055fc:	4673      	mov	r3, lr
     for (uint32_t i = 0; i < src_len; i++)
- 80055ee:	4298      	cmp	r0, r3
- 80055f0:	d8f1      	bhi.n	80055d6 <Protocol_Receive+0x8e>
+ 80055fe:	4298      	cmp	r0, r3
+ 8005600:	d8f1      	bhi.n	80055e6 <Protocol_Receive+0x8e>
 					for (uint32_t j = 0; j < decoded_len; j++)
- 80055f2:	f1bc 0f00 	cmp.w	ip, #0
- 80055f6:	d007      	beq.n	8005608 <Protocol_Receive+0xc0>
- 80055f8:	4f1e      	ldr	r7, [pc, #120]	@ (8005674 <Protocol_Receive+0x12c>)
- 80055fa:	44e1      	add	r9, ip
+ 8005602:	f1bc 0f00 	cmp.w	ip, #0
+ 8005606:	d007      	beq.n	8005618 <Protocol_Receive+0xc0>
+ 8005608:	4f1e      	ldr	r7, [pc, #120]	@ (8005684 <Protocol_Receive+0x12c>)
+ 800560a:	44e1      	add	r9, ip
 						parse_byte(decode_data[j]);
- 80055fc:	f817 0b01 	ldrb.w	r0, [r7], #1
- 8005600:	f7ff fce2 	bl	8004fc8 <parse_byte>
+ 800560c:	f817 0b01 	ldrb.w	r0, [r7], #1
+ 8005610:	f7ff fce2 	bl	8004fd8 <parse_byte>
 					for (uint32_t j = 0; j < decoded_len; j++)
- 8005604:	454f      	cmp	r7, r9
- 8005606:	d1f9      	bne.n	80055fc <Protocol_Receive+0xb4>
+ 8005614:	454f      	cmp	r7, r9
+ 8005616:	d1f9      	bne.n	800560c <Protocol_Receive+0xb4>
 					in_frame = 0;
- 8005608:	2300      	movs	r3, #0
+ 8005618:	2300      	movs	r3, #0
 	for (uint32_t i = 0; i < len; i++)
- 800560a:	42a5      	cmp	r5, r4
+ 800561a:	42a5      	cmp	r5, r4
 					in_frame = 0;
- 800560c:	7033      	strb	r3, [r6, #0]
+ 800561c:	7033      	strb	r3, [r6, #0]
 					frame_pos = 0;
- 800560e:	f8c8 3000 	str.w	r3, [r8]
+ 800561e:	f8c8 3000 	str.w	r3, [r8]
 	for (uint32_t i = 0; i < len; i++)
- 8005612:	d1aa      	bne.n	800556a <Protocol_Receive+0x22>
+ 8005622:	d1aa      	bne.n	800557a <Protocol_Receive+0x22>
 	return 0;
- 8005614:	2000      	movs	r0, #0
+ 8005624:	2000      	movs	r0, #0
 }
- 8005616:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
- 800561a:	4673      	mov	r3, lr
- 800561c:	e7d5      	b.n	80055ca <Protocol_Receive+0x82>
+ 8005626:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
+ 800562a:	4673      	mov	r3, lr
+ 800562c:	e7d5      	b.n	80055da <Protocol_Receive+0x82>
 				in_frame = 0;
- 800561e:	2300      	movs	r3, #0
- 8005620:	7033      	strb	r3, [r6, #0]
+ 800562e:	2300      	movs	r3, #0
+ 8005630:	7033      	strb	r3, [r6, #0]
 				return -1;
- 8005622:	f04f 30ff 	mov.w	r0, #4294967295	@ 0xffffffff
+ 8005632:	f04f 30ff 	mov.w	r0, #4294967295	@ 0xffffffff
 				frame_pos = 0;
- 8005626:	f8c8 3000 	str.w	r3, [r8]
+ 8005636:	f8c8 3000 	str.w	r3, [r8]
 }
- 800562a:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
- 800562e:	f8df 8048 	ldr.w	r8, [pc, #72]	@ 8005678 <Protocol_Receive+0x130>
- 8005632:	f8d8 2000 	ldr.w	r2, [r8]
- 8005636:	e7b6      	b.n	80055a6 <Protocol_Receive+0x5e>
+ 800563a:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
+ 800563e:	f8df 8048 	ldr.w	r8, [pc, #72]	@ 8005688 <Protocol_Receive+0x130>
+ 8005642:	f8d8 2000 	ldr.w	r2, [r8]
+ 8005646:	e7b6      	b.n	80055b6 <Protocol_Receive+0x5e>
 				if (src[i+1] == ESCAPE_7E)
- 8005638:	f811 a00e 	ldrb.w	sl, [r1, lr]
- 800563c:	f1ba 0f55 	cmp.w	sl, #85	@ 0x55
- 8005640:	d00e      	beq.n	8005660 <Protocol_Receive+0x118>
+ 8005648:	f811 a00e 	ldrb.w	sl, [r1, lr]
+ 800564c:	f1ba 0f55 	cmp.w	sl, #85	@ 0x55
+ 8005650:	d00e      	beq.n	8005670 <Protocol_Receive+0x118>
 				else if (src[i+1] == ESCAPE_7A) {
- 8005642:	f1ba 0faa 	cmp.w	sl, #170	@ 0xaa
- 8005646:	d1d1      	bne.n	80055ec <Protocol_Receive+0xa4>
+ 8005652:	f1ba 0faa 	cmp.w	sl, #170	@ 0xaa
+ 8005656:	d1d1      	bne.n	80055fc <Protocol_Receive+0xa4>
 					dst[dst_idx++] = ESCAPE_FLAG;
- 8005648:	f809 700c 	strb.w	r7, [r9, ip]
+ 8005658:	f809 700c 	strb.w	r7, [r9, ip]
     for (uint32_t i = 0; i < src_len; i++)
- 800564c:	1c9f      	adds	r7, r3, #2
- 800564e:	42b8      	cmp	r0, r7
+ 800565c:	1c9f      	adds	r7, r3, #2
+ 800565e:	42b8      	cmp	r0, r7
 					dst[dst_idx++] = ESCAPE_FLAG;
- 8005650:	f10c 0c01 	add.w	ip, ip, #1
+ 8005660:	f10c 0c01 	add.w	ip, ip, #1
     for (uint32_t i = 0; i < src_len; i++)
- 8005654:	d9cd      	bls.n	80055f2 <Protocol_Receive+0xaa>
+ 8005664:	d9cd      	bls.n	8005602 <Protocol_Receive+0xaa>
 				if (src[i+1] == ESCAPE_7E)
- 8005656:	f103 0e03 	add.w	lr, r3, #3
+ 8005666:	f103 0e03 	add.w	lr, r3, #3
 			if (src[i] == ESCAPE_FLAG)
- 800565a:	463b      	mov	r3, r7
- 800565c:	5dcf      	ldrb	r7, [r1, r7]
- 800565e:	e7bd      	b.n	80055dc <Protocol_Receive+0x94>
+ 800566a:	463b      	mov	r3, r7
+ 800566c:	5dcf      	ldrb	r7, [r1, r7]
+ 800566e:	e7bd      	b.n	80055ec <Protocol_Receive+0x94>
 					dst[dst_idx++] = START_END_FLAG;
- 8005660:	277e      	movs	r7, #126	@ 0x7e
- 8005662:	e7f1      	b.n	8005648 <Protocol_Receive+0x100>
+ 8005670:	277e      	movs	r7, #126	@ 0x7e
+ 8005672:	e7f1      	b.n	8005658 <Protocol_Receive+0x100>
 	return 0;
- 8005664:	2000      	movs	r0, #0
+ 8005674:	2000      	movs	r0, #0
 }
- 8005666:	4770      	bx	lr
- 8005668:	20000270 	.word	0x20000270
- 800566c:	20000278 	.word	0x20000278
- 8005670:	20005288 	.word	0x20005288
- 8005674:	20002a78 	.word	0x20002a78
- 8005678:	20000274 	.word	0x20000274
+ 8005676:	4770      	bx	lr
+ 8005678:	20000270 	.word	0x20000270
+ 800567c:	20000278 	.word	0x20000278
+ 8005680:	20005288 	.word	0x20005288
+ 8005684:	20002a78 	.word	0x20002a78
+ 8005688:	20000274 	.word	0x20000274
 
-0800567c <STMFLASH_Write_NoCheck.part.0>:
+0800568c <STMFLASH_Write_NoCheck.part.0>:
 	if (pBuffer == NULL || NumToWrite == 0) {
 		return;
 	}
 	
 	// Prevent address overflow (Flash range check)
 	if (WriteAddr < STM32_FLASH_BASE || 
- 800567c:	f100 4378 	add.w	r3, r0, #4160749568	@ 0xf8000000
- 8005680:	f5b3 3f00 	cmp.w	r3, #131072	@ 0x20000
- 8005684:	d265      	bcs.n	8005752 <STMFLASH_Write_NoCheck.part.0+0xd6>
+ 800568c:	f100 4378 	add.w	r3, r0, #4160749568	@ 0xf8000000
+ 8005690:	f5b3 3f00 	cmp.w	r3, #131072	@ 0x20000
+ 8005694:	d265      	bcs.n	8005762 <STMFLASH_Write_NoCheck.part.0+0xd6>
 	    WriteAddr >= (STM32_FLASH_BASE + 0x20000) ||
- 8005686:	4b35      	ldr	r3, [pc, #212]	@ (800575c <STMFLASH_Write_NoCheck.part.0+0xe0>)
+ 8005696:	4b35      	ldr	r3, [pc, #212]	@ (800576c <STMFLASH_Write_NoCheck.part.0+0xe0>)
 static void STMFLASH_Write_NoCheck(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
- 8005688:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
- 800568c:	4617      	mov	r7, r2
+ 8005698:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
+ 800569c:	4617      	mov	r7, r2
 	    WriteAddr + (NumToWrite * 2) > (STM32_FLASH_BASE + 0x20000)) {
- 800568e:	eb00 0242 	add.w	r2, r0, r2, lsl #1
+ 800569e:	eb00 0242 	add.w	r2, r0, r2, lsl #1
 	    WriteAddr >= (STM32_FLASH_BASE + 0x20000) ||
- 8005692:	429a      	cmp	r2, r3
- 8005694:	d84f      	bhi.n	8005736 <STMFLASH_Write_NoCheck.part.0+0xba>
+ 80056a2:	429a      	cmp	r2, r3
+ 80056a4:	d84f      	bhi.n	8005746 <STMFLASH_Write_NoCheck.part.0+0xba>
 		                    ((uint64_t)temp_static[6] << 32) |
 		                    ((uint64_t)temp_static[7] << 48);
 
 		// Critical fix: Use static variable address to avoid illegal address access from stack overflow
 		// Previously stack-based qw_data address might be 0x20008000 (exceeding RAM range)
 		HAL_StatusTypeDef status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, 
- 8005696:	460d      	mov	r5, r1
- 8005698:	2600      	movs	r6, #0
+ 80056a6:	460d      	mov	r5, r1
+ 80056a8:	2600      	movs	r6, #0
 			temp_static[k] = 0xFFFF;
- 800569a:	f04f 39ff 	mov.w	r9, #4294967295	@ 0xffffffff
+ 80056aa:	f04f 39ff 	mov.w	r9, #4294967295	@ 0xffffffff
 		HAL_StatusTypeDef status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, 
- 800569e:	f8df 80c4 	ldr.w	r8, [pc, #196]	@ 8005764 <STMFLASH_Write_NoCheck.part.0+0xe8>
- 80056a2:	4c2f      	ldr	r4, [pc, #188]	@ (8005760 <STMFLASH_Write_NoCheck.part.0+0xe4>)
- 80056a4:	eba0 0a01 	sub.w	sl, r0, r1
- 80056a8:	e037      	b.n	800571a <STMFLASH_Write_NoCheck.part.0+0x9e>
+ 80056ae:	f8df 80c4 	ldr.w	r8, [pc, #196]	@ 8005774 <STMFLASH_Write_NoCheck.part.0+0xe8>
+ 80056b2:	4c2f      	ldr	r4, [pc, #188]	@ (8005770 <STMFLASH_Write_NoCheck.part.0+0xe4>)
+ 80056b4:	eba0 0a01 	sub.w	sl, r0, r1
+ 80056b8:	e037      	b.n	800572a <STMFLASH_Write_NoCheck.part.0+0x9e>
 			temp_static[j] = pBuffer[i+j];
- 80056aa:	882a      	ldrh	r2, [r5, #0]
+ 80056ba:	882a      	ldrh	r2, [r5, #0]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056ac:	1c73      	adds	r3, r6, #1
- 80056ae:	429f      	cmp	r7, r3
+ 80056bc:	1c73      	adds	r3, r6, #1
+ 80056be:	429f      	cmp	r7, r3
 			temp_static[j] = pBuffer[i+j];
- 80056b0:	8022      	strh	r2, [r4, #0]
+ 80056c0:	8022      	strh	r2, [r4, #0]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056b2:	dd42      	ble.n	800573a <STMFLASH_Write_NoCheck.part.0+0xbe>
+ 80056c2:	dd42      	ble.n	800574a <STMFLASH_Write_NoCheck.part.0+0xbe>
 			temp_static[j] = pBuffer[i+j];
- 80056b4:	886a      	ldrh	r2, [r5, #2]
+ 80056c4:	886a      	ldrh	r2, [r5, #2]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056b6:	1cb3      	adds	r3, r6, #2
- 80056b8:	429f      	cmp	r7, r3
+ 80056c6:	1cb3      	adds	r3, r6, #2
+ 80056c8:	429f      	cmp	r7, r3
 			temp_static[j] = pBuffer[i+j];
- 80056ba:	8062      	strh	r2, [r4, #2]
+ 80056ca:	8062      	strh	r2, [r4, #2]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056bc:	dd3d      	ble.n	800573a <STMFLASH_Write_NoCheck.part.0+0xbe>
+ 80056cc:	dd3d      	ble.n	800574a <STMFLASH_Write_NoCheck.part.0+0xbe>
 			temp_static[j] = pBuffer[i+j];
- 80056be:	88aa      	ldrh	r2, [r5, #4]
+ 80056ce:	88aa      	ldrh	r2, [r5, #4]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056c0:	1cf3      	adds	r3, r6, #3
- 80056c2:	429f      	cmp	r7, r3
+ 80056d0:	1cf3      	adds	r3, r6, #3
+ 80056d2:	429f      	cmp	r7, r3
 			temp_static[j] = pBuffer[i+j];
- 80056c4:	80a2      	strh	r2, [r4, #4]
+ 80056d4:	80a2      	strh	r2, [r4, #4]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056c6:	dd3e      	ble.n	8005746 <STMFLASH_Write_NoCheck.part.0+0xca>
+ 80056d6:	dd3e      	ble.n	8005756 <STMFLASH_Write_NoCheck.part.0+0xca>
 			temp_static[j] = pBuffer[i+j];
- 80056c8:	88ea      	ldrh	r2, [r5, #6]
+ 80056d8:	88ea      	ldrh	r2, [r5, #6]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056ca:	1d33      	adds	r3, r6, #4
- 80056cc:	429f      	cmp	r7, r3
+ 80056da:	1d33      	adds	r3, r6, #4
+ 80056dc:	429f      	cmp	r7, r3
 			temp_static[j] = pBuffer[i+j];
- 80056ce:	80e2      	strh	r2, [r4, #6]
+ 80056de:	80e2      	strh	r2, [r4, #6]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056d0:	dd39      	ble.n	8005746 <STMFLASH_Write_NoCheck.part.0+0xca>
+ 80056e0:	dd39      	ble.n	8005756 <STMFLASH_Write_NoCheck.part.0+0xca>
 			temp_static[j] = pBuffer[i+j];
- 80056d2:	892a      	ldrh	r2, [r5, #8]
+ 80056e2:	892a      	ldrh	r2, [r5, #8]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056d4:	1d73      	adds	r3, r6, #5
- 80056d6:	429f      	cmp	r7, r3
-			temp_static[j] = pBuffer[i+j];
- 80056d8:	8122      	strh	r2, [r4, #8]
-		                    ((uint64_t)temp_static[2] << 32) |
- 80056da:	e9d4 0200 	ldrd	r0, r2, [r4]
-		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056de:	dd39      	ble.n	8005754 <STMFLASH_Write_NoCheck.part.0+0xd8>
-			temp_static[j] = pBuffer[i+j];
- 80056e0:	896b      	ldrh	r3, [r5, #10]
- 80056e2:	8163      	strh	r3, [r4, #10]
-		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056e4:	1db3      	adds	r3, r6, #6
+ 80056e4:	1d73      	adds	r3, r6, #5
  80056e6:	429f      	cmp	r7, r3
- 80056e8:	dd34      	ble.n	8005754 <STMFLASH_Write_NoCheck.part.0+0xd8>
 			temp_static[j] = pBuffer[i+j];
- 80056ea:	89ab      	ldrh	r3, [r5, #12]
- 80056ec:	81a3      	strh	r3, [r4, #12]
+ 80056e8:	8122      	strh	r2, [r4, #8]
+		                    ((uint64_t)temp_static[2] << 32) |
+ 80056ea:	e9d4 0200 	ldrd	r0, r2, [r4]
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 80056ee:	1df3      	adds	r3, r6, #7
- 80056f0:	429f      	cmp	r7, r3
+ 80056ee:	dd39      	ble.n	8005764 <STMFLASH_Write_NoCheck.part.0+0xd8>
 			temp_static[j] = pBuffer[i+j];
- 80056f2:	bfc4      	itt	gt
- 80056f4:	89eb      	ldrhgt	r3, [r5, #14]
- 80056f6:	81e3      	strhgt	r3, [r4, #14]
+ 80056f0:	896b      	ldrh	r3, [r5, #10]
+ 80056f2:	8163      	strh	r3, [r4, #10]
+		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
+ 80056f4:	1db3      	adds	r3, r6, #6
+ 80056f6:	429f      	cmp	r7, r3
+ 80056f8:	dd34      	ble.n	8005764 <STMFLASH_Write_NoCheck.part.0+0xd8>
+			temp_static[j] = pBuffer[i+j];
+ 80056fa:	89ab      	ldrh	r3, [r5, #12]
+ 80056fc:	81a3      	strh	r3, [r4, #12]
+		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
+ 80056fe:	1df3      	adds	r3, r6, #7
+ 8005700:	429f      	cmp	r7, r3
+			temp_static[j] = pBuffer[i+j];
+ 8005702:	bfc4      	itt	gt
+ 8005704:	89eb      	ldrhgt	r3, [r5, #14]
+ 8005706:	81e3      	strhgt	r3, [r4, #14]
 		                    ((uint64_t)temp_static[6] << 32) |
- 80056f8:	e9d4 3c02 	ldrd	r3, ip, [r4, #8]
+ 8005708:	e9d4 3c02 	ldrd	r3, ip, [r4, #8]
 		qw_data_static[0] = ((uint64_t)temp_static[0])       |
- 80056fc:	e9c8 0200 	strd	r0, r2, [r8]
+ 800570c:	e9c8 0200 	strd	r0, r2, [r8]
 		HAL_StatusTypeDef status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, 
- 8005700:	4642      	mov	r2, r8
- 8005702:	2002      	movs	r0, #2
+ 8005710:	4642      	mov	r2, r8
+ 8005712:	2002      	movs	r0, #2
 		qw_data_static[1] = ((uint64_t)temp_static[4])       |
- 8005704:	e9c8 3c02 	strd	r3, ip, [r8, #8]
+ 8005714:	e9c8 3c02 	strd	r3, ip, [r8, #8]
 		HAL_StatusTypeDef status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_QUADWORD, 
- 8005708:	f7fb ff46 	bl	8001598 <HAL_FLASH_Program>
+ 8005718:	f7fb ff3e 	bl	8001598 <HAL_FLASH_Program>
 		                                              WriteAddr, 
 		                                              (uint32_t)(&qw_data_static[0]));
 
 		        if (status != HAL_OK) {
- 800570c:	b998      	cbnz	r0, 8005736 <STMFLASH_Write_NoCheck.part.0+0xba>
+ 800571c:	b998      	cbnz	r0, 8005746 <STMFLASH_Write_NoCheck.part.0+0xba>
 	for(i=0; i<NumToWrite; i+=8)
- 800570e:	3608      	adds	r6, #8
- 8005710:	b2b3      	uxth	r3, r6
- 8005712:	429f      	cmp	r7, r3
- 8005714:	f105 0510 	add.w	r5, r5, #16
- 8005718:	d90d      	bls.n	8005736 <STMFLASH_Write_NoCheck.part.0+0xba>
+ 800571e:	3608      	adds	r6, #8
+ 8005720:	b2b3      	uxth	r3, r6
+ 8005722:	429f      	cmp	r7, r3
+ 8005724:	f105 0510 	add.w	r5, r5, #16
+ 8005728:	d90d      	bls.n	8005746 <STMFLASH_Write_NoCheck.part.0+0xba>
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 800571a:	42b7      	cmp	r7, r6
+ 800572a:	42b7      	cmp	r7, r6
 			temp_static[k] = 0xFFFF;
- 800571c:	e9c4 9900 	strd	r9, r9, [r4]
- 8005720:	e9c4 9902 	strd	r9, r9, [r4, #8]
- 8005724:	eb05 010a 	add.w	r1, r5, sl
+ 800572c:	e9c4 9900 	strd	r9, r9, [r4]
+ 8005730:	e9c4 9902 	strd	r9, r9, [r4, #8]
+ 8005734:	eb05 010a 	add.w	r1, r5, sl
 		for(uint16_t j=0; j<8 && (i+j)<NumToWrite; j++) {
- 8005728:	dcbf      	bgt.n	80056aa <STMFLASH_Write_NoCheck.part.0+0x2e>
- 800572a:	f04f 33ff 	mov.w	r3, #4294967295	@ 0xffffffff
- 800572e:	469c      	mov	ip, r3
- 8005730:	4618      	mov	r0, r3
- 8005732:	461a      	mov	r2, r3
- 8005734:	e7e2      	b.n	80056fc <STMFLASH_Write_NoCheck.part.0+0x80>
+ 8005738:	dcbf      	bgt.n	80056ba <STMFLASH_Write_NoCheck.part.0+0x2e>
+ 800573a:	f04f 33ff 	mov.w	r3, #4294967295	@ 0xffffffff
+ 800573e:	469c      	mov	ip, r3
+ 8005740:	4618      	mov	r0, r3
+ 8005742:	461a      	mov	r2, r3
+ 8005744:	e7e2      	b.n	800570c <STMFLASH_Write_NoCheck.part.0+0x80>
 		            return;
 		        }
 		WriteAddr += 16; // Advance by 16 bytes
 	}
 } 
- 8005736:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
+ 8005746:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
 		                    ((uint64_t)temp_static[2] << 32) |
- 800573a:	f04f 32ff 	mov.w	r2, #4294967295	@ 0xffffffff
- 800573e:	6820      	ldr	r0, [r4, #0]
- 8005740:	4613      	mov	r3, r2
- 8005742:	4694      	mov	ip, r2
- 8005744:	e7da      	b.n	80056fc <STMFLASH_Write_NoCheck.part.0+0x80>
- 8005746:	f04f 33ff 	mov.w	r3, #4294967295	@ 0xffffffff
- 800574a:	e9d4 0200 	ldrd	r0, r2, [r4]
- 800574e:	469c      	mov	ip, r3
- 8005750:	e7d4      	b.n	80056fc <STMFLASH_Write_NoCheck.part.0+0x80>
- 8005752:	4770      	bx	lr
+ 800574a:	f04f 32ff 	mov.w	r2, #4294967295	@ 0xffffffff
+ 800574e:	6820      	ldr	r0, [r4, #0]
+ 8005750:	4613      	mov	r3, r2
+ 8005752:	4694      	mov	ip, r2
+ 8005754:	e7da      	b.n	800570c <STMFLASH_Write_NoCheck.part.0+0x80>
+ 8005756:	f04f 33ff 	mov.w	r3, #4294967295	@ 0xffffffff
+ 800575a:	e9d4 0200 	ldrd	r0, r2, [r4]
+ 800575e:	469c      	mov	ip, r3
+ 8005760:	e7d4      	b.n	800570c <STMFLASH_Write_NoCheck.part.0+0x80>
+ 8005762:	4770      	bx	lr
 		                    ((uint64_t)temp_static[6] << 32) |
- 8005754:	f04f 3cff 	mov.w	ip, #4294967295	@ 0xffffffff
- 8005758:	68a3      	ldr	r3, [r4, #8]
- 800575a:	e7cf      	b.n	80056fc <STMFLASH_Write_NoCheck.part.0+0x80>
- 800575c:	08020000 	.word	0x08020000
- 8005760:	2000628c 	.word	0x2000628c
- 8005764:	200062a0 	.word	0x200062a0
+ 8005764:	f04f 3cff 	mov.w	ip, #4294967295	@ 0xffffffff
+ 8005768:	68a3      	ldr	r3, [r4, #8]
+ 800576a:	e7cf      	b.n	800570c <STMFLASH_Write_NoCheck.part.0+0x80>
+ 800576c:	08020000 	.word	0x08020000
+ 8005770:	2000628c 	.word	0x2000628c
+ 8005774:	200062a0 	.word	0x200062a0
 
-08005768 <STMFLASH_Write>:
+08005778 <STMFLASH_Write>:
   * @warning Function returns silently on error (NULL pointer, address out of range, misalignment).
   */
 void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 {
 	// Safety check: prevent NULL pointer and invalid parameters
 	if (pBuffer == NULL || NumToWrite == 0) {
- 8005768:	2900      	cmp	r1, #0
- 800576a:	f000 80b1 	beq.w	80058d0 <STMFLASH_Write+0x168>
+ 8005778:	2900      	cmp	r1, #0
+ 800577a:	f000 80b1 	beq.w	80058e0 <STMFLASH_Write+0x168>
 {
- 800576e:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
- 8005772:	ed2d 8b02 	vpush	{d8}
- 8005776:	4615      	mov	r5, r2
- 8005778:	b089      	sub	sp, #36	@ 0x24
+ 800577e:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 8005782:	ed2d 8b02 	vpush	{d8}
+ 8005786:	4615      	mov	r5, r2
+ 8005788:	b089      	sub	sp, #36	@ 0x24
 	if (pBuffer == NULL || NumToWrite == 0) {
- 800577a:	b142      	cbz	r2, 800578e <STMFLASH_Write+0x26>
+ 800578a:	b142      	cbz	r2, 800579e <STMFLASH_Write+0x26>
 		return;
 	}
 	
 	// Address alignment check: STM32H5 Flash programming requires 16-byte alignment
 	if ((WriteAddr & 0x0F) != 0) {
- 800577c:	f010 0f0f 	tst.w	r0, #15
- 8005780:	4683      	mov	fp, r0
- 8005782:	d104      	bne.n	800578e <STMFLASH_Write+0x26>
+ 800578c:	f010 0f0f 	tst.w	r0, #15
+ 8005790:	4683      	mov	fp, r0
+ 8005792:	d104      	bne.n	800579e <STMFLASH_Write+0x26>
 	uint16_t secremain;    // Remaining space in current sector (in halfwords)	   
  	uint16_t i = 0;        // Loop counter (must initialize to 0)
 	uint32_t offaddr;      // Offset address (relative to Flash base)
 	
 	// Validate address is within valid Flash range (STM32H503: 128KB total)
 	if(WriteAddr<STM32_FLASH_BASE || WriteAddr>=(STM32_FLASH_BASE+0x20000))return; // Invalid address
- 8005784:	f100 4778 	add.w	r7, r0, #4160749568	@ 0xf8000000
- 8005788:	f5b7 3f00 	cmp.w	r7, #131072	@ 0x20000
- 800578c:	d304      	bcc.n	8005798 <STMFLASH_Write+0x30>
+ 8005794:	f100 4778 	add.w	r7, r0, #4160749568	@ 0xf8000000
+ 8005798:	f5b7 3f00 	cmp.w	r7, #131072	@ 0x20000
+ 800579c:	d304      	bcc.n	80057a8 <STMFLASH_Write+0x30>
 		}	 
 	};	
 	
 	HAL_FLASH_Lock();  // Lock Flash after operation
 	__enable_irq();    // Re-enable interrupts
 }
- 800578e:	b009      	add	sp, #36	@ 0x24
- 8005790:	ecbd 8b02 	vpop	{d8}
- 8005794:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 800579e:	b009      	add	sp, #36	@ 0x24
+ 80057a0:	ecbd 8b02 	vpop	{d8}
+ 80057a4:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
   __ASM volatile ("cpsid i" : : : "memory");
- 8005798:	468a      	mov	sl, r1
- 800579a:	b672      	cpsid	i
+ 80057a8:	468a      	mov	sl, r1
+ 80057aa:	b672      	cpsid	i
 	HAL_FLASH_Unlock();  // Unlock Flash for writing
- 800579c:	f7fb ff7e 	bl	800169c <HAL_FLASH_Unlock>
+ 80057ac:	f7fb ff76 	bl	800169c <HAL_FLASH_Unlock>
 	secpos=offaddr/STM_SECTOR_SIZE;			// Calculate sector index (0~15 for STM32H503 with 8KB sectors)
- 80057a0:	0b7b      	lsrs	r3, r7, #13
+ 80057b0:	0b7b      	lsrs	r3, r7, #13
 	secoff=(offaddr%STM_SECTOR_SIZE)/2;		// Calculate offset within sector (in halfwords, 2 bytes each)
- 80057a2:	f3c7 074b 	ubfx	r7, r7, #1, #12
+ 80057b2:	f3c7 074b 	ubfx	r7, r7, #1, #12
 	secremain=STM_SECTOR_SIZE/2-secoff;		// Calculate remaining space in current sector (in halfwords)
- 80057a6:	f5c7 5480 	rsb	r4, r7, #4096	@ 0x1000
+ 80057b6:	f5c7 5480 	rsb	r4, r7, #4096	@ 0x1000
 	if(NumToWrite<=secremain)secremain=NumToWrite;  // Data fits within current sector
- 80057aa:	b2a4      	uxth	r4, r4
- 80057ac:	42ac      	cmp	r4, r5
- 80057ae:	bf28      	it	cs
- 80057b0:	462c      	movcs	r4, r5
+ 80057ba:	b2a4      	uxth	r4, r4
+ 80057bc:	42ac      	cmp	r4, r5
+ 80057be:	bf28      	it	cs
+ 80057c0:	462c      	movcs	r4, r5
 			EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
- 80057b2:	ed9f 8b49 	vldr	d8, [pc, #292]	@ 80058d8 <STMFLASH_Write+0x170>
- 80057b6:	4a4a      	ldr	r2, [pc, #296]	@ (80058e0 <STMFLASH_Write+0x178>)
- 80057b8:	f502 5800 	add.w	r8, r2, #8192	@ 0x2000
- 80057bc:	ebc2 3643 	rsb	r6, r2, r3, lsl #13
+ 80057c2:	ed9f 8b49 	vldr	d8, [pc, #292]	@ 80058e8 <STMFLASH_Write+0x170>
+ 80057c6:	4a4a      	ldr	r2, [pc, #296]	@ (80058f0 <STMFLASH_Write+0x178>)
+ 80057c8:	f502 5800 	add.w	r8, r2, #8192	@ 0x2000
+ 80057cc:	ebc2 3643 	rsb	r6, r2, r3, lsl #13
 			if(NumToWrite>(STM_SECTOR_SIZE/2))secremain=STM_SECTOR_SIZE/2;  // Next sector will be full
- 80057c0:	4a47      	ldr	r2, [pc, #284]	@ (80058e0 <STMFLASH_Write+0x178>)
+ 80057d0:	4a47      	ldr	r2, [pc, #284]	@ (80058f0 <STMFLASH_Write+0x178>)
 	return *(uint16_t*)faddr;
- 80057c2:	1991      	adds	r1, r2, r6
- 80057c4:	f101 6100 	add.w	r1, r1, #134217728	@ 0x8000000
- 80057c8:	6809      	ldr	r1, [r1, #0]
+ 80057d2:	1991      	adds	r1, r2, r6
+ 80057d4:	f101 6100 	add.w	r1, r1, #134217728	@ 0x8000000
+ 80057d8:	6809      	ldr	r1, [r1, #0]
 void STMFLASH_Read(uint32_t ReadAddr,uint16_t *pBuffer,uint16_t NumToRead)
 {
 	uint16_t i;
 	for(i=0;i<NumToRead;i++)
 	{
 		pBuffer[i]=STMFLASH_ReadHalfWord(ReadAddr);// Read 2 bytes (1 halfword)
- 80057ca:	f842 1b04 	str.w	r1, [r2], #4
+ 80057da:	f842 1b04 	str.w	r1, [r2], #4
 	for(i=0;i<NumToRead;i++)
- 80057ce:	4542      	cmp	r2, r8
- 80057d0:	d1f7      	bne.n	80057c2 <STMFLASH_Write+0x5a>
- 80057d2:	4a43      	ldr	r2, [pc, #268]	@ (80058e0 <STMFLASH_Write+0x178>)
+ 80057de:	4542      	cmp	r2, r8
+ 80057e0:	d1f7      	bne.n	80057d2 <STMFLASH_Write+0x5a>
+ 80057e2:	4a43      	ldr	r2, [pc, #268]	@ (80058f0 <STMFLASH_Write+0x178>)
 			if(STMFLASH_BUF[secoff+i]!=0XFFFF)break;  // Found non-erased byte, need erase
- 80057d4:	f64f 7eff 	movw	lr, #65535	@ 0xffff
- 80057d8:	eb02 0947 	add.w	r9, r2, r7, lsl #1
+ 80057e4:	f64f 7eff 	movw	lr, #65535	@ 0xffff
+ 80057e8:	eb02 0947 	add.w	r9, r2, r7, lsl #1
 	for(i=0;i<NumToRead;i++)
- 80057dc:	4649      	mov	r1, r9
+ 80057ec:	4649      	mov	r1, r9
 		for(i=0;i<secremain;i++)
- 80057de:	2200      	movs	r2, #0
- 80057e0:	e003      	b.n	80057ea <STMFLASH_Write+0x82>
- 80057e2:	fa1f f28c 	uxth.w	r2, ip
- 80057e6:	4294      	cmp	r4, r2
- 80057e8:	d007      	beq.n	80057fa <STMFLASH_Write+0x92>
-			if(STMFLASH_BUF[secoff+i]!=0XFFFF)break;  // Found non-erased byte, need erase
- 80057ea:	f831 0b02 	ldrh.w	r0, [r1], #2
-		for(i=0;i<secremain;i++)
- 80057ee:	f102 0c01 	add.w	ip, r2, #1
-			if(STMFLASH_BUF[secoff+i]!=0XFFFF)break;  // Found non-erased byte, need erase
- 80057f2:	4570      	cmp	r0, lr
- 80057f4:	d0f5      	beq.n	80057e2 <STMFLASH_Write+0x7a>
-		 if(i<secremain)  // Erase is needed
+ 80057ee:	2200      	movs	r2, #0
+ 80057f0:	e003      	b.n	80057fa <STMFLASH_Write+0x82>
+ 80057f2:	fa1f f28c 	uxth.w	r2, ip
  80057f6:	4294      	cmp	r4, r2
- 80057f8:	d81b      	bhi.n	8005832 <STMFLASH_Write+0xca>
- 80057fa:	4622      	mov	r2, r4
- 80057fc:	4651      	mov	r1, sl
- 80057fe:	4658      	mov	r0, fp
- 8005800:	9301      	str	r3, [sp, #4]
+ 80057f8:	d007      	beq.n	800580a <STMFLASH_Write+0x92>
+			if(STMFLASH_BUF[secoff+i]!=0XFFFF)break;  // Found non-erased byte, need erase
+ 80057fa:	f831 0b02 	ldrh.w	r0, [r1], #2
+		for(i=0;i<secremain;i++)
+ 80057fe:	f102 0c01 	add.w	ip, r2, #1
+			if(STMFLASH_BUF[secoff+i]!=0XFFFF)break;  // Found non-erased byte, need erase
+ 8005802:	4570      	cmp	r0, lr
+ 8005804:	d0f5      	beq.n	80057f2 <STMFLASH_Write+0x7a>
+		 if(i<secremain)  // Erase is needed
+ 8005806:	4294      	cmp	r4, r2
+ 8005808:	d81b      	bhi.n	8005842 <STMFLASH_Write+0xca>
+ 800580a:	4622      	mov	r2, r4
+ 800580c:	4651      	mov	r1, sl
+ 800580e:	4658      	mov	r0, fp
+ 8005810:	9301      	str	r3, [sp, #4]
 	if (pBuffer == NULL || NumToWrite == 0) {
- 8005802:	f7ff ff3b 	bl	800567c <STMFLASH_Write_NoCheck.part.0>
+ 8005812:	f7ff ff3b 	bl	800568c <STMFLASH_Write_NoCheck.part.0>
 		if(NumToWrite==secremain)break;  // All data written, exit loop
- 8005806:	42a5      	cmp	r5, r4
- 8005808:	9b01      	ldr	r3, [sp, #4]
- 800580a:	f506 5600 	add.w	r6, r6, #8192	@ 0x2000
- 800580e:	d057      	beq.n	80058c0 <STMFLASH_Write+0x158>
+ 8005816:	42a5      	cmp	r5, r4
+ 8005818:	9b01      	ldr	r3, [sp, #4]
+ 800581a:	f506 5600 	add.w	r6, r6, #8192	@ 0x2000
+ 800581e:	d057      	beq.n	80058d0 <STMFLASH_Write+0x158>
 		   	NumToWrite-=secremain;	// Decrease remaining count
- 8005810:	1b2d      	subs	r5, r5, r4
- 8005812:	b2ad      	uxth	r5, r5
+ 8005820:	1b2d      	subs	r5, r5, r4
+ 8005822:	b2ad      	uxth	r5, r5
 			if(NumToWrite>(STM_SECTOR_SIZE/2))secremain=STM_SECTOR_SIZE/2;  // Next sector will be full
- 8005814:	f5b5 5f80 	cmp.w	r5, #4096	@ 0x1000
+ 8005824:	f5b5 5f80 	cmp.w	r5, #4096	@ 0x1000
 		   	pBuffer+=secremain;  	// Advance source buffer pointer
- 8005818:	eb0a 0a44 	add.w	sl, sl, r4, lsl #1
+ 8005828:	eb0a 0a44 	add.w	sl, sl, r4, lsl #1
 		WriteAddr+=secremain*2;	// Advance write address (secremain is in halfwords, multiply by 2 for bytes)	   
- 800581c:	eb0b 0b44 	add.w	fp, fp, r4, lsl #1
+ 800582c:	eb0b 0b44 	add.w	fp, fp, r4, lsl #1
 			if(NumToWrite>(STM_SECTOR_SIZE/2))secremain=STM_SECTOR_SIZE/2;  // Next sector will be full
- 8005820:	f04f 0700 	mov.w	r7, #0
- 8005824:	462c      	mov	r4, r5
+ 8005830:	f04f 0700 	mov.w	r7, #0
+ 8005834:	462c      	mov	r4, r5
 			secpos++;				// Move to next sector		
- 8005826:	f103 0301 	add.w	r3, r3, #1
+ 8005836:	f103 0301 	add.w	r3, r3, #1
 			if(NumToWrite>(STM_SECTOR_SIZE/2))secremain=STM_SECTOR_SIZE/2;  // Next sector will be full
- 800582a:	bf28      	it	cs
- 800582c:	f44f 5480 	movcs.w	r4, #4096	@ 0x1000
- 8005830:	e7c6      	b.n	80057c0 <STMFLASH_Write+0x58>
+ 800583a:	bf28      	it	cs
+ 800583c:	f44f 5480 	movcs.w	r4, #4096	@ 0x1000
+ 8005840:	e7c6      	b.n	80057d0 <STMFLASH_Write+0x58>
 			uint32_t SectorError = 0;
- 8005832:	2200      	movs	r2, #0
- 8005834:	9203      	str	r2, [sp, #12]
+ 8005842:	2200      	movs	r2, #0
+ 8005844:	9203      	str	r2, [sp, #12]
 			EraseInitStruct.NbSectors = 1;        // Erase one sector at a time
- 8005836:	2201      	movs	r2, #1
+ 8005846:	2201      	movs	r2, #1
 			EraseInitStruct.TypeErase = FLASH_TYPEERASE_SECTORS;
- 8005838:	ed8d 8b04 	vstr	d8, [sp, #16]
+ 8005848:	ed8d 8b04 	vstr	d8, [sp, #16]
 			__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
- 800583c:	f44f 011e 	mov.w	r1, #10354688	@ 0x9e0000
+ 800584c:	f44f 011e 	mov.w	r1, #10354688	@ 0x9e0000
 			EraseInitStruct.Sector    = secpos;   // Sector to erase (8KB sectors for STM32H503)
- 8005840:	9306      	str	r3, [sp, #24]
- 8005842:	9301      	str	r3, [sp, #4]
+ 8005850:	9306      	str	r3, [sp, #24]
+ 8005852:	9301      	str	r3, [sp, #4]
 			__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
- 8005844:	4b27      	ldr	r3, [pc, #156]	@ (80058e4 <STMFLASH_Write+0x17c>)
+ 8005854:	4b27      	ldr	r3, [pc, #156]	@ (80058f4 <STMFLASH_Write+0x17c>)
 			EraseInitStruct.NbSectors = 1;        // Erase one sector at a time
- 8005846:	9207      	str	r2, [sp, #28]
+ 8005856:	9207      	str	r2, [sp, #28]
 			__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
- 8005848:	f8d3 2100 	ldr.w	r2, [r3, #256]	@ 0x100
+ 8005858:	f8d3 2100 	ldr.w	r2, [r3, #256]	@ 0x100
 			    HAL_StatusTypeDef erase_status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
- 800584c:	a804      	add	r0, sp, #16
+ 800585c:	a804      	add	r0, sp, #16
 			__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_ALL_ERRORS);
- 800584e:	f042 4280 	orr.w	r2, r2, #1073741824	@ 0x40000000
- 8005852:	f8c3 2100 	str.w	r2, [r3, #256]	@ 0x100
- 8005856:	f8d3 2104 	ldr.w	r2, [r3, #260]	@ 0x104
- 800585a:	f042 4200 	orr.w	r2, r2, #2147483648	@ 0x80000000
- 800585e:	f8c3 2104 	str.w	r2, [r3, #260]	@ 0x104
- 8005862:	6319      	str	r1, [r3, #48]	@ 0x30
+ 800585e:	f042 4280 	orr.w	r2, r2, #1073741824	@ 0x40000000
+ 8005862:	f8c3 2100 	str.w	r2, [r3, #256]	@ 0x100
+ 8005866:	f8d3 2104 	ldr.w	r2, [r3, #260]	@ 0x104
+ 800586a:	f042 4200 	orr.w	r2, r2, #2147483648	@ 0x80000000
+ 800586e:	f8c3 2104 	str.w	r2, [r3, #260]	@ 0x104
+ 8005872:	6319      	str	r1, [r3, #48]	@ 0x30
 			    HAL_StatusTypeDef erase_status = HAL_FLASHEx_Erase(&EraseInitStruct, &SectorError);
- 8005864:	a903      	add	r1, sp, #12
- 8005866:	f7fb ff6b 	bl	8001740 <HAL_FLASHEx_Erase>
+ 8005874:	a903      	add	r1, sp, #12
+ 8005876:	f7fb ff63 	bl	8001740 <HAL_FLASHEx_Erase>
 			    if (erase_status != HAL_OK) {
- 800586a:	9b01      	ldr	r3, [sp, #4]
- 800586c:	bb40      	cbnz	r0, 80058c0 <STMFLASH_Write+0x158>
+ 800587a:	9b01      	ldr	r3, [sp, #4]
+ 800587c:	bb40      	cbnz	r0, 80058d0 <STMFLASH_Write+0x158>
 				STMFLASH_BUF[i] = 0xFFFF;
- 800586e:	f44f 5280 	mov.w	r2, #4096	@ 0x1000
- 8005872:	21ff      	movs	r1, #255	@ 0xff
- 8005874:	481a      	ldr	r0, [pc, #104]	@ (80058e0 <STMFLASH_Write+0x178>)
- 8005876:	9301      	str	r3, [sp, #4]
- 8005878:	f000 f836 	bl	80058e8 <memset>
+ 800587e:	f44f 5280 	mov.w	r2, #4096	@ 0x1000
+ 8005882:	21ff      	movs	r1, #255	@ 0xff
+ 8005884:	481a      	ldr	r0, [pc, #104]	@ (80058f0 <STMFLASH_Write+0x178>)
+ 8005886:	9301      	str	r3, [sp, #4]
+ 8005888:	f000 f836 	bl	80058f8 <memset>
 				if ((i+secoff) >= (PAGE_SIZE/4)) {
- 800587c:	f5b7 6f00 	cmp.w	r7, #2048	@ 0x800
- 8005880:	9b01      	ldr	r3, [sp, #4]
- 8005882:	d20f      	bcs.n	80058a4 <STMFLASH_Write+0x13c>
- 8005884:	4652      	mov	r2, sl
- 8005886:	f640 0c01 	movw	ip, #2049	@ 0x801
- 800588a:	3701      	adds	r7, #1
- 800588c:	eb0a 0044 	add.w	r0, sl, r4, lsl #1
- 8005890:	e001      	b.n	8005896 <STMFLASH_Write+0x12e>
- 8005892:	4567      	cmp	r7, ip
- 8005894:	d006      	beq.n	80058a4 <STMFLASH_Write+0x13c>
-				STMFLASH_BUF[i+secoff]=pBuffer[i];	  
- 8005896:	f832 1b02 	ldrh.w	r1, [r2], #2
-				if ((i+secoff) >= (PAGE_SIZE/4)) {
+ 800588c:	f5b7 6f00 	cmp.w	r7, #2048	@ 0x800
+ 8005890:	9b01      	ldr	r3, [sp, #4]
+ 8005892:	d20f      	bcs.n	80058b4 <STMFLASH_Write+0x13c>
+ 8005894:	4652      	mov	r2, sl
+ 8005896:	f640 0c01 	movw	ip, #2049	@ 0x801
  800589a:	3701      	adds	r7, #1
-			for(i=0;i<secremain;i++)
- 800589c:	4282      	cmp	r2, r0
+ 800589c:	eb0a 0044 	add.w	r0, sl, r4, lsl #1
+ 80058a0:	e001      	b.n	80058a6 <STMFLASH_Write+0x12e>
+ 80058a2:	4567      	cmp	r7, ip
+ 80058a4:	d006      	beq.n	80058b4 <STMFLASH_Write+0x13c>
 				STMFLASH_BUF[i+secoff]=pBuffer[i];	  
- 800589e:	f829 1b02 	strh.w	r1, [r9], #2
+ 80058a6:	f832 1b02 	ldrh.w	r1, [r2], #2
+				if ((i+secoff) >= (PAGE_SIZE/4)) {
+ 80058aa:	3701      	adds	r7, #1
 			for(i=0;i<secremain;i++)
- 80058a2:	d1f6      	bne.n	8005892 <STMFLASH_Write+0x12a>
+ 80058ac:	4282      	cmp	r2, r0
+				STMFLASH_BUF[i+secoff]=pBuffer[i];	  
+ 80058ae:	f829 1b02 	strh.w	r1, [r9], #2
+			for(i=0;i<secremain;i++)
+ 80058b2:	d1f6      	bne.n	80058a2 <STMFLASH_Write+0x12a>
 		STMFLASH_Read(secpos*STM_SECTOR_SIZE+STM32_FLASH_BASE,STMFLASH_BUF,STM_SECTOR_SIZE/2);
- 80058a4:	0358      	lsls	r0, r3, #13
- 80058a6:	f44f 5280 	mov.w	r2, #4096	@ 0x1000
- 80058aa:	490d      	ldr	r1, [pc, #52]	@ (80058e0 <STMFLASH_Write+0x178>)
- 80058ac:	f100 6000 	add.w	r0, r0, #134217728	@ 0x8000000
- 80058b0:	9301      	str	r3, [sp, #4]
- 80058b2:	f7ff fee3 	bl	800567c <STMFLASH_Write_NoCheck.part.0>
+ 80058b4:	0358      	lsls	r0, r3, #13
+ 80058b6:	f44f 5280 	mov.w	r2, #4096	@ 0x1000
+ 80058ba:	490d      	ldr	r1, [pc, #52]	@ (80058f0 <STMFLASH_Write+0x178>)
+ 80058bc:	f100 6000 	add.w	r0, r0, #134217728	@ 0x8000000
+ 80058c0:	9301      	str	r3, [sp, #4]
+ 80058c2:	f7ff fee3 	bl	800568c <STMFLASH_Write_NoCheck.part.0>
 		if(NumToWrite==secremain)break;  // All data written, exit loop
- 80058b6:	42a5      	cmp	r5, r4
- 80058b8:	9b01      	ldr	r3, [sp, #4]
- 80058ba:	f506 5600 	add.w	r6, r6, #8192	@ 0x2000
- 80058be:	d1a7      	bne.n	8005810 <STMFLASH_Write+0xa8>
+ 80058c6:	42a5      	cmp	r5, r4
+ 80058c8:	9b01      	ldr	r3, [sp, #4]
+ 80058ca:	f506 5600 	add.w	r6, r6, #8192	@ 0x2000
+ 80058ce:	d1a7      	bne.n	8005820 <STMFLASH_Write+0xa8>
 	HAL_FLASH_Lock();  // Lock Flash after operation
- 80058c0:	f7fb ff00 	bl	80016c4 <HAL_FLASH_Lock>
+ 80058d0:	f7fb fef8 	bl	80016c4 <HAL_FLASH_Lock>
   __ASM volatile ("cpsie i" : : : "memory");
- 80058c4:	b662      	cpsie	i
+ 80058d4:	b662      	cpsie	i
 }
- 80058c6:	b009      	add	sp, #36	@ 0x24
- 80058c8:	ecbd 8b02 	vpop	{d8}
- 80058cc:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
- 80058d0:	4770      	bx	lr
- 80058d2:	bf00      	nop
- 80058d4:	f3af 8000 	nop.w
- 80058d8:	00000004 	.word	0x00000004
- 80058dc:	00000001 	.word	0x00000001
- 80058e0:	2000528c 	.word	0x2000528c
- 80058e4:	40022000 	.word	0x40022000
+ 80058d6:	b009      	add	sp, #36	@ 0x24
+ 80058d8:	ecbd 8b02 	vpop	{d8}
+ 80058dc:	e8bd 8ff0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 80058e0:	4770      	bx	lr
+ 80058e2:	bf00      	nop
+ 80058e4:	f3af 8000 	nop.w
+ 80058e8:	00000004 	.word	0x00000004
+ 80058ec:	00000001 	.word	0x00000001
+ 80058f0:	2000528c 	.word	0x2000528c
+ 80058f4:	40022000 	.word	0x40022000
 
-080058e8 <memset>:
- 80058e8:	4402      	add	r2, r0
- 80058ea:	4603      	mov	r3, r0
- 80058ec:	4293      	cmp	r3, r2
- 80058ee:	d100      	bne.n	80058f2 <memset+0xa>
- 80058f0:	4770      	bx	lr
- 80058f2:	f803 1b01 	strb.w	r1, [r3], #1
- 80058f6:	e7f9      	b.n	80058ec <memset+0x4>
+080058f8 <memset>:
+ 80058f8:	4402      	add	r2, r0
+ 80058fa:	4603      	mov	r3, r0
+ 80058fc:	4293      	cmp	r3, r2
+ 80058fe:	d100      	bne.n	8005902 <memset+0xa>
+ 8005900:	4770      	bx	lr
+ 8005902:	f803 1b01 	strb.w	r1, [r3], #1
+ 8005906:	e7f9      	b.n	80058fc <memset+0x4>
 
-080058f8 <__libc_init_array>:
- 80058f8:	b570      	push	{r4, r5, r6, lr}
- 80058fa:	4d0d      	ldr	r5, [pc, #52]	@ (8005930 <__libc_init_array+0x38>)
- 80058fc:	2600      	movs	r6, #0
- 80058fe:	4c0d      	ldr	r4, [pc, #52]	@ (8005934 <__libc_init_array+0x3c>)
- 8005900:	1b64      	subs	r4, r4, r5
- 8005902:	10a4      	asrs	r4, r4, #2
- 8005904:	42a6      	cmp	r6, r4
- 8005906:	d109      	bne.n	800591c <__libc_init_array+0x24>
- 8005908:	4d0b      	ldr	r5, [pc, #44]	@ (8005938 <__libc_init_array+0x40>)
- 800590a:	2600      	movs	r6, #0
- 800590c:	4c0b      	ldr	r4, [pc, #44]	@ (800593c <__libc_init_array+0x44>)
- 800590e:	f000 f825 	bl	800595c <_init>
- 8005912:	1b64      	subs	r4, r4, r5
- 8005914:	10a4      	asrs	r4, r4, #2
- 8005916:	42a6      	cmp	r6, r4
- 8005918:	d105      	bne.n	8005926 <__libc_init_array+0x2e>
- 800591a:	bd70      	pop	{r4, r5, r6, pc}
- 800591c:	f855 3b04 	ldr.w	r3, [r5], #4
- 8005920:	3601      	adds	r6, #1
- 8005922:	4798      	blx	r3
- 8005924:	e7ee      	b.n	8005904 <__libc_init_array+0xc>
- 8005926:	f855 3b04 	ldr.w	r3, [r5], #4
- 800592a:	3601      	adds	r6, #1
- 800592c:	4798      	blx	r3
- 800592e:	e7f2      	b.n	8005916 <__libc_init_array+0x1e>
- 8005930:	08005e58 	.word	0x08005e58
- 8005934:	08005e58 	.word	0x08005e58
- 8005938:	08005e58 	.word	0x08005e58
- 800593c:	08005e5c 	.word	0x08005e5c
+08005908 <__libc_init_array>:
+ 8005908:	b570      	push	{r4, r5, r6, lr}
+ 800590a:	4d0d      	ldr	r5, [pc, #52]	@ (8005940 <__libc_init_array+0x38>)
+ 800590c:	2600      	movs	r6, #0
+ 800590e:	4c0d      	ldr	r4, [pc, #52]	@ (8005944 <__libc_init_array+0x3c>)
+ 8005910:	1b64      	subs	r4, r4, r5
+ 8005912:	10a4      	asrs	r4, r4, #2
+ 8005914:	42a6      	cmp	r6, r4
+ 8005916:	d109      	bne.n	800592c <__libc_init_array+0x24>
+ 8005918:	4d0b      	ldr	r5, [pc, #44]	@ (8005948 <__libc_init_array+0x40>)
+ 800591a:	2600      	movs	r6, #0
+ 800591c:	4c0b      	ldr	r4, [pc, #44]	@ (800594c <__libc_init_array+0x44>)
+ 800591e:	f000 f825 	bl	800596c <_init>
+ 8005922:	1b64      	subs	r4, r4, r5
+ 8005924:	10a4      	asrs	r4, r4, #2
+ 8005926:	42a6      	cmp	r6, r4
+ 8005928:	d105      	bne.n	8005936 <__libc_init_array+0x2e>
+ 800592a:	bd70      	pop	{r4, r5, r6, pc}
+ 800592c:	f855 3b04 	ldr.w	r3, [r5], #4
+ 8005930:	3601      	adds	r6, #1
+ 8005932:	4798      	blx	r3
+ 8005934:	e7ee      	b.n	8005914 <__libc_init_array+0xc>
+ 8005936:	f855 3b04 	ldr.w	r3, [r5], #4
+ 800593a:	3601      	adds	r6, #1
+ 800593c:	4798      	blx	r3
+ 800593e:	e7f2      	b.n	8005926 <__libc_init_array+0x1e>
+ 8005940:	08005e68 	.word	0x08005e68
+ 8005944:	08005e68 	.word	0x08005e68
+ 8005948:	08005e68 	.word	0x08005e68
+ 800594c:	08005e6c 	.word	0x08005e6c
 
-08005940 <memcpy>:
- 8005940:	440a      	add	r2, r1
- 8005942:	1e43      	subs	r3, r0, #1
- 8005944:	4291      	cmp	r1, r2
- 8005946:	d100      	bne.n	800594a <memcpy+0xa>
- 8005948:	4770      	bx	lr
- 800594a:	b510      	push	{r4, lr}
- 800594c:	f811 4b01 	ldrb.w	r4, [r1], #1
- 8005950:	4291      	cmp	r1, r2
- 8005952:	f803 4f01 	strb.w	r4, [r3, #1]!
- 8005956:	d1f9      	bne.n	800594c <memcpy+0xc>
- 8005958:	bd10      	pop	{r4, pc}
+08005950 <memcpy>:
+ 8005950:	440a      	add	r2, r1
+ 8005952:	1e43      	subs	r3, r0, #1
+ 8005954:	4291      	cmp	r1, r2
+ 8005956:	d100      	bne.n	800595a <memcpy+0xa>
+ 8005958:	4770      	bx	lr
+ 800595a:	b510      	push	{r4, lr}
+ 800595c:	f811 4b01 	ldrb.w	r4, [r1], #1
+ 8005960:	4291      	cmp	r1, r2
+ 8005962:	f803 4f01 	strb.w	r4, [r3, #1]!
+ 8005966:	d1f9      	bne.n	800595c <memcpy+0xc>
+ 8005968:	bd10      	pop	{r4, pc}
 	...
 
-0800595c <_init>:
- 800595c:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
- 800595e:	bf00      	nop
- 8005960:	bcf8      	pop	{r3, r4, r5, r6, r7}
- 8005962:	bc08      	pop	{r3}
- 8005964:	469e      	mov	lr, r3
- 8005966:	4770      	bx	lr
+0800596c <_init>:
+ 800596c:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 800596e:	bf00      	nop
+ 8005970:	bcf8      	pop	{r3, r4, r5, r6, r7}
+ 8005972:	bc08      	pop	{r3}
+ 8005974:	469e      	mov	lr, r3
+ 8005976:	4770      	bx	lr
 
-08005968 <_fini>:
- 8005968:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
- 800596a:	bf00      	nop
- 800596c:	bcf8      	pop	{r3, r4, r5, r6, r7}
- 800596e:	bc08      	pop	{r3}
- 8005970:	469e      	mov	lr, r3
- 8005972:	4770      	bx	lr
+08005978 <_fini>:
+ 8005978:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+ 800597a:	bf00      	nop
+ 800597c:	bcf8      	pop	{r3, r4, r5, r6, r7}
+ 800597e:	bc08      	pop	{r3}
+ 8005980:	469e      	mov	lr, r3
+ 8005982:	4770      	bx	lr

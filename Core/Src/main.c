@@ -133,14 +133,14 @@ int main(void)
     ImageConfig_t config;
     if (Config_Read(&config) == 0 && config.page_count != 0) {
       // Upgrade is needed
-      HAL_UART_Transmit(&huart1, "update mode\n", 12, 100);
+      HAL_UART_Transmit(&huart1, (uint8_t *)"update mode\n", 12, 100);
       if (IAP_Update() == 0) {
         // Upgrade successful, jump to run region
         IAP_RunApp();
       }
     } else {
       // No upgrade needed, jump directly to run region
-      HAL_UART_Transmit(&huart1, "run mode\n", 9, 100);
+      HAL_UART_Transmit(&huart1, (uint8_t *)"run mode\n", 9, 100);
       IAP_RunApp();
     }
 
