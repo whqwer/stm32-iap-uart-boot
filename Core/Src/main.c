@@ -106,6 +106,8 @@ int main(void)
   //  HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
   //  HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
   // Debug: Uncomment to force immediate jump to application
+//  IAP_RunApp();
+//  	  IWDG->KR = 0xAAAA;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -119,7 +121,7 @@ int main(void)
      * 3. After upgrade, jump to the run region
      * 4. If no upgrade is needed, jump directly to the run region
      */
-	  IWDG->KR = 0xAAAA;
+
 
     // Read the flag area data to determine if an upgrade is needed
     ImageConfig_t config;

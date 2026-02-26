@@ -101,33 +101,42 @@ int8_t IAP_RunApp(void)
     /* Validate stack pointer (STM32H503 SRAM: 0x20000000-0x20008000, 32KB) */
     if (sp >= 0x20000000 && sp <= 0x20008000)
     {
-        HAL_Delay(10);
+//        HAL_Delay(10);
 
         /* 1. Disable global interrupts */
         __disable_irq();
 
-        /* 2. De-initialize peripherals */
+        /* 2. Stop all DMA transfers to prevent spurious interrupts */
+        // if (huart1.hdmarx != NULL) {
+        //     HAL_DMA_Abort(huart1.hdmarx);
+        // }
+        // if (huart1.hdmatx != NULL) {
+        //     HAL_DMA_Abort(huart1.hdmatx);
+        // }
+        
+        // /* 3. De-initialize peripherals */
+        // HAL_UART_DeInit(&huart1);
         HAL_UART_MspDeInit(&huart1);
         HAL_DeInit();
 
-        /* 3. Disable SysTick */
+        /* 4. Disable SysTick */
         SysTick->CTRL = 0;
         SysTick->LOAD = 0;
         SysTick->VAL = 0;
 
-        /* 4. Clear all pending interrupts */
+        /* 5. Clear all pending interrupts */
         for (uint8_t i = 0; i < 8; i++)
         {
             NVIC->ICER[i] = 0xFFFFFFFF;
             NVIC->ICPR[i] = 0xFFFFFFFF;
         }
 
-        /* 5. Set vector table offset to application address */
+        /* 6. Set vector table offset to application address */
         SCB->VTOR = boot_address;
         __DSB();  // Data Synchronization Barrier
         __ISB();  // Instruction Synchronization Barrier
 
-        /* 6. STM32H5 cache handling - clear and disable cache */
+        /* 7. STM32H5 cache handling - clear and disable cache */
         #if (__ICACHE_PRESENT == 1)
         SCB_InvalidateICache();
         SCB_DisableICache();
@@ -137,14 +146,14 @@ int8_t IAP_RunApp(void)
         SCB_DisableDCache();
         #endif
 
-        /* 7. Set main stack pointer */
+        /* 8. Set main stack pointer */
         __set_MSP(*(__IO uint32_t*) boot_address);
 
-        /* 8. Get reset vector address and jump */
+        /* 9. Get reset vector address and jump */
         JumpAddress = *(__IO uint32_t*) (boot_address + 4);
         Jump_To_Application = (pFunction) JumpAddress;
 
-        /* 9. Jump to application */
+        /* 10. Jump to application */
         Jump_To_Application();
 
         return 0;
@@ -222,8 +231,8 @@ int8_t IAP_Update(void)
     Protocol_IAP_Init();
     
     /* 3. Send target image info to host PC */
-    HAL_UART_Transmit(&huart1, (uint8_t *)"fireware update start at:", strlen("fireware update start at:"), 100);
-    HAL_UART_Transmit(&huart1, (uint8_t*)"0x08008000\r\n", strlen("0x08008000\r\n"), 100);
+//    HAL_UART_Transmit(&huart1, (uint8_t *)"fireware update start at:", strlen("fireware update start at:"), 100);
+//    HAL_UART_Transmit(&huart1, (uint8_t*)"0x08008000\r\n", strlen("0x08008000\r\n"), 100);
     
     /* 4. Erase the update region */
     uint8_t target_image = 0; // 0=update region
@@ -286,7 +295,7 @@ int8_t IAP_Update(void)
                     uint32_t update_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
                     
                     /* Copy the update region code to the run region */
-                    HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
+//                    HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
                     if (Copy_Update_To_Runapp(g_expected_page_count) != 0) {
                         g_config.page_count = 0;
                         Config_Write(&g_config);
@@ -310,7 +319,7 @@ int8_t IAP_Update(void)
 //                    g_config.page_count = 0;          // Clear update flag
                     Config_Write(&g_config);
                     
-                    HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", strlen("update success\r\n"), 100);
+//                    HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", strlen("update success\r\n"), 100);
                     UART1_in_update_mode = 0;
                     return 0;
                 }
