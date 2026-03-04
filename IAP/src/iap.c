@@ -60,8 +60,9 @@ void IAP_Init(void)
     
     /* Load or initialize upgrade/runapp config */
     if (Config_Read(&g_config) != 0) {
-        /* Config invalid, initialize with defaults (auto-detect existing firmware) */
-//        HAL_UART_Transmit(&huart1, (uint8_t*)"Config invalid, init...\r\n", 25, 100);
+        /* Config无效（magic不匹配）：说明标志区被擦除但未写完（断电场景）
+         * 重新初始化：尝试自动探测已有固件，若有则记录CRC，page_count=0（直接运行） */
+//        HAL_UART_Transmit(&huart1, (uint8_t*)"Config invalid, reinit...\r\n", 27, 100);
         Config_Init();
         Config_Read(&g_config);
     }
@@ -238,9 +239,9 @@ int8_t IAP_Update(void)
     uint8_t target_image = 0; // 0=update region
     if (!Erase_Image(target_image))
     {
-        g_config.page_count = 0;
-        Config_Write(&g_config);
-        UART1_in_update_mode = 0;
+//        g_config.page_count = 0;
+//        Config_Write(&g_config);
+//        UART1_in_update_mode = 0;
         return -1;
     }
     
@@ -261,12 +262,12 @@ int8_t IAP_Update(void)
     {
     	// Feed the watchdog to prevent reset
     	IWDG->KR = 0xAAAA;
-        /* Check total timeout (20 seconds) */
-        if ((HAL_GetTick() - start_time) > 20000)
+        /* Check total timeout (30 seconds) */
+        if ((HAL_GetTick() - start_time) > 30000)
         {
-            g_config.page_count = 0;
-            Config_Write(&g_config);
-            UART1_in_update_mode = 0;
+//            g_config.page_count = 0;
+//            Config_Write(&g_config);
+//            UART1_in_update_mode = 0;
             return -2;
         }
         
@@ -296,30 +297,34 @@ int8_t IAP_Update(void)
                     
                     /* Copy the update region code to the run region */
 //                    HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
-                    if (Copy_Update_To_Runapp(g_expected_page_count) != 0) {
-                        g_config.page_count = 0;
-                        Config_Write(&g_config);
-                        UART1_in_update_mode = 0;
-                        HAL_UART_Transmit(&huart1, (uint8_t *)"copy failed\r\n", strlen("copy failed\r\n"), 100);
-                        return -4;
-                    }
+//                    if (Copy_Update_To_Runapp(g_expected_page_count) != 0) {
+//                        g_config.page_count = 0;
+//                        Config_Write(&g_config);
+//                        UART1_in_update_mode = 0;
+//                        HAL_UART_Transmit(&huart1, (uint8_t *)"copy failed\r\n", strlen("copy failed\r\n"), 100);
+//                        return -4;
+//                    }
                     
                     /* Verify the CRC of the run region */
                     uint32_t run_crc = Calculate_Image_CRC(RUNAPP_REGION_BASE, total_received);
                     if (run_crc != update_crc) {
-                        g_config.page_count = 0;
-                        Config_Write(&g_config);
-                        UART1_in_update_mode = 0;
+//                        g_config.page_count = 0;
+//                        Config_Write(&g_config);
+//                        UART1_in_update_mode = 0;
                         HAL_UART_Transmit(&huart1, (uint8_t *)"CRC check failed\r\n", strlen("CRC check failed\r\n"), 100);
                         return -5;
+
                     }
                     
                     /* Update the config */
                     g_config.firmware_CRC = run_crc;       // CRC of run region
-//                    g_config.page_count = 0;          // Clear update flag
-                    Config_Write(&g_config);
-                    
-//                    HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", strlen("update success\r\n"), 100);
+                    g_config.page_count = 0;               // 清除升级标志，下次直接运行
+                    if (Config_Write(&g_config) != 0) {
+                        /* Config写入失败（极少发生），标志区可能被擦除
+                         * 此处固件已正确写入，直接跳转运行，下次启动Config_Init会重建 */
+                        HAL_UART_Transmit(&huart1, (uint8_t *)"Config write failed, jump anyway\r\n", 35, 100);
+                    }
+                    HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", 16, 100);
                     UART1_in_update_mode = 0;
                     return 0;
                 }

@@ -106,8 +106,9 @@ int main(void)
   //  HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
   //  HAL_UART_Transmit(&huart1, "boot run\n", 9, 100);
   // Debug: Uncomment to force immediate jump to application
-//  IAP_RunApp();
+//
 //  	  IWDG->KR = 0xAAAA;
+//  	  IAP_RunApp();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -128,7 +129,8 @@ int main(void)
     if (Config_Read(&config) == 0 && config.page_count != 0) {
       // Upgrade is needed
       HAL_UART_Transmit(&huart1, (uint8_t *)"update mode\n", 12, 100);
-      if (IAP_Update() == 0) {
+      int ret = IAP_Update();
+      if ( ret== 0) {
         // Upgrade successful, jump to run region
         IAP_RunApp();
       }
