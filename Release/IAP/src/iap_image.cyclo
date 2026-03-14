@@ -2,4 +2,4 @@
 ../IAP/src/iap_image.c:35:8:Config_Write	5
 ../IAP/src/iap_image.c:136:8:Config_Init	5
 ../IAP/src/iap_image.c:161:10:Calculate_Image_CRC	2
-../IAP/src/iap_image.c:256:9:Erase_Image	4
+../IAP/src/iap_image.c:256:9:Erase_Image	3
