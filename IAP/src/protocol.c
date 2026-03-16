@@ -269,8 +269,16 @@ void Protocol_IAP_Init(void)
     /* Use dynamic target address from iap.c for dual-image support */
     iap_write_addr = g_update_target_addr;
     iap_buf_idx = 0;
-    iap_total_received = 0;
+    iap_total_received = 0;    current_page_index = 0;          /* 重置页索引，防止旧值触发提前CRC检查 */
 
+    /* 重置协议解析状态机所有状态变量，防止重试时用到上一轮的旧状态 */
+    state       = STATE_WAIT_START;
+    body_len    = 0;
+    body_offset = 0;
+    recv_count  = 0;
+    recv_crc    = 0;
+    frame_pos   = 0;
+    in_frame    = 0;
 	// 1. Terminate all ongoing UART operations
 	HAL_UART_AbortReceive_IT(&huart1);
 	HAL_UART_Abort(&huart1);

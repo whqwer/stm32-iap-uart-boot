@@ -85,7 +85,7 @@ static void STMFLASH_Write_NoCheck(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t
 
 
 
-uint16_t STMFLASH_BUF[PAGE_SIZE / 4];     // Flash sector buffer
+uint16_t STMFLASH_BUF[PAGE_SIZE / 2];     // Flash sector buffer (one full sector = PAGE_SIZE/2 halfwords)
 //uint16_t STM32_FLASH_SIZE[PAGE_SIZE / 2];//Up to 4k bytes
 
 /**
@@ -179,7 +179,7 @@ void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 			
 			// After erase, fill buffer with 0xFFFF (erased state)
 			// Note: memset fills bytes, so we must loop to fill halfwords correctly
-			for(i=0; i<(PAGE_SIZE/4); i++) {
+for(i=0; i<(PAGE_SIZE/2); i++) {
 				STMFLASH_BUF[i] = 0xFFFF;
 			}
 			
@@ -187,7 +187,7 @@ void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 			for(i=0;i<secremain;i++)
 			{
 				// Prevent buffer overflow
-				if ((i+secoff) >= (PAGE_SIZE/4)) {
+				if ((i+secoff) >= (PAGE_SIZE/2)) {
 					break;  // Stop if exceeding buffer bounds
 				}
 				STMFLASH_BUF[i+secoff]=pBuffer[i];	  

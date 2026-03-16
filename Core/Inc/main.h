@@ -57,9 +57,16 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define LED_Pin GPIO_PIN_13
+#define LED_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+/* PC13: 升级状态指示 LED（低电平点亮，高电平息灯）
+ * 与 APP 的 gpio.c 对应：MX_GPIO_Init() 初始化为 GPIO_PIN_SET（息灯）*/
+#define BOOT_LED_PORT    LED_GPIO_Port
+#define BOOT_LED_PIN     LED_Pin
+#define BOOT_LED_ON()    HAL_GPIO_WritePin(BOOT_LED_PORT, BOOT_LED_PIN, GPIO_PIN_RESET)
+#define BOOT_LED_OFF()   HAL_GPIO_WritePin(BOOT_LED_PORT, BOOT_LED_PIN, GPIO_PIN_SET)
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

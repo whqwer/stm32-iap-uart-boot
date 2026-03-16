@@ -102,12 +102,12 @@ void Int2Str(uint8_t* str, int32_t intnum)
   * @details Transmits string via UART1 with 1000ms timeout.
   *          Can be disabled via ENABLE_PUTSTR macro for production builds.
   */
-void Serial_PutString(uint8_t *s)
-{
-#if (ENABLE_PUTSTR == 1)  // Conditional compilation for debug output
-	HAL_UART_Transmit(&huart1, s, strlen((const char*)s),1000);
-#endif
-}
+//void Serial_PutString(uint8_t *s)
+//{
+//#if (ENABLE_PUTSTR == 1)  // Conditional compilation for debug output
+//	HAL_UART_Transmit(&huart1, s, strlen((const char*)s),1000);
+//#endif
+//}
 
 /**
   * @}

@@ -31,12 +31,15 @@
 #define CONFIG_SIZE           (8 * 1024)    /* 8KB */
 
 /* Update Region -----------------------------------------------*/
-#define UPDATE_REGION_BASE    0x08008000    /* Sector 4 */
-#define UPDATE_REGION_SIZE    (96 * 1024)   /* 48KB (6 sectors) */
+#define UPDATE_REGION_BASE    0x08008000    /* Sector 4, APP 固件写入区 */
+#define UPDATE_REGION_SIZE    (96 * 1024)   /* 96KB (12 sectors, 4-15) */
 
-/* RunApp Region -----------------------------------------------*/
-#define RUNAPP_REGION_BASE    0x08008000    /* Sector 10 */
-#define RUNAPP_REGION_SIZE    (96 * 1024)   /* 48KB (6 sectors) */
+/* RunApp Region -----------------------------------------------
+ * 当前为单区设计：UPDATE 和 RUNAPP 指向同一地址（0x08008000）。
+ * APP 链接脚本 ORIGIN = 0x08008000，固件直接写入并从此地址运行。
+ * 无需 Copy_Update_To_Runapp()。                                 */
+#define RUNAPP_REGION_BASE    0x08008000    /* 与 UPDATE 同区，Sector 4 */
+#define RUNAPP_REGION_SIZE    (96 * 1024)   /* 96KB */
 
 /* Compatibility: Default to UPDATE as ApplicationAddress ----*/
 #define ApplicationAddress    UPDATE_REGION_BASE

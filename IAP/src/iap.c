@@ -286,45 +286,37 @@ int8_t IAP_Update(void)
                 
                 /* Check if last page received using page_index */
                 volatile uint16_t current_page_index = Protocol_IAP_GetCurrentPageIndex();
-                
-                if (g_expected_page_count > 0 && current_page_index >= g_expected_page_count - 1)
+                uint32_t total_received = Protocol_IAP_GetProgress();
+                /* total_received>0 guard: 若尚未写入任何数据（如首包帧CRC错误），
+                 * 不触发CRC检查，避免stale的current_page_index误触发提前返回。 */
+                if (total_received > 0 && g_expected_page_count > 0 && current_page_index >= g_expected_page_count - 1)
                 {
-                    /* Get total received size for CRC calculation */
-                    uint32_t total_received = Protocol_IAP_GetProgress();
-                    
-                    /* Calculate the CRC of the update region */
-                    uint32_t update_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
-                    
-                    /* Copy the update region code to the run region */
-//                    HAL_UART_Transmit(&huart1, (uint8_t *)"copy update to runapp...\r\n", strlen("copy update to runapp...\r\n"), 100);
-//                    if (Copy_Update_To_Runapp(g_expected_page_count) != 0) {
-//                        g_config.page_count = 0;
-//                        Config_Write(&g_config);
-//                        UART1_in_update_mode = 0;
-//                        HAL_UART_Transmit(&huart1, (uint8_t *)"copy failed\r\n", strlen("copy failed\r\n"), 100);
-//                        return -4;
-//                    }
-                    
-                    /* Verify the CRC of the run region */
-                    uint32_t run_crc = Calculate_Image_CRC(RUNAPP_REGION_BASE, total_received);
-                    if (run_crc != update_crc) {
-//                        g_config.page_count = 0;
-//                        Config_Write(&g_config);
-//                        UART1_in_update_mode = 0;
-                        HAL_UART_Transmit(&huart1, (uint8_t *)"CRC check failed\r\n", strlen("CRC check failed\r\n"), 100);
-                        return -5;
 
+                    /* 将实际写入 flash 的固件 CRC 与主机发来的期望 CRC 比对。
+                     * g_config.firmware_CRC 由 APP 从 enter-upgrade 数据包中解析
+                     * 并写入 Config 区，代表主机侧对固件文件计算的 CRC32。
+                     * 只有两者一致，才说明固件完整传输，才清除升级标志并跳转。
+                     *
+                     * 原代码错误：用 Calculate_Image_CRC(RUNAPP_REGION_BASE) 与
+                     * Calculate_Image_CRC(UPDATE_REGION_BASE) 比对，但两个宏都定
+                     * 义为 0x08008000（同一地址），永远相等，校验完全失效：即使固
+                     * 件损坏，page_count 也会被清 0，导致跳转到无效固件后死机。   */
+                    uint32_t actual_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
+
+                    if (actual_crc != g_config.firmware_CRC) {
+//                        HAL_UART_Transmit(&huart1, (uint8_t *)"CRC check failed\r\n",
+//                                          strlen("CRC check failed\r\n"), 100);
+                        return -5;  /* 固件损坏，不清除标志，等主机重传 */
                     }
-                    
-                    /* Update the config */
-                    g_config.firmware_CRC = run_crc;       // CRC of run region
+
+                    /* CRC 验证通过：固件完整，firmware_CRC 保持不变 */
                     g_config.page_count = 0;               // 清除升级标志，下次直接运行
                     if (Config_Write(&g_config) != 0) {
                         /* Config写入失败（极少发生），标志区可能被擦除
                          * 此处固件已正确写入，直接跳转运行，下次启动Config_Init会重建 */
-                        HAL_UART_Transmit(&huart1, (uint8_t *)"Config write failed, jump anyway\r\n", 35, 100);
+//                        HAL_UART_Transmit(&huart1, (uint8_t *)"Config write failed, jump anyway\r\n", 35, 100);
                     }
-                    HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", 16, 100);
+//                    HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", 16, 100);
                     UART1_in_update_mode = 0;
                     return 0;
                 }
