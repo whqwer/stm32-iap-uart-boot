@@ -315,6 +315,7 @@ int8_t IAP_Update(void)
                         /* Config写入失败（极少发生），标志区可能被擦除
                          * 此处固件已正确写入，直接跳转运行，下次启动Config_Init会重建 */
 //                        HAL_UART_Transmit(&huart1, (uint8_t *)"Config write failed, jump anyway\r\n", 35, 100);
+                        return -4;
                     }
 //                    HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", 16, 100);
                     UART1_in_update_mode = 0;
