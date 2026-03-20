@@ -247,14 +247,29 @@ int8_t IAP_Update(void)
     
     start_time = HAL_GetTick();
     
-    /* 5. Start first DMA reception */
-    status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
-    if (status != HAL_OK) {
-        g_config.page_count = 0;
-        Config_Write(&g_config);
-        UART1_in_update_mode = 0;
-        return -1;
-    }
+    /* 5. 擦除期间主机可能持续发送数据，UART FIFO 溢出导致 ORE 挂起。
+      *     若不清除，DMA 刚启动就会被 ORE 中断打断，串口永远收不到数据。
+      *     （这正是"断点能收到、不加断点收不到"的根因：断点引入的延迟
+      *       使主机停发，ORE 不再被立即触发，DMA 得以正常工作。）         */
+     __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF);  /* Overrun  */
+     __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_FEF);   /* Framing  */
+     __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_NEF);   /* Noise    */
+     __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_PEF);   /* Parity   */
+     /* 清空 FIFO 残留字节（最多 16 字节），防止 DMA 启动后立即触发半满 */
+     while (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE)) {
+         (void)huart1.Instance->RDR;
+     }
+     huart1.ErrorCode = HAL_UART_ERROR_NONE;
+
+     /* 6. Start first DMA reception */
+     status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
+     if (status != HAL_OK) {
+         /* ★ 不要清除 page_count！保留升级标志，下次上电 bootloader 会重试。
+          *   若此处清 0 写 Flash，bootloader 会认为升级完成并跳转 app，
+          *   但 app flash 刚被擦空，跳转后必然死机。                      */
+         UART1_in_update_mode = 0;
+         return -1;
+     }
     huart1.hdmarx->XferHalfCpltCallback = NULL;
 
     /* 6. Main loop: wait and process data */

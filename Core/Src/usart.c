@@ -219,6 +219,36 @@ uint8_t UART1_Complete_flag=0;
 //extern uint8_t cmdStr[128];
 uint16_t rx_len = 0;
 extern uint8_t rx_buffer[MAX_FRAME_SIZE];
+/**
+ * @brief UART 错误回调 —— ORE/FE/NE 触发后自动重新挂载 DMA
+ *
+ * HAL 在 UART_IRQHandler 中检测到错误后会 abort DMA 并调用此函数。
+ * 若不重新挂载，DMA 永久停止，bootloader 再也收不到任何数据。
+ * 常见触发场景：Flash 擦除期间主机持续发送 → FIFO 溢出 → ORE。
+ */
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART1 && UART1_in_update_mode)
+    {
+        /* 清除所有错误标志 */
+        __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_OREF);
+        __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_FEF);
+        __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_NEF);
+        __HAL_UART_CLEAR_FLAG(huart, UART_CLEAR_PEF);
+        /* 清空 FIFO 残留 */
+        while (__HAL_UART_GET_FLAG(huart, UART_FLAG_RXNE)) {
+            (void)huart->Instance->RDR;
+        }
+        huart->ErrorCode = HAL_UART_ERROR_NONE;
+        /* 重新挂载 DMA，恢复接收 */
+        if (HAL_UARTEx_ReceiveToIdle_DMA(huart, rx_buffer, sizeof(rx_buffer)) == HAL_OK) {
+            if (huart->hdmarx) {
+                huart->hdmarx->XferHalfCpltCallback = NULL;
+            }
+        }
+    }
+}
+
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
 	if (huart->Instance == USART1)
