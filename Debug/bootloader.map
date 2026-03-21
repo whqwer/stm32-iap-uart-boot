@@ -690,7 +690,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./Core/Src/syscalls.o
  .debug_macro   0x00000000       0xce ./Core/Src/syscalls.o
  .debug_line    0x00000000      0x8e8 ./Core/Src/syscalls.o
- .debug_str     0x00000000     0x99fa ./Core/Src/syscalls.o
+ .debug_str     0x00000000     0x9a05 ./Core/Src/syscalls.o
  .comment       0x00000000       0x44 ./Core/Src/syscalls.o
  .debug_frame   0x00000000      0x190 ./Core/Src/syscalls.o
  .ARM.attributes
@@ -757,7 +757,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x6a ./Core/Src/sysmem.o
  .debug_macro   0x00000000      0x1df ./Core/Src/sysmem.o
  .debug_line    0x00000000      0x505 ./Core/Src/sysmem.o
- .debug_str     0x00000000     0x7798 ./Core/Src/sysmem.o
+ .debug_str     0x00000000     0x77a3 ./Core/Src/sysmem.o
  .comment       0x00000000       0x44 ./Core/Src/sysmem.o
  .debug_frame   0x00000000       0x28 ./Core/Src/sysmem.o
  .ARM.attributes
@@ -1733,7 +1733,7 @@ Discarded input sections
  .debug_macro   0x00000000      0x20a ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.o
  .debug_macro   0x00000000      0x38f ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.o
  .debug_line    0x00000000      0xe3d ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.o
- .debug_str     0x00000000    0xbdb41 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.o
+ .debug_str     0x00000000    0xbdb4c ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.o
  .comment       0x00000000       0x44 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.o
  .debug_frame   0x00000000      0x140 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_exti.o
  .ARM.attributes
@@ -2272,7 +2272,7 @@ Discarded input sections
  .debug_macro   0x00000000      0x20a ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.o
  .debug_macro   0x00000000      0x38f ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.o
  .debug_line    0x00000000      0xa73 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.o
- .debug_str     0x00000000    0xbdcc3 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.o
+ .debug_str     0x00000000    0xbdcce ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.o
  .comment       0x00000000       0x44 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.o
  .debug_frame   0x00000000      0x154 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr.o
  .ARM.attributes
@@ -2452,7 +2452,7 @@ Discarded input sections
  .debug_macro   0x00000000      0x20a ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.o
  .debug_macro   0x00000000      0x38f ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.o
  .debug_line    0x00000000      0xcc6 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.o
- .debug_str     0x00000000    0xbde56 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.o
+ .debug_str     0x00000000    0xbde61 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.o
  .comment       0x00000000       0x44 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.o
  .debug_frame   0x00000000      0x21c ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_pwr_ex.o
  .ARM.attributes
@@ -3200,8 +3200,8 @@ Discarded input sections
  .debug_macro   0x00000000       0x16 ./IAP/src/common.o
  .debug_macro   0x00000000       0x16 ./IAP/src/common.o
  .debug_macro   0x00000000       0x29 ./IAP/src/common.o
- .debug_line    0x00000000      0xc4a ./IAP/src/common.o
- .debug_str     0x00000000    0xbe2b7 ./IAP/src/common.o
+ .debug_line    0x00000000      0xc55 ./IAP/src/common.o
+ .debug_str     0x00000000    0xbe2c2 ./IAP/src/common.o
  .comment       0x00000000       0x44 ./IAP/src/common.o
  .debug_frame   0x00000000       0x4c ./IAP/src/common.o
  .ARM.attributes
@@ -5022,56 +5022,56 @@ LOAD /opt/st/stm32cubeide_1.19.0/plugins/com.st.stm32cube.ide.mcu.externaltools.
  .debug_macro   0x00020610      0x36f ./IAP/src/protocol.o
  .debug_macro   0x0002097f      0x2e7 ./IAP/src/stmflash.o
 
-.debug_line     0x00000000    0x1f386
+.debug_line     0x00000000    0x1f3bd
  .debug_line    0x00000000      0x7b2 ./Core/Src/gpdma.o
  .debug_line    0x000007b2      0x802 ./Core/Src/gpio.o
- .debug_line    0x00000fb4      0xa86 ./Core/Src/main.o
- .debug_line    0x00001a3a      0x77a ./Core/Src/stm32h5xx_hal_msp.o
- .debug_line    0x000021b4      0x984 ./Core/Src/stm32h5xx_it.o
- .debug_line    0x00002b38      0x9c4 ./Core/Src/system_stm32h5xx.o
- .debug_line    0x000034fc      0xb3e ./Core/Src/usart.o
- .debug_line    0x0000403a       0x77 ./Core/Startup/startup_stm32h503cbtx.o
- .debug_line    0x000040b1      0xe94 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal.o
- .debug_line    0x00004f45      0xeb9 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_cortex.o
- .debug_line    0x00005dfe     0x1543 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma.o
- .debug_line    0x00007341     0x4edb ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma_ex.o
- .debug_line    0x0000c21c     0x1041 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.o
- .debug_line    0x0000d25d     0x1463 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash_ex.o
- .debug_line    0x0000e6c0      0xcdd ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_gpio.o
- .debug_line    0x0000f39d     0x1d1c ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc.o
- .debug_line    0x000110b9     0x222f ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc_ex.o
- .debug_line    0x000132e8     0x6f6a ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart.o
- .debug_line    0x0001a252     0x1274 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.o
- .debug_line    0x0001b4c6      0xcae ./IAP/src/iap.o
- .debug_line    0x0001c174      0xad2 ./IAP/src/iap_image.o
- .debug_line    0x0001cc46     0x19a5 ./IAP/src/protocol.o
- .debug_line    0x0001e5eb      0xd9b ./IAP/src/stmflash.o
+ .debug_line    0x00000fb4      0xa91 ./Core/Src/main.o
+ .debug_line    0x00001a45      0x77a ./Core/Src/stm32h5xx_hal_msp.o
+ .debug_line    0x000021bf      0x984 ./Core/Src/stm32h5xx_it.o
+ .debug_line    0x00002b43      0x9c4 ./Core/Src/system_stm32h5xx.o
+ .debug_line    0x00003507      0xb3e ./Core/Src/usart.o
+ .debug_line    0x00004045       0x77 ./Core/Startup/startup_stm32h503cbtx.o
+ .debug_line    0x000040bc      0xe94 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal.o
+ .debug_line    0x00004f50      0xeb9 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_cortex.o
+ .debug_line    0x00005e09     0x1543 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma.o
+ .debug_line    0x0000734c     0x4edb ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma_ex.o
+ .debug_line    0x0000c227     0x1041 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.o
+ .debug_line    0x0000d268     0x1463 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash_ex.o
+ .debug_line    0x0000e6cb      0xcdd ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_gpio.o
+ .debug_line    0x0000f3a8     0x1d1c ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc.o
+ .debug_line    0x000110c4     0x222f ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc_ex.o
+ .debug_line    0x000132f3     0x6f6a ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart.o
+ .debug_line    0x0001a25d     0x1274 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.o
+ .debug_line    0x0001b4d1      0xcb9 ./IAP/src/iap.o
+ .debug_line    0x0001c18a      0xadd ./IAP/src/iap_image.o
+ .debug_line    0x0001cc67     0x19b0 ./IAP/src/protocol.o
+ .debug_line    0x0001e617      0xda6 ./IAP/src/stmflash.o
 
-.debug_str      0x00000000    0xc37bd
- .debug_str     0x00000000    0xc37bd ./Core/Src/gpdma.o
-                              0xbdfa8 (size before relaxing)
- .debug_str     0x000c37bd    0xbdb9e ./Core/Src/gpio.o
- .debug_str     0x000c37bd    0xbef09 ./Core/Src/main.o
- .debug_str     0x000c37bd    0xbd87e ./Core/Src/stm32h5xx_hal_msp.o
- .debug_str     0x000c37bd    0xbe4b6 ./Core/Src/stm32h5xx_it.o
- .debug_str     0x000c37bd    0xbdc96 ./Core/Src/system_stm32h5xx.o
- .debug_str     0x000c37bd    0xbeaf5 ./Core/Src/usart.o
- .debug_str     0x000c37bd       0x79 ./Core/Startup/startup_stm32h503cbtx.o
- .debug_str     0x000c37bd    0xbe809 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal.o
- .debug_str     0x000c37bd    0xbe573 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_cortex.o
- .debug_str     0x000c37bd    0xbdec9 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma.o
- .debug_str     0x000c37bd    0xbe593 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma_ex.o
- .debug_str     0x000c37bd    0xbdcc1 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.o
- .debug_str     0x000c37bd    0xbe079 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash_ex.o
- .debug_str     0x000c37bd    0xbdb74 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_gpio.o
- .debug_str     0x000c37bd    0xbe1d6 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc.o
- .debug_str     0x000c37bd    0xbe32d ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc_ex.o
- .debug_str     0x000c37bd    0xbe86a ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart.o
- .debug_str     0x000c37bd    0xbe22a ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.o
- .debug_str     0x000c37bd    0xbedab ./IAP/src/iap.o
- .debug_str     0x000c37bd    0xbe3c4 ./IAP/src/iap_image.o
- .debug_str     0x000c37bd    0xbed79 ./IAP/src/protocol.o
- .debug_str     0x000c37bd    0xbe50b ./IAP/src/stmflash.o
+.debug_str      0x00000000    0xc37fd
+ .debug_str     0x00000000    0xc37fd ./Core/Src/gpdma.o
+                              0xbdfb3 (size before relaxing)
+ .debug_str     0x000c37fd    0xbdba9 ./Core/Src/gpio.o
+ .debug_str     0x000c37fd    0xbef14 ./Core/Src/main.o
+ .debug_str     0x000c37fd    0xbd889 ./Core/Src/stm32h5xx_hal_msp.o
+ .debug_str     0x000c37fd    0xbe4c1 ./Core/Src/stm32h5xx_it.o
+ .debug_str     0x000c37fd    0xbdca1 ./Core/Src/system_stm32h5xx.o
+ .debug_str     0x000c37fd    0xbeb00 ./Core/Src/usart.o
+ .debug_str     0x000c37fd       0x79 ./Core/Startup/startup_stm32h503cbtx.o
+ .debug_str     0x000c37fd    0xbe814 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal.o
+ .debug_str     0x000c37fd    0xbe57e ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_cortex.o
+ .debug_str     0x000c37fd    0xbded4 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma.o
+ .debug_str     0x000c37fd    0xbe59e ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_dma_ex.o
+ .debug_str     0x000c37fd    0xbdccc ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash.o
+ .debug_str     0x000c37fd    0xbe084 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_flash_ex.o
+ .debug_str     0x000c37fd    0xbdb7f ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_gpio.o
+ .debug_str     0x000c37fd    0xbe1e1 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc.o
+ .debug_str     0x000c37fd    0xbe338 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_rcc_ex.o
+ .debug_str     0x000c37fd    0xbe875 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart.o
+ .debug_str     0x000c37fd    0xbe235 ./Drivers/STM32H5xx_HAL_Driver/Src/stm32h5xx_hal_uart_ex.o
+ .debug_str     0x000c37fd    0xbedb6 ./IAP/src/iap.o
+ .debug_str     0x000c37fd    0xbe3cf ./IAP/src/iap_image.o
+ .debug_str     0x000c37fd    0xbed84 ./IAP/src/protocol.o
+ .debug_str     0x000c37fd    0xbe516 ./IAP/src/stmflash.o
 
 .comment        0x00000000       0x43
  .comment       0x00000000       0x43 ./Core/Src/gpdma.o
