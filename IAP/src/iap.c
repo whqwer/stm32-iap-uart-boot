@@ -297,7 +297,29 @@ int8_t IAP_Update(void)
             {
                 /* Process data */
                 Protocol_Receive(rx_buffer, rx_len);
-                memset(rx_buffer, 0, MAX_FRAME_SIZE);
+               // memset(rx_buffer, 0, MAX_FRAME_SIZE);
+               /*
+                升级接收说明（重要）：
+                MCU 端行为（碎片化原因）：
+                STM32 UART 有硬件 FIFO（常见 16 字节），且 HAL 的
+                HAL_UARTEx_ReceiveToIdle_DMA 会在 UART IDLE（线路短暂停）
+                或 DMA 计数变化时结束一次传输并回报已接字节数。
+                如果主机/驱动在发送链路上产生微小间隙（写入被分块或驱动调度），
+                MCU 会把流切分成多次 IDLE 回调 — 每次上报的长度通常与 FIFO/写入块大小相关。
+                为什么 USB→串口 看起来“一次到齐”但直接在 ARM 主机上会被拆分：
+                USB-串口适配器/驱动通常在设备侧做更大的缓冲和连续发射（USB bulk coalescing），
+                导致物理线上无明显空隙；而某些主机/驱动/PTY 路径会分多次 write() 或在写间产生调度延迟，
+                因而触发 MCU 的 IDLE → 多次回调。
+                为什么必须移除对 rx_buffer 的 memset 清零：
+                当前协议实现重用 rx_buffer（或其别名）作为“帧累积区”，并通过 frame_pos 跟踪
+                已累积长度。一次 IDLE 回调处理完并不等于整个帧完成；若在每次回调后清零 rx_buffer，
+                就会抹掉前面已累积但等待后续片段的字节，导致拼包失败/CRC 错误。USB 情形通常不会出现
+                后续片段，因此看不出问题。
+                建议（摘要）：
+                保留不清零当前 rx_buffer 的做法（最小改动）；或
+                更稳健地实现：使用独立累积缓冲或 circular DMA + 读/写索引，使 DMA 写区与解析区不重叠；
+                或在主机端尽量一次性 write 大块并用 tcdrain()/合并写以减少分片。
+                */
                 
                 /* Check if last page received using page_index */
                 volatile uint16_t current_page_index = Protocol_IAP_GetCurrentPageIndex();
