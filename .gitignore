@@ -1,2 +1,47 @@
-/Debug
-/Release
+# ──────────────────────────────────────────────
+# STM32 / ARM GCC build outputs — never commit
+# ──────────────────────────────────────────────
+
+# Compiled object files
+*.o
+*.obj
+
+# Dependency / stack-usage / cyclomatic files
+*.d
+*.su
+*.cyclo
+
+# Linked firmware images
+*.elf
+*.bin
+*.hex
+
+# Map / linker list
+*.map
+*.list
+
+# Static libraries
+*.a
+*.lib
+
+# ──────────────────────────────────────────────
+
+
+# ──────────────────────────────────────────────
+# Pseudo-files / sockets / pipes (Linux procfs)
+# ──────────────────────────────────────────────
+anon_inode:*
+socket:*
+
+Debug/
+Release/
+
+.settings/
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE / OS junk
+# ──────────────────────────────────────────────
+.DS_Store
+Thumbs.db
