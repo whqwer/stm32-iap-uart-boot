@@ -24,6 +24,11 @@ int8_t Config_Read(ImageConfig_t *config)
 {
     if (config == NULL) return -1;
     memcpy(config, (void*)CONFIG_BASE, sizeof(ImageConfig_t));
+
+    /* Flash 未初始化时所有字节为 0xFF；page_count=0xFFFF 视为无效 config，
+     * 返回 -1 让调用方走 Config_Init 分支，避免误判为"需要升级"。 */
+    if (config->page_count == 0xFFFF) return -1;
+
     return 0;
 }
 
@@ -137,12 +142,15 @@ int8_t Config_Init(void)
 {
     ImageConfig_t default_config = IMAGE_CONFIG_DEFAULT;
 
-    /* Auto-detect existing firmware at run region */
+    /* Auto-detect existing firmware at run region for CRC only.
+     * page_count MUST stay 0 here: it is the "no-upgrade-needed" flag.
+     * Setting it to the detected page count would make every cold boot
+     * (with an erased config sector) look like an upgrade request and
+     * prevent the bootloader from ever jumping to the app. */
     uint32_t size_b = Detect_Firmware_Size(RUNAPP_REGION_BASE);
     if (size_b > 0) {
         default_config.firmware_CRC = crc32_c((uint8_t*)RUNAPP_REGION_BASE, size_b);
-        /* Calculate page count */
-        default_config.page_count = (size_b + PAGE_SIZE - 1) / PAGE_SIZE;
+        /* page_count intentionally left as 0 — direct-run, no upgrade needed */
     }
 
     return Config_Write(&default_config);

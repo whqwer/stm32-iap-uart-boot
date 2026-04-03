@@ -2,7 +2,8 @@
 #define __IAP_H__
 #include "stm32h503xx.h"
 #include "iap_config.h"
-
+#include "lcd_init.h"
+#include "lcd.h"
 /* Exported types ------------------------------------------------------------*/
 typedef  void (*pFunction)(void);
 

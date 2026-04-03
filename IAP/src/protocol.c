@@ -427,12 +427,16 @@ void parse_byte(uint8_t byte)
 //									SerialPutString((const uint8_t*)".");
 //								}
 							}
-							//OK
+							//OK — send ACK
 							boot_to_FPGA_UL1[4] = (uint8_t)(0x00 >> 0);
 							boot_to_FPGA_UL1[5] = (uint8_t)(0x00 >> 8);
 							boot_to_FPGA_UL1[6] = (uint8_t)(0x00 >> 16);
 							boot_to_FPGA_UL1[7] = (uint8_t)(0x00 >> 24);
 							send_protocol_frame( 0x01, 0x00, boot_to_FPGA_UL1, 8);
+							/* LCD dots animation is driven by a 500 ms timer in
+							 * iap.c (app_upgrade_progress_tick), NOT here.
+							 * Doing any SPI here would delay ACK delivery and
+							 * cause the host to see missing ACKs.             */
 						}
 						else//length error
 						{

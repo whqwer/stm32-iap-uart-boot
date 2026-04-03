@@ -5,6 +5,6 @@
 ../IAP/src/protocol.c:267:6:Protocol_IAP_Init	2
 ../IAP/src/protocol.c:307:10:Protocol_IAP_GetProgress	1
 ../IAP/src/protocol.c:312:10:Protocol_IAP_GetCurrentPageIndex	1
-../IAP/src/protocol.c:519:6:send_protocol_frame	1
+../IAP/src/protocol.c:523:6:send_protocol_frame	1
 ../IAP/src/protocol.c:325:6:parse_byte	19
-../IAP/src/protocol.c:461:9:Protocol_Receive	8
+../IAP/src/protocol.c:465:9:Protocol_Receive	8

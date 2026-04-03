@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "gpdma.h"
+#include "spi.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -29,6 +30,8 @@
 #include "iap_image.h"
 #include <stdio.h>
 #include <string.h>
+#include "lcd_init.h"
+#include "lcd.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,6 +62,8 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+/* app_upgrade_start() and app_upgrade_progress_tick() are defined in
+ * HARDWARE/LCD/Src/lcd_boot.c and declared in HARDWARE/LCD/Inc/lcd.h  */
 /* USER CODE END 0 */
 
 /**
@@ -97,14 +102,13 @@ int main(void)
   MX_GPIO_Init();
   MX_GPDMA1_Init();
   MX_USART1_UART_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   /* Initialize IAP (In-Application Programming) module */
   /* Sets up UART and prepares for firmware update or application jump */
   IAP_Init();
-  // Debug: Uncomment to force immediate jump to application
-//
-//  	  IWDG->KR = 0xAAAA;
-//  	  IAP_RunApp();
+  LCD_Init();
+  LCD_Fill(0, 0, 120, 240, BLACK);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -126,12 +130,17 @@ int main(void)
       // Upgrade is needed
       HAL_UART_Transmit(&huart1, (uint8_t *)"update mode\n", 12, 100);
       BOOT_LED_ON();   /* 进入升级模式：亮灯 */
+
+      /* 显示 Upgrading + 点动画初始化 */
+      app_upgrade_start();
+
       int ret = IAP_Update();
 
+      BOOT_LED_OFF();
       if ( ret== 0) {
-        // Upgrade successful, jump to run region
-    	  BOOT_LED_OFF();  /* 升级结束：熄灯（成功或失败均熄灯，跳转前清晰状态） */
-        IAP_RunApp();
+	  // Upgrade successful, jump to run region
+		BOOT_LED_OFF();  /* 升级结束：熄灯（成功或失败均熄灯，跳转前清晰状态） */
+		IAP_RunApp();
       }
     } else {
       // No upgrade needed, jump directly to run region
@@ -172,11 +181,14 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLM = 6;
   RCC_OscInitStruct.PLL.PLLN = 100;
   RCC_OscInitStruct.PLL.PLLP = 2;
-  RCC_OscInitStruct.PLL.PLLQ = 2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
   RCC_OscInitStruct.PLL.PLLR = 2;
   RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1_VCIRANGE_2;
   RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1_VCORANGE_WIDE;
   RCC_OscInitStruct.PLL.PLLFRACN = 0;
+  /* Enable PLL1Q output: SPI1 clock source = PLL1Q = HSE/PLLM*PLLN/PLLQ
+   * = 24MHz/6*100/4 = 100MHz. Without this, SPI1 gets no valid clock and
+   * falls back to a very slow source, making LCD_Init take seconds. */
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();

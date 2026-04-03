@@ -10,6 +10,7 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include IAP/src/subdir.mk
+-include HARDWARE/LCD/Src/subdir.mk
 -include Drivers/STM32H5xx_HAL_Driver/Src/subdir.mk
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
@@ -67,8 +68,8 @@ all: main-build
 main-build: bootloader.elf secondary-outputs
 
 # Tool invocations
-bootloader.elf bootloader.map: $(OBJS) $(USER_OBJS) /home/nilicheng/Documents/code/Asteroid_screen_bootloader/STM32H503CBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "bootloader.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"/home/nilicheng/Documents/code/Asteroid_screen_bootloader/STM32H503CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="bootloader.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+bootloader.elf bootloader.map: $(OBJS) $(USER_OBJS) /home/wh/Documents/IAP/git_bootloader/Asteroid/STM32H503CBTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "bootloader.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"/home/wh/Documents/IAP/git_bootloader/Asteroid/STM32H503CBTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="bootloader.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

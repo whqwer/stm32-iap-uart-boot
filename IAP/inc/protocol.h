@@ -91,6 +91,7 @@ uint16_t Protocol_IAP_GetCurrentPageIndex(void);
  * @return None
  */
 void send_protocol_frame(uint8_t receiver, uint8_t sender, const uint8_t *data, uint32_t data_len);
+
 #endif /* INC_PROTOCOL_H_ */
 
 

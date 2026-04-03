@@ -20,6 +20,7 @@
 #include "iap_image.h"
 #include "stmflash.h"
 #include "protocol.h"
+#include "lcd.h"          /* app_upgrade_progress_tick() */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -107,16 +108,11 @@ int8_t IAP_RunApp(void)
         /* 1. Disable global interrupts */
         __disable_irq();
 
-        /* 2. Stop all DMA transfers to prevent spurious interrupts */
-        // if (huart1.hdmarx != NULL) {
-        //     HAL_DMA_Abort(huart1.hdmarx);
-        // }
-        // if (huart1.hdmatx != NULL) {
-        //     HAL_DMA_Abort(huart1.hdmatx);
-        // }
-        
-        // /* 3. De-initialize peripherals */
-        // HAL_UART_DeInit(&huart1);
+        /* 2. De-initialize UART MSP and reset all peripherals via HAL_DeInit.
+         * This was the original working approach before HARDWARE/LCD was added.
+         * HAL_DeInit does APB/AHB bus force-reset which clears all peripherals;
+         * the app then reinitialises everything via its own MX_*_Init() calls,
+         * so this is safe as long as the app startup sequence is correct.     */
         HAL_UART_MspDeInit(&huart1);
         HAL_DeInit();
 
@@ -272,6 +268,9 @@ int8_t IAP_Update(void)
      }
     huart1.hdmarx->XferHalfCpltCallback = NULL;
 
+    /* Dots animation: tick every 500 ms */
+    uint32_t last_dot_tick = start_time;
+
     /* 6. Main loop: wait and process data */
     while (1)
     {
@@ -374,7 +373,15 @@ int8_t IAP_Update(void)
                 }
             }
         }
-        
+
+        /* Dots animation: advance every 500 ms.
+         * Called here (outside packet processing) so LCD SPI transfer
+         * never blocks the Protocol_Receive / DMA restart path.        */
+        if ((HAL_GetTick() - last_dot_tick) >= 500u) {
+            last_dot_tick = HAL_GetTick();
+            app_upgrade_progress_tick();
+        }
+
         HAL_Delay(1);
     }
 }

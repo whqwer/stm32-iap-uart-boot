@@ -1,6 +1,6 @@
 IAP/src/iap.o: ../IAP/src/iap.c \
- /home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/iap_config.h \
- /home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/iap.h \
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/iap_config.h \
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/iap.h \
  ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/stm32h503xx.h \
  ../Drivers/CMSIS/Include/core_cm33.h \
  ../Drivers/CMSIS/Include/cmsis_version.h \
@@ -8,9 +8,9 @@ IAP/src/iap.o: ../IAP/src/iap.c \
  ../Drivers/CMSIS/Include/cmsis_gcc.h \
  ../Drivers/CMSIS/Include/mpu_armv8.h \
  ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/system_stm32h5xx.h \
- /home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/iap_config.h \
- /home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/iap_image.h \
- /home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/stmflash.h \
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/iap_config.h \
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/HARDWARE/LCD/Inc/lcd_init.h \
+ ../Core/Inc/spi.h ../Core/Inc/main.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal.h \
  ../Core/Inc/stm32h5xx_hal_conf.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_rcc.h \
@@ -28,13 +28,19 @@ IAP/src/iap.o: ../IAP/src/iap.c \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_flash_ex.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_pwr.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_pwr_ex.h \
+ ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_spi.h \
+ ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_spi_ex.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart_ex.h \
  ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_exti.h \
- /home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/common.h \
- /home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/protocol.h
-/home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/iap_config.h:
-/home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/iap.h:
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/HARDWARE/LCD/Inc/lcd.h \
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/HARDWARE/LCD/Inc/lcd_init.h \
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/iap_image.h \
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/stmflash.h \
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/common.h \
+ /home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/protocol.h
+/home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/iap_config.h:
+/home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/iap.h:
 ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/stm32h503xx.h:
 ../Drivers/CMSIS/Include/core_cm33.h:
 ../Drivers/CMSIS/Include/cmsis_version.h:
@@ -42,9 +48,10 @@ IAP/src/iap.o: ../IAP/src/iap.c \
 ../Drivers/CMSIS/Include/cmsis_gcc.h:
 ../Drivers/CMSIS/Include/mpu_armv8.h:
 ../Drivers/CMSIS/Device/ST/STM32H5xx/Include/system_stm32h5xx.h:
-/home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/iap_config.h:
-/home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/iap_image.h:
-/home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/stmflash.h:
+/home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/iap_config.h:
+/home/wh/Documents/IAP/git_bootloader/Asteroid/HARDWARE/LCD/Inc/lcd_init.h:
+../Core/Inc/spi.h:
+../Core/Inc/main.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal.h:
 ../Core/Inc/stm32h5xx_hal_conf.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_rcc.h:
@@ -62,8 +69,14 @@ IAP/src/iap.o: ../IAP/src/iap.c \
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_flash_ex.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_pwr.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_pwr_ex.h:
+../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_spi.h:
+../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_spi_ex.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_uart_ex.h:
 ../Drivers/STM32H5xx_HAL_Driver/Inc/stm32h5xx_hal_exti.h:
-/home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/common.h:
-/home/nilicheng/Documents/code/Asteroid_screen_bootloader/IAP/inc/protocol.h:
+/home/wh/Documents/IAP/git_bootloader/Asteroid/HARDWARE/LCD/Inc/lcd.h:
+/home/wh/Documents/IAP/git_bootloader/Asteroid/HARDWARE/LCD/Inc/lcd_init.h:
+/home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/iap_image.h:
+/home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/stmflash.h:
+/home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/common.h:
+/home/wh/Documents/IAP/git_bootloader/Asteroid/IAP/inc/protocol.h:
