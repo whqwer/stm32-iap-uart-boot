@@ -453,6 +453,7 @@ void parse_byte(uint8_t byte)
 					boot_to_FPGA_UL1[6] = (uint8_t)(0x01 >> 16);
 					boot_to_FPGA_UL1[7] = (uint8_t)(0x01 >> 24);
 					send_protocol_frame( 0x01, 0x00, boot_to_FPGA_UL1, 8);
+
 				}
             }
             state = STATE_WAIT_START;
