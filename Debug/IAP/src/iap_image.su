@@ -1,5 +1,0 @@
-../IAP/src/iap_image.c:23:8:Config_Read	4	static
-../IAP/src/iap_image.c:40:8:Config_Write	88	static
-../IAP/src/iap_image.c:141:8:Config_Init	24	static
-../IAP/src/iap_image.c:169:10:Calculate_Image_CRC	0	static
-../IAP/src/iap_image.c:264:9:Erase_Image	32	static
