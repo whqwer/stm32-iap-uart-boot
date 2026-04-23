@@ -126,9 +126,9 @@ int main(void)
 
     // Read the flag area data to determine if an upgrade is needed
     ImageConfig_t config;
-    if (Config_Read(&config) == 0 && config.page_count != 0) {
+    if (Config_Read(&config) == 0 && config.need_upgrade == 1u) {
       // Upgrade is needed
-      HAL_UART_Transmit(&huart1, (uint8_t *)"update mode\n", 12, 100);
+//      HAL_UART_Transmit(&huart1, (uint8_t *)"update mode\n", 12, 100);
       BOOT_LED_ON();   /* 进入升级模式：亮灯 */
 
       /* 显示 Upgrading + 点动画初始化 */
@@ -144,7 +144,7 @@ int main(void)
       }
     } else {
       // No upgrade needed, jump directly to run region
-      HAL_UART_Transmit(&huart1, (uint8_t *)"run mode\n", 9, 100);
+//      HAL_UART_Transmit(&huart1, (uint8_t *)"run mode\n", 9, 100);
       BOOT_LED_OFF();  /* 确保正常启动时 LED 熄灭 */
       IAP_RunApp();
     }

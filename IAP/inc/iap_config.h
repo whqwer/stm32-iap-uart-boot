@@ -58,13 +58,15 @@ typedef struct {
     uint16_t page_count;       /* Page count (number of pages used by firmware) */
     uint32_t firmware_CRC;     /* Firmware CRC32 value */
     uint32_t version;          /* Firmware version number (preserved during updates) */
+    uint8_t  need_upgrade;     /* Explicit upgrade flag: 1=upgrade needed, 0=run app  */
 } ImageConfig_t;
 
 /* Default config */
 #define IMAGE_CONFIG_DEFAULT { \
     .page_count = 0,           \
     .firmware_CRC = 0,         \
-    .version = 0               \
+    .version      = 0,         \
+    .need_upgrade = 0          \
 }
 
 #endif /* __IAP_CONFIG_H__ */

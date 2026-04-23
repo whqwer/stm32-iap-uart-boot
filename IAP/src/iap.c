@@ -179,35 +179,35 @@ extern uint16_t rx_len;
  * @param page_count Number of pages
  * @return 0=success, -1=failure
  */
-static int8_t Copy_Update_To_Runapp(uint16_t page_count)
-{
-    uint32_t update_addr = UPDATE_REGION_BASE;
-    uint32_t runapp_addr = RUNAPP_REGION_BASE;
-    uint16_t remaining_pages = page_count;
-    
-    /* 4. Erase the run region */
-       uint8_t target_image = 1; // 1=run region
-       if (!Erase_Image(target_image))
-       {
-           g_config.page_count = 0;
-           Config_Write(&g_config);
-           UART1_in_update_mode = 0;
-           return -1;
-       }
-
-    while (remaining_pages > 0)
-    {
-        uint16_t num_halfwords = PAGE_SIZE / 2;
-        
-        STMFLASH_Write(runapp_addr, (uint16_t*)update_addr, num_halfwords);
-        
-        runapp_addr += PAGE_SIZE;
-        update_addr += PAGE_SIZE;
-        remaining_pages--;
-    }
-    
-    return 0;
-}
+//static int8_t Copy_Update_To_Runapp(uint16_t page_count)
+//{
+//    uint32_t update_addr = UPDATE_REGION_BASE;
+//    uint32_t runapp_addr = RUNAPP_REGION_BASE;
+//    uint16_t remaining_pages = page_count;
+//
+//    /* 4. Erase the run region */
+//       uint8_t target_image = 1; // 1=run region
+//       if (!Erase_Image(target_image))
+//       {
+//           g_config.page_count = 0;
+//           Config_Write(&g_config);
+//           UART1_in_update_mode = 0;
+//           return -1;
+//       }
+//
+//    while (remaining_pages > 0)
+//    {
+//        uint16_t num_halfwords = PAGE_SIZE / 2;
+//
+//        STMFLASH_Write(runapp_addr, (uint16_t*)update_addr, num_halfwords);
+//
+//        runapp_addr += PAGE_SIZE;
+//        update_addr += PAGE_SIZE;
+//        remaining_pages--;
+//    }
+//
+//    return 0;
+//}
 
 int8_t IAP_Update(void)
 {
@@ -346,7 +346,8 @@ int8_t IAP_Update(void)
                     }
 
                     /* CRC 验证通过：固件完整，firmware_CRC 保持不变 */
-                    g_config.page_count = 0;               // 清除升级标志，下次直接运行
+                    g_config.page_count   = 0;               // 清除升级标志，
+                    g_config.need_upgrade = 0u;              // 清除升级标志，app启动后显示结果再清零
                     if (Config_Write(&g_config) != 0) {
                         /* Config写入失败（极少发生），标志区可能被擦除
                          * 此处固件已正确写入，直接跳转运行，下次启动Config_Init会重建 */

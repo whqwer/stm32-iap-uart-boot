@@ -384,8 +384,11 @@ void parse_byte(uint8_t byte)
 				uint32_t calc_crc = crc32_c(crc_input, 4 + body_len);
 				
 				if (calc_crc == recv_crc) {
-					// CRC OK! Extract firmware data (skip version, receiver, sender - 3 bytes)
-//					uint8_t receive=frame_buf[1];
+					if (body_len < 7u || frame_buf[3] != 0x02u /* UPGRADE_CMD_PACKAGE */) {
+						state = STATE_WAIT_START;
+						break;
+					}
+
 					uint8_t *firmware_data = &frame_buf[7];
 					uint32_t data_len = body_len - 7;
 					
@@ -421,11 +424,6 @@ void parse_byte(uint8_t byte)
 									iap_buf_idx = 0;
 								}
 								
-//								// Print progress
-//								if ((iap_total_received % 1024) == 0)
-//								{
-//									SerialPutString((const uint8_t*)".");
-//								}
 							}
 							//OK — send ACK
 							boot_to_FPGA_UL1[4] = (uint8_t)(0x00 >> 0);
@@ -433,10 +431,6 @@ void parse_byte(uint8_t byte)
 							boot_to_FPGA_UL1[6] = (uint8_t)(0x00 >> 16);
 							boot_to_FPGA_UL1[7] = (uint8_t)(0x00 >> 24);
 							send_protocol_frame( 0x01, 0x00, boot_to_FPGA_UL1, 8);
-							/* LCD dots animation is driven by a 500 ms timer in
-							 * iap.c (app_upgrade_progress_tick), NOT here.
-							 * Doing any SPI here would delay ACK delivery and
-							 * cause the host to see missing ACKs.             */
 						}
 						else//length error
 						{
@@ -448,10 +442,10 @@ void parse_byte(uint8_t byte)
 						}
 					}
 				} else {//CRC error
-					boot_to_FPGA_UL1[4] = (uint8_t)(0x01 >> 0);
-					boot_to_FPGA_UL1[5] = (uint8_t)(0x01 >> 8);
-					boot_to_FPGA_UL1[6] = (uint8_t)(0x01 >> 16);
-					boot_to_FPGA_UL1[7] = (uint8_t)(0x01 >> 24);
+					boot_to_FPGA_UL1[4] = (uint8_t)(0x02 >> 0);
+					boot_to_FPGA_UL1[5] = (uint8_t)(0x02 >> 8);
+					boot_to_FPGA_UL1[6] = (uint8_t)(0x02 >> 16);
+					boot_to_FPGA_UL1[7] = (uint8_t)(0x02 >> 24);
 					send_protocol_frame( 0x01, 0x00, boot_to_FPGA_UL1, 8);
 
 				}
