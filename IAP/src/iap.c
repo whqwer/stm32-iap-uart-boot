@@ -340,21 +340,25 @@ int8_t IAP_Update(void)
                     uint32_t actual_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
 
                     if (actual_crc != g_config.firmware_CRC) {
-//                        HAL_UART_Transmit(&huart1, (uint8_t *)"CRC check failed\r\n",
-//                                          strlen("CRC check failed\r\n"), 100);
+                        /* 居中显示红色 32 号字体错误提示
+                         * 屏幕 120×240（x=列 0~119, y=行 0~239）
+                         * 32 号字体: 高 32px, 宽 16px/字符
+                         * "CRC check" (9 字符, 144px): y=(240-144)/2=48, x=(120-64)/2=28
+                         * "failed"   (6 字符,  96px): y=(240- 96)/2=72, x=28+32=60 */
+                        LCD_Fill(0, 0, 120, 240, BLACK);
+                        LCD_ShowStringDMA(28, 48, "CRC check", RED, BLACK, 32);
+                        LCD_ShowStringDMA(60, 72, "failed",    RED, BLACK, 32);
                         return -5;  /* 固件损坏，不清除标志，等主机重传 */
                     }
 
                     /* CRC 验证通过：固件完整，firmware_CRC 保持不变 */
-                    g_config.page_count   = 0;               // 清除升级标志，
-                    g_config.need_upgrade = 0u;              // 清除升级标志，app启动后显示结果再清零
+                    g_config.page_count   = 0;
+                    g_config.need_upgrade = 2u;   /* 2 = 升级完成，通知 APP 显示结果后清零
+                                                   * 不能清为 0：APP 就看不到升级结果了
+                                                   * 不能保持 1：下次上电 bootloader 会再次进升级模式 */
                     if (Config_Write(&g_config) != 0) {
-                        /* Config写入失败（极少发生），标志区可能被擦除
-                         * 此处固件已正确写入，直接跳转运行，下次启动Config_Init会重建 */
-//                        HAL_UART_Transmit(&huart1, (uint8_t *)"Config write failed, jump anyway\r\n", 35, 100);
                         return -4;
                     }
-//                    HAL_UART_Transmit(&huart1, (uint8_t *)"update success\r\n", 16, 100);
                     UART1_in_update_mode = 0;
                     return 0;
                 }

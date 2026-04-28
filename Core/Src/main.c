@@ -107,48 +107,30 @@ int main(void)
   /* Initialize IAP (In-Application Programming) module */
   /* Sets up UART and prepares for firmware update or application jump */
   IAP_Init();
+
+  ImageConfig_t config;
+  if (Config_Read(&config) == 0 && config.need_upgrade != 1u){
+	  IAP_RunApp();
+  }
+
   LCD_Init();
   LCD_Fill(0, 0, 120, 240, BLACK);
+  /* 显示 Upgrading + 点动画初始化 */
+  app_upgrade_start();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* Main Bootloader Decision Logic:
-     *
-     * 1. Check if the flag area requires an upgrade
-     * 2. If upgrade is needed, execute IAP_Update()
-     * 3. After upgrade, jump to the run region
-     * 4. If no upgrade is needed, jump directly to the run region
-     */
-
-
-    // Read the flag area data to determine if an upgrade is needed
-    ImageConfig_t config;
-    if (Config_Read(&config) == 0 && config.need_upgrade == 1u) {
-      // Upgrade is needed
-//      HAL_UART_Transmit(&huart1, (uint8_t *)"update mode\n", 12, 100);
-      BOOT_LED_ON();   /* 进入升级模式：亮灯 */
-
-      /* 显示 Upgrading + 点动画初始化 */
-      app_upgrade_start();
-
+	  /* 显示 Upgrading + 点动画初始化 */
+	  app_upgrade_start();
       int ret = IAP_Update();
 
-      BOOT_LED_OFF();
-      if ( ret== 0) {
-	  // Upgrade successful, jump to run region
-		BOOT_LED_OFF();  /* 升级结束：熄灯（成功或失败均熄灯，跳转前清晰状态） */
-		IAP_RunApp();
+      if (ret == 0) {
+          IAP_RunApp();
       }
-    } else {
-      // No upgrade needed, jump directly to run region
-//      HAL_UART_Transmit(&huart1, (uint8_t *)"run mode\n", 9, 100);
-      BOOT_LED_OFF();  /* 确保正常启动时 LED 熄灭 */
-      IAP_RunApp();
-    }
-
+      /* else: APP valid but < 3 attempts — retry upgrade immediately */
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

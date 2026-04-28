@@ -179,10 +179,14 @@ uint32_t decode_escape(uint8_t *dst, const uint8_t *src, uint32_t src_len)
 					dst[dst_idx++] = ESCAPE_FLAG;
 					i++;
 				}
-	//			else
-	//			{
-	//				dst[dst_idx++] = src[i]; // Unknown escape? Output directly
-	//			}
+				else
+				{
+					/* 无效 escape 序列: 0x7A 后跟未知字节。
+					 * 帧已损坏，返回 0 通知调用方丢弃该帧。
+					 * Protocol_Receive 检测到 decoded_len==0 时
+					 * 不调用 parse_byte，帧被静默丢弃。 */
+					return 0;
+				}
 			}
 			else
 			{
@@ -388,7 +392,6 @@ void parse_byte(uint8_t byte)
 						state = STATE_WAIT_START;
 						break;
 					}
-
 					uint8_t *firmware_data = &frame_buf[7];
 					uint32_t data_len = body_len - 7;
 					
@@ -423,7 +426,6 @@ void parse_byte(uint8_t byte)
 								{
 									iap_buf_idx = 0;
 								}
-								
 							}
 							//OK — send ACK
 							boot_to_FPGA_UL1[4] = (uint8_t)(0x00 >> 0);
