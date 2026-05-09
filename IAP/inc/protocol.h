@@ -83,6 +83,19 @@ uint32_t Protocol_IAP_GetProgress(void);
 uint16_t Protocol_IAP_GetCurrentPageIndex(void);
 
 /**
+ * @brief Get the data payload length of the most recently processed PACKAGE frame.
+ * @details Used to detect a 2-byte trigger packet vs a real firmware page so
+ *          iap.c can suppress the "CRC failed" LCD display for trig_buf-induced fails.
+ * @return Byte count of the last PACKAGE payload (0 if none yet received)
+ */
+uint32_t Protocol_IAP_GetLastPacketDataLen(void);
+
+/**
+ * @brief Returns 1 if the last PACKAGE was a trig packet (2 bytes {0x00,0x00}), 0 otherwise.
+ */
+int Protocol_IAP_IsLastPacketTrig(void);
+
+/**
  * @brief Send a protocol frame over UART
  * @param receiver Receiver ID (destination address)
  * @param sender Sender ID (source address)

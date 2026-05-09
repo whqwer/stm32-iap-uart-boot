@@ -100,11 +100,7 @@ void app_upgrade_start(void)
 {
     LCD_Fill(0, 0, 120, 240, BLACK);
 
-    /* "Upgrading" in font-32: 9 chars × 16px = 144px vertical.
-     * Split into ≤3-char chunks to keep lcd_char_buf loads manageable.  */
-    LCD_ShowStringDMA(UPGRADE_X,  40u, "Upg", WHITE, BLACK, 32);
-    LCD_ShowStringDMA(UPGRADE_X,  88u, "rad", WHITE, BLACK, 32);
-    LCD_ShowStringDMA(UPGRADE_X, 136u, "ing", WHITE, BLACK, 32);
+    LCD_ShowStringDMA(UPGRADE_X,  32u, "Upgrading", WHITE, BLACK, 32);
 
     s_dot_phase = 0u;   /* tick() will advance to 1 (".")  on first call */
 }

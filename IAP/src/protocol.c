@@ -63,6 +63,10 @@ uint8_t rx_buffer[MAX_FRAME_SIZE];
 
 static uint32_t frame_pos = 0;
 static uint8_t in_frame = 0;
+
+/* Outer unescape state machine (declared here so Protocol_IAP_Init can reset it) */
+typedef enum { OUTER_IDLE, OUTER_IN_FRAME, OUTER_ESCAPE } OuterState;
+static OuterState outer_state = OUTER_IDLE;
 //static uint8_t crc_bytes[4];
 
 // ==================== IAP Update State (Simplified) ====================
@@ -73,6 +77,8 @@ static uint32_t iap_write_addr = 0;       // Current Flash write address (set on
 static uint16_t iap_buf_idx = 0;          // Current buffer index
 static uint32_t iap_total_received = 0;   // Total bytes received
 static uint16_t current_page_index = 0;  // Current page index (from frame_buf[5] and frame_buf[6], LSB)
+static uint32_t last_packet_data_len = 0; // Data bytes of the most recently processed PACKAGE
+static int      last_packet_is_trig   = 0; // 1 if last PACKAGE was a 2-byte {0x00,0x00} trig
 extern uint16_t g_expected_page_count;    // Expected total page count from config
 
 
@@ -273,7 +279,9 @@ void Protocol_IAP_Init(void)
     /* Use dynamic target address from iap.c for dual-image support */
     iap_write_addr = g_update_target_addr;
     iap_buf_idx = 0;
-    iap_total_received = 0;    current_page_index = 0;          /* 重置页索引，防止旧值触发提前CRC检查 */
+    iap_total_received = 0;
+    current_page_index = 0;          /* 重置页索引，防止旧值触发提前CRC检查 */
+    last_packet_data_len = 0;
 
     /* 重置协议解析状态机所有状态变量，防止重试时用到上一轮的旧状态 */
     state       = STATE_WAIT_START;
@@ -283,6 +291,7 @@ void Protocol_IAP_Init(void)
     recv_crc    = 0;
     frame_pos   = 0;
     in_frame    = 0;
+    outer_state = OUTER_IDLE;
 	// 1. Terminate all ongoing UART operations
 	HAL_UART_AbortReceive_IT(&huart1);
 	HAL_UART_Abort(&huart1);
@@ -316,6 +325,24 @@ uint32_t Protocol_IAP_GetProgress(void)
 uint16_t Protocol_IAP_GetCurrentPageIndex(void)
 {
     return current_page_index;
+}
+
+/**
+ * @brief Get the data length of the most recently processed PACKAGE frame.
+ * Used in iap.c to distinguish a 2-byte trigger packet from a real firmware page.
+ */
+uint32_t Protocol_IAP_GetLastPacketDataLen(void)
+{
+    return last_packet_data_len;
+}
+
+/**
+ * @brief Returns 1 if the most recently received PACKAGE was a trigger packet
+ *        (exactly 2 bytes, both 0x00), 0 otherwise.
+ */
+int Protocol_IAP_IsLastPacketTrig(void)
+{
+    return last_packet_is_trig;
 }
 
 
@@ -394,6 +421,11 @@ void parse_byte(uint8_t byte)
 					}
 					uint8_t *firmware_data = &frame_buf[7];
 					uint32_t data_len = body_len - 7;
+					last_packet_data_len = data_len;
+					/* Strict trig detection: host sends exactly 2 bytes {0x00,0x00} */
+					last_packet_is_trig = (data_len == 2u &&
+										   firmware_data[0] == 0x00u &&
+										   firmware_data[1] == 0x00u) ? 1 : 0;
 					
 					// Read page index from frame_buf[5] and frame_buf[6] (LSB format)
 					current_page_index = (uint16_t)frame_buf[5] | ((uint16_t)frame_buf[6] << 8);
@@ -456,59 +488,82 @@ void parse_byte(uint8_t byte)
             break;
     }
 }
+/* Outer unescape state machine — mirrors the APP's OUTER_IDLE/IN_FRAME/ESCAPE
+ * approach.  Strips 0x7A escape bytes on-the-fly and feeds decoded bytes
+ * directly to parse_byte(), eliminating the old buffer+decode_escape path.
+ *
+ * Old approach problems:
+ *   1. Used frame_buffer + decode_escape (post-processing): on invalid escape
+ *      decode_escape returns 0, but inner SM state was NOT reset — next 0x7E
+ *      landed inside a stale inner state, permanently desynchronising parser.
+ *   2. End-of-frame "byte==0x7E && frame_pos>=13" misfired on short frames.
+ *
+ * New approach: streaming outer SM (OUTER_IDLE → OUTER_IN_FRAME → OUTER_ESCAPE)
+ */
 // Protocol receive function
 // Parameters: buf - receive buffer, len - receive data length
 // Return: 0 success, -1 failure
 int32_t Protocol_Receive(uint8_t *buf, uint32_t len)
 {
-	for (uint32_t i = 0; i < len; i++)
-	{
-		uint8_t byte = buf[i];
-		
-		if (!in_frame)
-		{
-			// Search for frame header 0x7E
-			if (byte == 0x7E)
-			{
-				in_frame = 1;
-				frame_pos = 0;
-				frame_buffer[frame_pos++] = byte;
-				state=STATE_WAIT_START;
-			}
-		}
-		else
-		{
-			// Already in frame, continue collecting
-			if (frame_pos < MAX_FRAME_SIZE)
-			{
-				frame_buffer[frame_pos++] = byte;
-				// Check if end of frame reached
-				if (byte == 0x7E && frame_pos >= 13)
-				{
-					// Complete frame received! Perform escape decoding
-					uint32_t decoded_len = decode_escape(decode_data, frame_buffer, frame_pos);
-					
-					// Parse protocol byte by byte
-					for (uint32_t j = 0; j < decoded_len; j++)
-					{
-						parse_byte(decode_data[j]);
-					}
-					
-					// Reset frame state, prepare to receive next frame
-					in_frame = 0;
-					frame_pos = 0;
-				}
-			}
-			else
-			{
-				// Buffer overflow, reset state
-				in_frame = 0;
-				frame_pos = 0;
-				return -1;
-			}
-		}
-	}
-	return 0;
+    for (uint32_t i = 0; i < len; i++)
+    {
+        uint8_t byte = buf[i];
+
+        switch (outer_state)
+        {
+            case OUTER_IDLE:
+                if (byte == START_END_FLAG) {
+                    /* Feed the opening 0x7E to the inner SM so it transitions
+                     * from STATE_WAIT_START → STATE_READ_LEN. */
+                    parse_byte(byte);
+                    outer_state = OUTER_IN_FRAME;
+                }
+                /* Any non-0x7E byte while idle is inter-frame noise — discard. */
+                break;
+
+            case OUTER_IN_FRAME:
+                if (byte == START_END_FLAG) {
+                    /* Closing 0x7E: feed to inner SM (STATE_WAIT_END_FLAG check)
+                     * then unconditionally reset inner SM and go OUTER_IDLE.
+                     * The inner SM resets itself to STATE_WAIT_START inside
+                     * STATE_WAIT_END_FLAG handling, so this is safe. */
+                    parse_byte(byte);
+                    /* Ensure inner SM is clean for the next frame regardless of
+                     * whether the CRC matched (parse_byte sends ACK/NACK itself). */
+                    state        = STATE_WAIT_START;
+                    recv_count   = 0;
+                    body_len     = 0;
+                    body_offset  = 0;
+                    outer_state  = OUTER_IDLE;
+                } else if (byte == ESCAPE_FLAG) {
+                    /* 0x7A escape prefix — do NOT pass to inner SM; wait for
+                     * the following byte to determine the decoded value. */
+                    outer_state = OUTER_ESCAPE;
+                } else {
+                    parse_byte(byte);
+                }
+                break;
+
+            case OUTER_ESCAPE:
+                outer_state = OUTER_IN_FRAME;   /* always leave escape state */
+                if (byte == ESCAPE_7E) {
+                    parse_byte(START_END_FLAG);  /* 0x7A 0x55 → 0x7E */
+                } else if (byte == ESCAPE_7A) {
+                    parse_byte(ESCAPE_FLAG);     /* 0x7A 0xAA → 0x7A */
+                } else {
+                    /* Invalid escape sequence: discard the current frame.
+                     * Stay in OUTER_IN_FRAME (not OUTER_IDLE) so the trailing
+                     * 0x7E is consumed as an end-delimiter, not mistaken for a
+                     * new frame start (which would desync the parser). */
+                    state        = STATE_WAIT_START;
+                    recv_count   = 0;
+                    body_len     = 0;
+                    body_offset  = 0;
+                }
+                break;
+        }
+    }
+    return 0;
 }
 
 uint8_t body[15];      //[version] [receiver] [sender] [data...]

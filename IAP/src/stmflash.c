@@ -179,7 +179,7 @@ void STMFLASH_Write(uint32_t WriteAddr,uint16_t *pBuffer,uint16_t NumToWrite)
 			
 			// After erase, fill buffer with 0xFFFF (erased state)
 			// Note: memset fills bytes, so we must loop to fill halfwords correctly
-for(i=0; i<(PAGE_SIZE/2); i++) {
+			for(i=0; i<(PAGE_SIZE/2); i++) {
 				STMFLASH_BUF[i] = 0xFFFF;
 			}
 			

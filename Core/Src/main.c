@@ -108,15 +108,14 @@ int main(void)
   /* Sets up UART and prepares for firmware update or application jump */
   IAP_Init();
 
+  LCD_Init();
+  LCD_Fill(0, 0, 120, 240, BLACK);
+
   ImageConfig_t config;
   if (Config_Read(&config) == 0 && config.need_upgrade != 1u){
 	  IAP_RunApp();
   }
 
-  LCD_Init();
-  LCD_Fill(0, 0, 120, 240, BLACK);
-  /* 显示 Upgrading + 点动画初始化 */
-  app_upgrade_start();
   /* USER CODE END 2 */
 
   /* Infinite loop */

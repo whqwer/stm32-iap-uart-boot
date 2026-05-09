@@ -294,31 +294,7 @@ int8_t IAP_Update(void)
             
             if (rx_len > 1)
             {
-                /* Process data */
                 Protocol_Receive(rx_buffer, rx_len);
-               // memset(rx_buffer, 0, MAX_FRAME_SIZE);
-               /*
-                升级接收说明（重要）：
-                MCU 端行为（碎片化原因）：
-                STM32 UART 有硬件 FIFO（常见 16 字节），且 HAL 的
-                HAL_UARTEx_ReceiveToIdle_DMA 会在 UART IDLE（线路短暂停）
-                或 DMA 计数变化时结束一次传输并回报已接字节数。
-                如果主机/驱动在发送链路上产生微小间隙（写入被分块或驱动调度），
-                MCU 会把流切分成多次 IDLE 回调 — 每次上报的长度通常与 FIFO/写入块大小相关。
-                为什么 USB→串口 看起来“一次到齐”但直接在 ARM 主机上会被拆分：
-                USB-串口适配器/驱动通常在设备侧做更大的缓冲和连续发射（USB bulk coalescing），
-                导致物理线上无明显空隙；而某些主机/驱动/PTY 路径会分多次 write() 或在写间产生调度延迟，
-                因而触发 MCU 的 IDLE → 多次回调。
-                为什么必须移除对 rx_buffer 的 memset 清零：
-                当前协议实现重用 rx_buffer（或其别名）作为“帧累积区”，并通过 frame_pos 跟踪
-                已累积长度。一次 IDLE 回调处理完并不等于整个帧完成；若在每次回调后清零 rx_buffer，
-                就会抹掉前面已累积但等待后续片段的字节，导致拼包失败/CRC 错误。USB 情形通常不会出现
-                后续片段，因此看不出问题。
-                建议（摘要）：
-                保留不清零当前 rx_buffer 的做法（最小改动）；或
-                更稳健地实现：使用独立累积缓冲或 circular DMA + 读/写索引，使 DMA 写区与解析区不重叠；
-                或在主机端尽量一次性 write 大块并用 tcdrain()/合并写以减少分片。
-                */
                 
                 /* Check if last page received using page_index */
                 volatile uint16_t current_page_index = Protocol_IAP_GetCurrentPageIndex();
@@ -327,28 +303,17 @@ int8_t IAP_Update(void)
                  * 不触发CRC检查，避免stale的current_page_index误触发提前返回。 */
                 if (total_received > 0 && g_expected_page_count > 0 && current_page_index >= g_expected_page_count - 1)
                 {
-
-                    /* 将实际写入 flash 的固件 CRC 与主机发来的期望 CRC 比对。
-                     * g_config.firmware_CRC 由 APP 从 enter-upgrade 数据包中解析
-                     * 并写入 Config 区，代表主机侧对固件文件计算的 CRC32。
-                     * 只有两者一致，才说明固件完整传输，才清除升级标志并跳转。
-                     *
-                     * 原代码错误：用 Calculate_Image_CRC(RUNAPP_REGION_BASE) 与
-                     * Calculate_Image_CRC(UPDATE_REGION_BASE) 比对，但两个宏都定
-                     * 义为 0x08008000（同一地址），永远相等，校验完全失效：即使固
-                     * 件损坏，page_count 也会被清 0，导致跳转到无效固件后死机。   */
                     uint32_t actual_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
 
                     if (actual_crc != g_config.firmware_CRC) {
-                        /* 居中显示红色 32 号字体错误提示
-                         * 屏幕 120×240（x=列 0~119, y=行 0~239）
-                         * 32 号字体: 高 32px, 宽 16px/字符
-                         * "CRC check" (9 字符, 144px): y=(240-144)/2=48, x=(120-64)/2=28
-                         * "failed"   (6 字符,  96px): y=(240- 96)/2=72, x=28+32=60 */
-                        LCD_Fill(0, 0, 120, 240, BLACK);
-                        LCD_ShowStringDMA(28, 48, "CRC check", RED, BLACK, 32);
-                        LCD_ShowStringDMA(60, 72, "failed",    RED, BLACK, 32);
-                        return -5;  /* 固件损坏，不清除标志，等主机重传 */
+                        /* Only show LCD for a REAL CRC failure, not for a 2-byte {0x00,0x00} trig_buf.
+                         * Strictly check: last packet was data_len==2 with both bytes 0x00. */
+                        if (!Protocol_IAP_IsLastPacketTrig()) {
+                            LCD_Fill(0, 0, 120, 240, BLACK);
+                            LCD_ShowStringDMA(24, 40, "CRC failed",   RED, BLACK, 32);
+                            LCD_ShowStringDMA(64, 24, "Please retry", RED, BLACK, 32);
+                        }
+                        return -5;  /* 固件未完整，不清除标志，等主机重传 */
                     }
 
                     /* CRC 验证通过：固件完整，firmware_CRC 保持不变 */

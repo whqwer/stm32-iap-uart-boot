@@ -61,11 +61,7 @@ void LCD_GPIOInit(void)
  */
 void LCD_WR_Bus(uint8_t dat)
 {
-//    LCD_CS_Clr();
-    HAL_SPI_Transmit_DMA(&hspi1, &dat, 1);
-//    while(HAL_SPI_GetState(&hspi1)!=HAL_SPI_STATE_READY); // Wait for completion
-//    HAL_SPI_Transmit(&hspi1, &dat, 1, 1000);
-//    LCD_CS_Set();
+    HAL_SPI_Transmit_DMA(&hspi1, &dat, 1);    /* LCD_WR_Bus must be fully synchronous (complete before returning).*/
 }
 
 /**
@@ -110,12 +106,12 @@ void LCD_WR_DATA(uint16_t dat)
 void LCD_WR_Busbuf(uint8_t* dat, uint32_t len)
 {
 	LCD_DC_Set();
-
+	
 	// Ensure all CPU writes are flushed to memory before DMA starts
 	__DSB();  // Data Synchronization Barrier
-
+	
     HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)dat, len);
-
+	
 	// Step 4: Wait for DMA transmission to complete
 	while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
 }
