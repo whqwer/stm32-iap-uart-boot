@@ -79,6 +79,7 @@ static uint32_t iap_total_received = 0;   // Total bytes received
 static uint16_t current_page_index = 0;  // Current page index (from frame_buf[5] and frame_buf[6], LSB)
 static uint32_t last_packet_data_len = 0; // Data bytes of the most recently processed PACKAGE
 static int      last_packet_is_trig   = 0; // 1 if last PACKAGE was a 2-byte {0x00,0x00} trig
+static int      valid_upgrade_packet  = 0; // one-shot: set when cmd==0x02 frame passes CRC
 extern uint16_t g_expected_page_count;    // Expected total page count from config
 
 
@@ -282,6 +283,8 @@ void Protocol_IAP_Init(void)
     iap_total_received = 0;
     current_page_index = 0;          /* 重置页索引，防止旧值触发提前CRC检查 */
     last_packet_data_len = 0;
+    last_packet_is_trig  = 0;
+    valid_upgrade_packet = 0;
 
     /* 重置协议解析状态机所有状态变量，防止重试时用到上一轮的旧状态 */
     state       = STATE_WAIT_START;
@@ -343,6 +346,16 @@ uint32_t Protocol_IAP_GetLastPacketDataLen(void)
 int Protocol_IAP_IsLastPacketTrig(void)
 {
     return last_packet_is_trig;
+}
+
+int Protocol_IAP_ConsumeValidPacket(void)
+{
+    if (valid_upgrade_packet) 
+	{ 
+		valid_upgrade_packet = 0; 
+		return 1; 
+	}
+    return 0;
 }
 
 
@@ -419,6 +432,7 @@ void parse_byte(uint8_t byte)
 						state = STATE_WAIT_START;
 						break;
 					}
+					valid_upgrade_packet = 1; /* cmd==0x02 confirmed */
 					uint8_t *firmware_data = &frame_buf[7];
 					uint32_t data_len = body_len - 7;
 					last_packet_data_len = data_len;

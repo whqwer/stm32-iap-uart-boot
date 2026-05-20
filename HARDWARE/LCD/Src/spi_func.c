@@ -1,118 +1,70 @@
 #include "spi_func.h"
-#include <string.h>
 #include "main.h"
 #include "spi.h"
+
 /**
- * @brief       GPIO initialization for LCD control pins
- * @param       None
- * @retval      None
+ * @brief  Initialize GPIO pins for LCD control (DC, RES).
+ *         SCK/MOSI are handled by SPI peripheral via MX_SPI1_Init().
+ *         CS is tied low on hardware.
  */
-//#define LCD_RES_CLK_ENABLE() __HAL_RCC_GPIOA_CLK_ENABLE()
-//#define LCD_RES_GPIO_PORT SPI_RES_GPIO_Port
-//#define LCD_RES_GPIO_PIN SPI_RES_Pin
-//
-//#define LCD_DC_CLK_ENABLE() __HAL_RCC_GPIOB_CLK_ENABLE()
-//#define LCD_DC_GPIO_PORT SPI_DC_GPIO_Port
-//#define LCD_DC_GPIO_PIN SPI_DC_Pin
-//
-//#define LCD_CS_CLK_ENABLE() __HAL_RCC_GPIOB_CLK_ENABLE()
-//#define LCD_CS_GPIO_PORT SPI_CS_GPIO_Port
-//#define LCD_CS_GPIO_PIN SPI_CS_Pin
 void LCD_GPIOInit(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
-    
-//    LCD_SCK_CLK_ENABLE();
-//    LCD_MOSI_CLK_ENABLE();
+
     LCD_RES_CLK_ENABLE();
     LCD_DC_CLK_ENABLE();
-//    LCD_CS_CLK_ENABLE();
-    
-    GPIO_InitStructure.Pin=LCD_DC_GPIO_PIN;
-    GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(LCD_DC_GPIO_PORT,&GPIO_InitStructure);
 
-//    GPIO_InitStructure.Pin=LCD_CS_GPIO_PIN;
-//    GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
-//    GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH;
-//    HAL_GPIO_Init(LCD_CS_GPIO_PORT,&GPIO_InitStructure);
+    GPIO_InitStructure.Pin   = LCD_DC_GPIO_PIN;
+    GPIO_InitStructure.Mode  = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStructure.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(LCD_DC_GPIO_PORT, &GPIO_InitStructure);
 
-    GPIO_InitStructure.Pin=LCD_RES_GPIO_PIN;
-    GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(LCD_RES_GPIO_PORT,&GPIO_InitStructure);
-
-//    GPIO_InitStructure.Pin=SPI1_MOSI_Pin;
-//    GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
-//    GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH;
-//    HAL_GPIO_Init(SPI1_MOSI_GPIO_Port,&GPIO_InitStructure);
-//
-//    GPIO_InitStructure.Pin=SPI1_SCK_Pin;
-//    GPIO_InitStructure.Mode=GPIO_MODE_OUTPUT_PP;
-//    GPIO_InitStructure.Speed=GPIO_SPEED_FREQ_HIGH;
-//    HAL_GPIO_Init(SPI1_SCK_GPIO_Port,&GPIO_InitStructure);
+    GPIO_InitStructure.Pin   = LCD_RES_GPIO_PIN;
+    HAL_GPIO_Init(LCD_RES_GPIO_PORT, &GPIO_InitStructure);
 }
 
 /**
- * @brief       Send one byte data via SPI (DMA mode)
- * @param       dat: Byte data to send
- * @retval      None
+ * @brief  Send one byte via SPI (blocking).
+ *         DC pin must be set by caller before invoking.
  */
 void LCD_WR_Bus(uint8_t dat)
 {
-    HAL_SPI_Transmit_DMA(&hspi1, &dat, 1);    /* LCD_WR_Bus must be fully synchronous (complete before returning).*/
+    while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
+    HAL_SPI_Transmit(&hspi1, &dat, 1, 10);
 }
 
-/**
- * @brief       Write register command to LCD
- * @param       reg: Command to write
- * @retval      None
- * @note        DC==0 for command mode
- */
+/** @brief Write register command (DC=0). */
 void LCD_WR_REG(uint8_t reg)
 {
     LCD_DC_Clr();
     LCD_WR_Bus(reg);
-//    LCD_DC_Set();
 }
 
-/**
- * @brief       Write one byte data to LCD
- * @param       dat: Data to write
- * @retval      None
- * @note        DC==1 for data mode
- */
+/** @brief Write one data byte (DC=1). */
 void LCD_WR_DATA8(uint8_t dat)
 {
     LCD_DC_Set();
     LCD_WR_Bus(dat);
-//    LCD_DC_Set();
 }
 
-/**
- * @brief       Write one half-word (16-bit) data to LCD
- * @param       dat: Data to write
- * @retval      None
- */
+/** @brief Write two data bytes (DC=1). */
 void LCD_WR_DATA(uint16_t dat)
 {
     LCD_DC_Set();
     LCD_WR_Bus(dat >> 8);
     LCD_WR_Bus(dat & 0xFF);
-    LCD_DC_Set();
-}
-//static uint8_t buffDMA[512];
-void LCD_WR_Busbuf(uint8_t* dat, uint32_t len)
-{
-	LCD_DC_Set();
-	
-	// Ensure all CPU writes are flushed to memory before DMA starts
-	__DSB();  // Data Synchronization Barrier
-	
-    HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)dat, len);
-	
-	// Step 4: Wait for DMA transmission to complete
-	while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
 }
 
+/**
+ * @brief  Bulk pixel transfer via SPI DMA (DC=1).
+ *         Blocks until DMA transfer is complete.
+ * @param  dat  32-byte-aligned source buffer
+ * @param  len  byte count
+ */
+void LCD_WR_Busbuf(uint8_t *dat, uint32_t len)
+{
+    LCD_DC_Set();
+    __DSB();
+    HAL_SPI_Transmit_DMA(&hspi1, dat, len);
+    while (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY);
+}

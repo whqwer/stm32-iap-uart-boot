@@ -13,8 +13,8 @@
  *
  * Memory overhead: 1024 bytes (lcd_char_buf) in BSS, 32-byte aligned.
  *
- * Font layout (ascii_3216):
- *   Each character entry is 64 bytes (32 rows × 2 bytes = 4 bytes/row × 8 rows).
+ * Font layout (ascii_boot):
+ *   Each character entry is 64 bytes (4 bytes/row × 16 rows).
  *   For each byte, bits are ordered LSB-first: bit-0 = leftmost pixel in the row.
  *   LCD window per character: 32 px wide × 16 px tall (sizey=32, sizex=16).
  *   Characters advance in the Y direction: y += 16 per character.
@@ -22,7 +22,7 @@
 
 #include "lcd_init.h"   /* LCD_Fill, LCD_Address_Set, color macros */
 #include "spi_func.h"   /* LCD_WR_Busbuf */
-#include "lcdfont.h"    /* ascii_3216[][64] */
+#include "lcdfont.h"    /* Font3216Entry_t, ascii_boot[] */
 
 /* ── One-character pixel buffer ──────────────────────────────────────────── */
 /* 32 × 16 pixels × 2 bytes/pixel = 1024 bytes; must be 32-byte aligned for
@@ -50,22 +50,26 @@ void LCD_ShowStringDMA(uint16_t x, uint16_t y, const char *s,
     if (sizey != 32u) return;           /* only font-32 supported here */
 
     const uint8_t  sizex       = 16u;  /* char width  = sizey / 2     */
-    const uint16_t TypefaceNum = 64u;  /* bytes per glyph in ascii_3216 */
+    const uint16_t TypefaceNum = 64u;  /* bytes per glyph in ascii_boot */
 
-    for (; *s >= ' ' && *s <= '~'; ++s) {
-        uint8_t num = (uint8_t)(*s) - (uint8_t)' ';
-        if (num >= 96u) break;          /* out of table range, stop    */
+    for (; *s != '\0'; ++s) {
+        /* Linear search in stripped table (22 entries max) */
+        const Font3216Entry_t *glyph = NULL;
+        for (uint8_t k = 0u; k < ascii_boot_count; ++k) {
+            if (ascii_boot[k].ch == (uint8_t)*s) { glyph = &ascii_boot[k]; break; }
+        }
+        if (glyph == NULL) { y += sizex; continue; } /* unknown char: skip */
 
         /* Set LCD window: 32 px wide (columns x…x+31), 16 px tall (rows y…y+15) */
         LCD_Address_Set(x, y, x + (uint16_t)(sizey - 1u), y + (uint16_t)(sizex - 1u));
 
         /* Render glyph into lcd_char_buf.
-         * Layout: 64 font bytes, 4 bytes per row, 16 rows total.
+         * Layout: 64 font bytes, 4 bytes per row, 16 rows total (32px wide × 16px tall).
          * Within each byte, bit-0 is the leftmost pixel (LSB-first).
-         * After every 32 pixels (= 4 bytes × 8 bits), a new row starts. */
+         * After every 32 pixels (= sizey), the inner bit loop breaks to start a new row. */
         uint32_t cnt = 0u, m = 0u;
         for (uint16_t i = 0u; i < TypefaceNum; ++i) {
-            uint8_t temp = ascii_3216[num][i];
+            uint8_t temp = glyph->bitmap[i];
             for (uint8_t t = 0u; t < 8u; ++t) {
                 uint16_t color = ((temp >> t) & 0x01u) ? fc : bc;
                 lcd_char_buf[cnt++] = (uint8_t)(color >> 8u);
@@ -83,8 +87,8 @@ void LCD_ShowStringDMA(uint16_t x, uint16_t y, const char *s,
 
 /* ── Upgrading animation ─────────────────────────────────────────────────── */
 /* Layout (portrait 120×240):
- *   "Upgrading" = 9 chars × 16 px = 144 px → y: 40 → 184
- *   Dots area   =  3 chars × 16 px =  48 px → y: 184 → 232
+ *   "Upgrading" = 9 chars × 16 px = 144 px → y: 32 → 176
+ *   Dots area   =  3 chars × 16 px =  48 px → y: 184 → 232  (8 px gap for spacing)
  *   Character width = 32 px, centred at x = (120-32)/2 = 44.             */
 #define UPGRADE_X     44u
 #define UPGRADE_DOT_Y 184u

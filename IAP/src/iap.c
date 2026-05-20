@@ -270,21 +270,39 @@ int8_t IAP_Update(void)
 
     /* Dots animation: tick every 500 ms */
     uint32_t last_dot_tick = start_time;
+    uint32_t last_upgrade_pkt_tick = 0; /* HAL_GetTick() of last cmd==0x02 packet; 0=none */
+    uint8_t  timeout_screen_shown  = 0u;
 
     /* 6. Main loop: wait and process data */
     while (1)
     {
     	// Feed the watchdog to prevent reset
     	IWDG->KR = 0xAAAA;
-        /* Check total timeout (30 seconds) */
+
+        /* 30-second total timeout.  If the timeout screen is already showing,
+         * keep waiting — do not exit until the next upgrade packet arrives. */
         if ((HAL_GetTick() - start_time) > 30000)
         {
-//            g_config.page_count = 0;
-//            Config_Write(&g_config);
-//            UART1_in_update_mode = 0;
-            return -2;
+            if (timeout_screen_shown) { 
+                start_time = HAL_GetTick(); 
+            }
+            else { 
+                return -2;
+            }
         }
-        
+
+        /* Inter-packet timeout: >2.5 s since the last cmd==0x02 packet.
+         * Non-upgrade frames (ACK, version query…) are ignored here. */
+        if (last_upgrade_pkt_tick != 0u &&
+            !timeout_screen_shown &&
+            (HAL_GetTick() - last_upgrade_pkt_tick) > 2500u)
+        {
+            LCD_Fill(0, 0, 120, 240, BLACK);
+            LCD_ShowStringDMA(24,  0, "Upgrade timeout", RED, BLACK, 32);
+            LCD_ShowStringDMA(64, 24, "please retry",    RED, BLACK, 32);
+            timeout_screen_shown = 1u;
+        }
+
         if(UART1_Complete_flag==1)
         {
             UART1_Complete_flag = 0;
@@ -295,28 +313,22 @@ int8_t IAP_Update(void)
             if (rx_len > 1)
             {
                 Protocol_Receive(rx_buffer, rx_len);
-                
+                int got_pkg = Protocol_IAP_ConsumeValidPacket(); /* 1 if cmd==0x02 */
+
                 /* Check if last page received using page_index */
                 volatile uint16_t current_page_index = Protocol_IAP_GetCurrentPageIndex();
                 uint32_t total_received = Protocol_IAP_GetProgress();
-                /* total_received>0 guard: 若尚未写入任何数据（如首包帧CRC错误），
-                 * 不触发CRC检查，避免stale的current_page_index误触发提前返回。 */
                 if (total_received > 0 && g_expected_page_count > 0 && current_page_index >= g_expected_page_count - 1)
                 {
                     uint32_t actual_crc = Calculate_Image_CRC(UPDATE_REGION_BASE, total_received);
-
                     if (actual_crc != g_config.firmware_CRC) {
-                        /* Only show LCD for a REAL CRC failure, not for a 2-byte {0x00,0x00} trig_buf.
-                         * Strictly check: last packet was data_len==2 with both bytes 0x00. */
                         if (!Protocol_IAP_IsLastPacketTrig()) {
                             LCD_Fill(0, 0, 120, 240, BLACK);
                             LCD_ShowStringDMA(24, 40, "CRC failed",   RED, BLACK, 32);
                             LCD_ShowStringDMA(64, 24, "Please retry", RED, BLACK, 32);
                         }
-                        return -5;  /* 固件未完整，不清除标志，等主机重传 */
+                        return -5;
                     }
-
-                    /* CRC 验证通过：固件完整，firmware_CRC 保持不变 */
                     g_config.page_count   = 0;
                     g_config.need_upgrade = 2u;   /* 2 = 升级完成，通知 APP 显示结果后清零
                                                    * 不能清为 0：APP 就看不到升级结果了
@@ -328,11 +340,18 @@ int8_t IAP_Update(void)
                     return 0;
                 }
 
-                /* Restart DMA after processing */
+                /* Restart DMA before any LCD update so next packet is captured */
                 HAL_UART_AbortReceive(&huart1);
                 status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
-                if (status == HAL_OK) {
-                    huart1.hdmarx->XferHalfCpltCallback = NULL;
+                if (status == HAL_OK) { huart1.hdmarx->XferHalfCpltCallback = NULL; }
+
+                /* Only upgrade packets update the timer and clear timeout screen */
+                if (got_pkg) {
+                    last_upgrade_pkt_tick = HAL_GetTick();
+                    if (timeout_screen_shown) {
+                        app_upgrade_start();
+                        timeout_screen_shown = 0u;
+                    }
                 }
             }
             else
@@ -344,10 +363,9 @@ int8_t IAP_Update(void)
             }
         }
 
-        /* Dots animation: advance every 500 ms.
-         * Called here (outside packet processing) so LCD SPI transfer
-         * never blocks the Protocol_Receive / DMA restart path.        */
-        if ((HAL_GetTick() - last_dot_tick) >= 500u) {
+        /* Dots animation: skip while timeout screen is visible */
+        if (!timeout_screen_shown &&
+            (HAL_GetTick() - last_dot_tick) >= 500u) {
             last_dot_tick = HAL_GetTick();
             app_upgrade_progress_tick();
         }

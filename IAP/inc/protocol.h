@@ -95,6 +95,9 @@ uint32_t Protocol_IAP_GetLastPacketDataLen(void);
  */
 int Protocol_IAP_IsLastPacketTrig(void);
 
+/** One-shot: 1 if a cmd==0x02 upgrade packet passed CRC since last call, else 0. */
+int Protocol_IAP_ConsumeValidPacket(void);
+
 /**
  * @brief Send a protocol frame over UART
  * @param receiver Receiver ID (destination address)

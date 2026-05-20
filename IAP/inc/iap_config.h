@@ -4,12 +4,9 @@
 /*============================================================================
  * STM32H503 Flash Memory Layout (128KB Total)
  *============================================================================
- * Bootloader:  0x08000000 - 0x08006000 (24KB, sectors 0-2)
- * Config:      0x08006000 - 0x08008000 (8KB, sector 3)
- * Update:      0x08008000 - 0x08014000 (48KB, sectors 4-9)
- * RunApp:      0x08014000 - 0x08020000 (48KB, sectors 10-15)
- * 
- * Config Data: Stored at 0x08006000 (last 8KB sector of Bootloader)
+ * Bootloader:  0x08000000 - 0x08007FFF (32KB, sectors 0-3)
+ * App:         0x08008000 - 0x0801DFFF (88KB, sectors 4-14)
+ * Config:      0x0801E000 - 0x0801FFFF (8KB,  sector 15, last)
  *============================================================================*/
 #include <stdint.h>
 
@@ -24,22 +21,22 @@
 
 /* Bootloader Region ------------------------------------------*/
 #define BOOTLOADER_BASE       0x08000000
-#define BOOTLOADER_SIZE       (48 * 1024)   /* 24KB */
+#define BOOTLOADER_SIZE       (32 * 1024)   /* 32KB */
 
 /* Config Sector (Flag Area) ------------------*/
-#define CONFIG_BASE           0x0800C000    /* Sector 3 */
+#define CONFIG_BASE           0x0801E000    /* Sector 15 (last) */
 #define CONFIG_SIZE           (8 * 1024)    /* 8KB */
 
 /* Update Region -----------------------------------------------*/
-#define UPDATE_REGION_BASE    0x0800E000    /* Sector 4, APP 固件写入区 */
-#define UPDATE_REGION_SIZE    (72 * 1024)   /* 72KB (12 sectors, 4-15) */
+#define UPDATE_REGION_BASE    0x08008000    /* Sector 4, APP 固件写入区 */
+#define UPDATE_REGION_SIZE    (88 * 1024)   /* 88KB (11 sectors, 4-14) */
 
 /* RunApp Region -----------------------------------------------
  * 当前为单区设计：UPDATE 和 RUNAPP 指向同一地址（0x0800E000）。
  * APP 链接脚本 ORIGIN = 0x08008000，固件直接写入并从此地址运行。
  * 无需 Copy_Update_To_Runapp()。                                 */
-#define RUNAPP_REGION_BASE    0x0800E000    /* 与 UPDATE 同区，Sector 4 */
-#define RUNAPP_REGION_SIZE    (72 * 1024)   /* 72KB */
+#define RUNAPP_REGION_BASE    0x08008000    /* 与 UPDATE 同区，Sector 4 */
+#define RUNAPP_REGION_SIZE    (88 * 1024)   /* 88KB */
 
 /* Compatibility: Default to UPDATE as ApplicationAddress ----*/
 #define ApplicationAddress    UPDATE_REGION_BASE
