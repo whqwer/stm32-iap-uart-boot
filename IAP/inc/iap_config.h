@@ -24,18 +24,18 @@
 #define BOOTLOADER_SIZE       (32 * 1024)   /* 32KB */
 
 /* Config Sector (Flag Area) ------------------*/
-#define CONFIG_BASE           0x0801E000    /* Sector 15 (last) */
+#define CONFIG_BASE           0x08008000    /* Sector 4 (last) */
 #define CONFIG_SIZE           (8 * 1024)    /* 8KB */
 
 /* Update Region -----------------------------------------------*/
-#define UPDATE_REGION_BASE    0x08008000    /* Sector 4, APP 固件写入区 */
+#define UPDATE_REGION_BASE    0x0800A000    /* Sector 5, APP 固件写入区 */
 #define UPDATE_REGION_SIZE    (88 * 1024)   /* 88KB (11 sectors, 4-14) */
 
 /* RunApp Region -----------------------------------------------
  * 当前为单区设计：UPDATE 和 RUNAPP 指向同一地址（0x0800E000）。
  * APP 链接脚本 ORIGIN = 0x08008000，固件直接写入并从此地址运行。
  * 无需 Copy_Update_To_Runapp()。                                 */
-#define RUNAPP_REGION_BASE    0x08008000    /* 与 UPDATE 同区，Sector 4 */
+#define RUNAPP_REGION_BASE    0x0800A000    /* 与 UPDATE 同区，Sector 4 */
 #define RUNAPP_REGION_SIZE    (88 * 1024)   /* 88KB */
 
 /* Compatibility: Default to UPDATE as ApplicationAddress ----*/
