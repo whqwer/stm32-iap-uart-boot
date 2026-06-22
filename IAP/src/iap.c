@@ -270,8 +270,9 @@ int8_t IAP_Update(void)
 
     /* Dots animation: tick every 500 ms */
     uint32_t last_dot_tick = start_time;
-    uint32_t last_upgrade_pkt_tick = 0; /* HAL_GetTick() of last cmd==0x02 packet; 0=none */
+    uint32_t last_upgrade_pkt_tick = 0u;
     uint8_t  timeout_screen_shown  = 0u;
+    uint8_t  upgrade_started       = 0u;
 
     /* 6. Main loop: wait and process data */
     while (1)
@@ -291,11 +292,13 @@ int8_t IAP_Update(void)
             }
         }
 
-        /* Inter-packet timeout: >2.5 s since the last cmd==0x02 packet.
+        /* Inter-packet timeout: >3 s since the last cmd==0x02 packet.
+         * Only starts after the first valid upgrade packet arrives.
          * Non-upgrade frames (ACK, version query…) are ignored here. */
-        if (last_upgrade_pkt_tick != 0u &&
+        if (upgrade_started == 1u &&
+            last_upgrade_pkt_tick != 0u &&
             !timeout_screen_shown &&
-            (HAL_GetTick() - last_upgrade_pkt_tick) > 2500u)
+            (HAL_GetTick() - last_upgrade_pkt_tick) > 3000u)
         {
             LCD_Fill(0, 0, 120, 240, BLACK);
             LCD_ShowStringDMA(24,  0, "Upgrade timeout", RED, BLACK, 32);
@@ -340,14 +343,24 @@ int8_t IAP_Update(void)
                     return 0;
                 }
 
-                /* Restart DMA before any LCD update so next packet is captured */
+                /* 无条件重启 RX DMA：参考 68d246b2 模式。
+                 * 如果 RxState 异常则先强制修复 — 之前的 guard 在状态粘滞时
+                 * 会跳过重启，导致 RX 永久停摆。 */
+                if (huart1.RxState != HAL_UART_STATE_READY) {
+                    huart1.RxState = HAL_UART_STATE_READY;
+                }
+                __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF | UART_CLEAR_FEF | UART_CLEAR_NEF | UART_CLEAR_PEF);
                 HAL_UART_AbortReceive(&huart1);
                 status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
                 if (status == HAL_OK) { huart1.hdmarx->XferHalfCpltCallback = NULL; }
 
-                /* Only upgrade packets update the timer and clear timeout screen */
+                /* Only upgrade packets start the UI, update the timer and clear timeout screen */
                 if (got_pkg) {
                     last_upgrade_pkt_tick = HAL_GetTick();
+                    if (upgrade_started == 0u) {
+                        app_upgrade_start();
+                        upgrade_started = 1u;
+                    }
                     if (timeout_screen_shown) {
                         app_upgrade_start();
                         timeout_screen_shown = 0u;
@@ -356,6 +369,11 @@ int8_t IAP_Update(void)
             }
             else
             {
+                if (huart1.RxState != HAL_UART_STATE_READY) {
+                    huart1.RxState = HAL_UART_STATE_READY;
+                }
+                __HAL_UART_CLEAR_FLAG(&huart1, UART_CLEAR_OREF | UART_CLEAR_FEF | UART_CLEAR_NEF | UART_CLEAR_PEF);
+                HAL_UART_AbortReceive(&huart1);
                 status = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rx_buffer, sizeof(rx_buffer));
                 if (status == HAL_OK) {
                     huart1.hdmarx->XferHalfCpltCallback = NULL;
@@ -363,8 +381,9 @@ int8_t IAP_Update(void)
             }
         }
 
-        /* Dots animation: skip while timeout screen is visible */
-        if (!timeout_screen_shown &&
+        /* Dots animation: only after upgrade has really started, and skip while timeout screen is visible */
+        if (upgrade_started == 1u &&
+            !timeout_screen_shown &&
             (HAL_GetTick() - last_dot_tick) >= 500u) {
             last_dot_tick = HAL_GetTick();
             app_upgrade_progress_tick();

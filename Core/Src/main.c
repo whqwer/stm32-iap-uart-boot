@@ -95,35 +95,33 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  MX_GPIO_Init();
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_GPDMA1_Init();
-  MX_USART1_UART_Init();
-  MX_SPI1_Init();
+
   /* USER CODE BEGIN 2 */
   /* Initialize IAP (In-Application Programming) module */
   /* Sets up UART and prepares for firmware update or application jump */
-  IAP_Init();
-
-  LCD_Init();
-  LCD_Fill(0, 0, 120, 240, BLACK);
-
   ImageConfig_t config;
   if (Config_Read(&config) == 0 && config.need_upgrade != 1u){
 	  IAP_RunApp();
   }
 
+  MX_GPDMA1_Init();
+  MX_USART1_UART_Init();
+
+  MX_SPI1_Init();
+  IAP_Init();
+  LCD_Init();
+  LCD_Fill(0, 0, 120, 240, BLACK);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  /* 显示 Upgrading + 点动画初始化 */
-	  app_upgrade_start();
       int ret = IAP_Update();
 
       if (ret == 0) {
