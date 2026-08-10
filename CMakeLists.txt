@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(bootloader C ASM)
+project(screenboot C ASM)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -93,7 +93,7 @@ if(VERSION_PATCH STREQUAL "")
   set(VERSION_PATCH ${GIT_VERSION_PATCH})
 endif()
 
-set(PROJECT_TARGET bootloader)
+set(PROJECT_TARGET screenboot)
 set(FIRMWARE_VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 if(NOT VERSION_STRING)
   if(GIT_DIRTY)
